@@ -6,3 +6,4 @@ Git repo for Wiki Energy project
 Team Members:
  - Stephen Suffian
  - Phil Ngo
+ - Miguel Perez
