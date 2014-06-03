@@ -12,9 +12,7 @@ researchers through a partnership with Pecan Street, a nonprofit based out of
 Austin, Texas with a mission to make energy efficiency easy and affordable
 for every American.
 
-# Methods
-
-
 # Team Members:
  - Stephen Suffian
  - Phil Ngo
+ - Miguel Perez
