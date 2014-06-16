@@ -3,11 +3,11 @@ This ipython notebook uses the Weather Underground [API](http://www.wunderground
 
 __________
 ##January
-![alt text](month_temp_graphs/January_Weather.pdf "Logo Title Text 1")
+![alt text](month_temp_graphs/January_Weather.png =1080x)
 ##April
-![alt text](month_temp_graphs/April_Weather.pdf "Logo Title Text 1")
+![alt text](month_temp_graphs/April_Weather.png =1080x)
 ##July
-![alt text](month_temp_graphs/July_Weather.pdf "Logo Title Text 1")
+![alt text](month_temp_graphs/July_Weather.png =1080x)
 ##October
-![alt text](month_temp_graphs/October_Weather.pdf "Logo Title Text 1")
+![alt text](month_temp_graphs/October_Weather.png =1080x)
 
