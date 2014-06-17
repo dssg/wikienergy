@@ -1,8 +1,8 @@
 #!/usr/bin/python
 import pandas as pd
 
-class Device:
-    '''Device
+class DeviceInstance:
+    '''DeviceInstance
 
     Attributes:
         data -- a timeseries of measurements in a pandas dataframe
@@ -10,16 +10,16 @@ class Device:
     '''
     # TODO - figure out how to store data efficiently
 
-    def __init__(self, data=None, params={}):
-        self.data = data
+    def __init__(self, traces=[], params={}):
+        self.traces = traces
         self.params = params
 
-    def add_data(self, data):
-        # adds new data to old dataset
+    def add_traces(self, traces):
+        # adds new traces to set of old traces
         pass
 
-    def get_data(self):
-        return self.data
+    def get_traces(self):
+        return self.traces
 
     def get_parameters(self):
         return params
@@ -28,8 +28,8 @@ class Device:
         # procedure to learn parameters a specific device
         pass
 
-    def update_data(self, data):
-        # replaces data
+    def update_traces(self, traces):
+        # replaces traces
         self.data = data
 
     def update_parameters(self,params):
@@ -80,8 +80,8 @@ class DeviceType:
         # manually updates parameters
         self.params = params
 
-class Building:
-    '''Class to represent a building with known (or unknown) device types
+class MeteredUnit:
+    '''Class to represent a metered with known (or unknown) device types
     '''
 
     def __init__(self, device_types=[]):
@@ -96,6 +96,9 @@ class Building:
     def learn_device_types(self, data, possible_device_types):
         # learns which devices are present, retains and returns the devices
         # which are.
+        pass
+
+    def learn_disaggregator_parameters(self,timeframe=None):
         pass
 
     def disaggregate(self, data):
