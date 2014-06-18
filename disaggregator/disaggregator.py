@@ -22,7 +22,7 @@ class DeviceInstance:
         return self.traces
 
     def get_parameters(self):
-        return params
+        return self.params
 
     def learn_parameters(self):
         # procedure to learn parameters a specific device
@@ -32,7 +32,7 @@ class DeviceInstance:
         # replaces traces
         self.data = data
 
-    def update_parameters(self,params):
+    def update_parameters(self, params):
         # replaces old parameters with manually updated parameters
         self.params = params
 
@@ -46,22 +46,22 @@ class DeviceType:
     '''
     # TODO - figure out how to store data efficiently
 
-    def __init__(self, devices=[], name=None, params=None):
+    def __init__(self, devices=[], name=None, params={}):
         self.devices = devices
         self.name = name
 
     def add_devices(self, devices):
         self.devices += devices
 
-    def generate_data(self,timeframe):
+    def generate_data(self, timeframe):
         # generates generic data for this device in a given timeframe
         pass
 
     def get_devices(self):
-        return devices
+        return self.devices
 
     def get_parameters(self):
-        return params
+        return self.params
 
     def learn_parameters(self):
         pass
