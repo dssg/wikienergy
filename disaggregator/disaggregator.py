@@ -84,6 +84,7 @@ class DeviceType(object):
 class MeteredUnit(object):
     '''Class to represent a metered with known (or unknown) device types
     '''
+    __metaclass__ = ABCMeta
 
     def __init__(self, device_types=[], params={}):
         self.device_types = device_types
