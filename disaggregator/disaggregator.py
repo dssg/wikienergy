@@ -14,27 +14,23 @@ class DeviceInstance:
         self.traces = traces
         self.params = params
 
-    def add_traces(self, traces):
-        # adds new traces to set of old traces
-        pass
+    def get_parameters(self):
+        return self.params
 
     def get_traces(self):
         return self.traces
-
-    def get_parameters(self):
-        return self.params
 
     def learn_parameters(self):
         # procedure to learn parameters a specific device
         pass
 
-    def update_traces(self, traces):
-        # replaces traces
-        self.data = data
-
-    def update_parameters(self, params):
+    def set_parameters(self, params):
         # replaces old parameters with manually updated parameters
         self.params = params
+
+    def set_traces(self, traces):
+        # replaces traces
+        self.data = data
 
 class DeviceType:
     '''DeviceType models the general parameters for a set of devices
@@ -50,15 +46,15 @@ class DeviceType:
         self.devices = devices
         self.name = name
 
-    def add_devices(self, devices):
-        self.devices += devices
-
     def generate_data(self, timeframe):
-        # generates generic data for this device in a given timeframe
+        # generates generic data for this device within a given timeframe
         pass
 
     def get_devices(self):
         return self.devices
+
+    def get_name(self):
+        return self.name
 
     def get_parameters(self):
         return self.params
@@ -66,8 +62,8 @@ class DeviceType:
     def learn_parameters(self):
         pass
 
-    def probability_present(self, data):
-        # evaluates the probability of being present in a particular dataset
+    def probability_present(self, aggregated_data):
+        # evaluates the probability of being present in a particular timeseries
         pass
 
     def update_devices(self, devices):
@@ -77,7 +73,6 @@ class DeviceType:
         self.name = name
 
     def update_parameters(self, params):
-        # manually updates parameters
         self.params = params
 
 class MeteredUnit:
@@ -86,9 +81,6 @@ class MeteredUnit:
 
     def __init__(self, device_types=[]):
         self.device_types = device_types
-
-    def add_device_types(self):
-        pass
 
     def get_device_types(self):
         return self.device_types
@@ -101,13 +93,13 @@ class MeteredUnit:
     def learn_disaggregator_parameters(self,timeframe=None):
         pass
 
-    def disaggregate(self, data):
-        # gets unlabeled data, returns labeled data
+    def disaggregate(self, aggregated_data):
+        # takes in unlabeled data, returns labeled data
         disaggregated_data = None
         confidences = None
         return disaggregated_data, confidences
 
-    def update_device_types(self, device_types):
+    def set_device_types(self, device_types):
         self.device_types = device_types
 
 
