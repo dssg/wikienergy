@@ -1,11 +1,12 @@
 #!/usr/bin/python
-from disaggregator import DeviceInstance, DeviceType, MeteringUnit
+from disaggregator import DeviceInstance, DeviceType, MeteredUnit
 
 class HMMDeviceInstance(DeviceInstance):
     '''HMMDeviceInstance'''
 
     def learn_parameters(self):
         pass
+
 class HMMDeviceType(DeviceType):
     '''HMMDeviceInstance'''
 
@@ -18,8 +19,8 @@ class HMMDeviceType(DeviceType):
     def probability_present(self, aggregated_data):
         pass
 
-class HMMMeteringUnit(MeteringUnit):
-    '''HMMDeviceInstance'''
+class HMMMeteredUnit(MeteredUnit):
+    '''HMMMeteredUnit'''
 
     def learn_device_types(self, data, possible_device_types):
         pass

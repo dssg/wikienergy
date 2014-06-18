@@ -1,5 +1,5 @@
 #!/usr/bin/python
-from abc import ABCMeta
+from abc import ABCMeta,abstractmethod
 
 class DeviceInstance(object):
     '''DeviceInstance
@@ -31,7 +31,7 @@ class DeviceInstance(object):
 
     def set_traces(self, traces):
         # replaces traces
-        self.data = data
+        self.traces = traces
 
 class DeviceType(object):
     '''DeviceType models the general parameters for a set of devices
