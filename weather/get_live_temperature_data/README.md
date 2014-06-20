@@ -1,3 +1,6 @@
+##Get live temperature data
+This python function uses [pywapi](https://pypi.python.org/pypi/pywapi) to query live temperature data
+
 ```python
 
 import pywapi
