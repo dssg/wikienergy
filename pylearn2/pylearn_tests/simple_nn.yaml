@@ -1,0 +1,30 @@
+!obj:pylearn2.train.Train {
+    dataset: &train !pkl: "/home/pngo/data/train_fake_ac_day.pkl",
+    model: !obj:pylearn2.models.softmax_regression.SoftmaxRegression {
+        n_classes: 2,
+        irange: 0.,
+        nvis: 5,
+    },
+    algorithm: !obj:pylearn2.training_algorithms.bgd.BGD {
+        batch_size: 10,
+        line_search_mode: 'exhaustive',
+        conjugate: 1,
+        monitoring_dataset:
+        {
+            'train' : *train,
+            'valid' : !pkl: "/home/pngo/data/train_fake_ac_day.pkl",
+            'test'  : !pkl: "/home/pngo/data/train_fake_ac_day.pkl",
+        },
+        termination_criterion: !obj:pylearn2.termination_criteria.MonitorBased {
+            channel_name: "valid_y_misclass"
+        }
+    },
+    extensions: [
+        !obj:pylearn2.train_extensions.best_params.MonitorBasedSaveBest {
+             channel_name: 'valid_y_misclass',
+             save_path: "softmax_regression_best.pkl"
+        },
+    ],
+    save_path: "softmax_regression.pkl",
+    save_freq: 1
+}
