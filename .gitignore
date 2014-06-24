@@ -1,3 +1,6 @@
 data/*
 !data/README.md
 *.pem
+*.json
+*.csv
+*.tsv
