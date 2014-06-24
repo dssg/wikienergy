@@ -1,4 +1,4 @@
-
+data/*
 !data/README.md
 *.pem
 *.json
