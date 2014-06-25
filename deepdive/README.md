@@ -8,11 +8,12 @@ _____________________________
  
 ##Principal Goals
   - Create a tool for evaluating energy-saving interventions
-  - Create an accurate energy disaggregator (15 minutes)
+  - Create an accurate energy disaggregator (15 minutes)    
+  
 ______________________________
   
 ##Data Sources
-Pecan Street | Tracebase | Weather | [Oak Park]
+Pecan Street | Tracebase) | Weather | [Oak Park]
 ###Pecan Street
 
 ####Overview
