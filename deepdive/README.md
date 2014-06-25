@@ -150,19 +150,22 @@ Use `get_weather_data(api_key,city,state,start_date,end_date)` to query historic
 <img src="images/ac_01.png" height=300 width = 900 >
 
 ####April Temperature
-![Temperature](images/April_Weather.png)
+<img src="images/April_Weather.png" height=300 width = 900 >
+
 ####April AC Usage
-![AC](images/ac_04.png)
+<img src="images/ac_04.png" height=300 width = 900 >
 
 ####July Temperature
-![Temperature](images/July_Weather.png)
+<img src="images/July_Weather.png" height=300 width = 900 >
+
 ####July AC Usage
-![AC](images/ac_07.png)
+<img src="images/ac_07.png" height=300 width = 900 >
 
 ####October Temperature
-![Temperature](images/October_Weather.png)
+<img src="images/October_Weather.png" height=300 width = 900 >
+
 ####October AC Usage
-![AC](images/ac_10.png)
+<img src="images/ac_10.png" height=300 width = 900 >
 
 ###EV
 After speaking with Pecan Street we learned that there is need for a way to reliably classify an electric vehicle opposed to another large load, such as HVAC. We've started exploring the homes with EV data looking for the signatures of these cars. 
