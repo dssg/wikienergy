@@ -1,27 +1,18 @@
 #Wikienergy Deep Dive 1
 _____________________________
-##Outline
-- Goals
-  - tool for evaluating energy-saving interventions
-  - accurate energy disaggregator (15 minutes)
-- Data Sources
-  - Pecan Street
-  - Tracebase
-  - Weather
-  - [Oak Park]
-- Algorithms
-  - FHMM
-  - Neural Networks
-- Analysis
-  - Most Common Appliances
-  - Weather vs. Energy Usage
-  - % HVAC
-  - EV Analytics
 
+#####[Goals](#principal-goals) | [Data Sources](#data-sources) | [Algorithms](#algorithms) | [Analysis](#analysis)
+
+</br>
  _____________________________
-
+ 
+##Principal Goals
+  - Create a tool for evaluating energy-saving interventions
+  - Create an accurate energy disaggregator (15 minutes)
+______________________________
+  
 ##Data Sources
-
+Pecan Street | Tracebase | Weather | [Oak Park]
 ###Pecan Street
 
 ####Overview
@@ -63,20 +54,19 @@ _____________________________
 - green button API
 - LIVE!!
 
-_____________________________
+ _____________________________
  
-##Goals
+##Algorithms
+Hidden Markov Model | Factorial Hidden Markov Model | Neural Networks
 
-###Disaggregation
+###Goals
+
+####Disaggregation
 
 - Existence
 - Modeling Appliances
 - Labeling States
 - Extracting Signal
-
- _____________________________
- 
-##Algorithms
 
 ###Hidden Markov Model (HMM)
 
