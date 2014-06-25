@@ -4,7 +4,7 @@ _____________________________
 #####[Goals](#principal-goals) | [Data Sources](#data-sources) | [Algorithms](#algorithms) | [Analysis](#analysis)
 
 </br>
- _____________________________
+_____________________________
  
 ##Principal Goals
   - Create a tool for evaluating energy-saving interventions
@@ -13,7 +13,7 @@ _____________________________
 ______________________________
   
 ##Data Sources
-Pecan Street | Tracebase) | Weather | [Oak Park]
+Pecan Street | Tracebase | Weather | [Oak Park]
 ###Pecan Street
 
 ####Overview
@@ -55,7 +55,7 @@ Pecan Street | Tracebase) | Weather | [Oak Park]
 - green button API
 - LIVE!!
 
- _____________________________
+_____________________________
  
 ##Algorithms
 Hidden Markov Model | Factorial Hidden Markov Model | Neural Networks
