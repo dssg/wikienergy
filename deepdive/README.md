@@ -130,9 +130,11 @@ ________________________
 ###Percent HVAC 
 *Historically Heating Ventilation and Air Conditioning have consumed over half of all home energy. Nationwide the fraction of energy consumed by HVAC has gone done from 58% in 1993 to 48% in 2009, but the number is still large. In intense climates the percent used by HVAC can be even larger, in research done by Pecan Street HVAC demanded 82% of the energy of some homes. Here is what we found:
 
-![March](images/Percent_Hvac_03.png =320x) ![July](images/Percent_Hvac_07.png =320x)
+![March](images/Percent_Hvac_03.png) 
 
-![October](images/Percent_Hvac_10.png =320x)
+![July](images/Percent_Hvac_07.png)
+
+![October](images/Percent_Hvac_10.png)
 
 ###Weather
 * Sanity check for Heat and AC use, by looking at correlation
