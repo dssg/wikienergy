@@ -135,8 +135,9 @@ Jan July November plots
 * Created an API which returns minute interval weather data(temp) by zip code
     * This allows us to embed weather information in future models 
 
-GRAPHS for JAN APR JUl OCT
-![January](images/January_Weather.png)
 
-
+####January Temperature
+![Temperature](images/January_Weather.png)
+####January AC Usage
+![AC](images/ac_01.png)
 ###EV
