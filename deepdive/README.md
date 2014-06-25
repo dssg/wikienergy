@@ -132,10 +132,9 @@ ________________________
 
 
 <img src="images/Percent_Hvac_03.png" width=33%>
+<img src="images/Percent_Hvac_07.png" width=33%>
+<img src="images/Percent_Hvac_10.png" width=33%>
 
-![July](images/Percent_Hvac_07.png)
-
-![October](images/Percent_Hvac_10.png)
 
 ###Weather
 * Sanity check for Heat and AC use, by looking at correlation
