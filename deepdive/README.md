@@ -144,12 +144,14 @@ ________________________
 ####Usage
 Use `get_weather_data(api_key,city,state,start_date,end_date)` to query historical weather data. The function will return a JSON object. To query live weather data, use `get_current_temp(city,state, zipcode = None)`.
 ####January Temperature
-<img src="images/January_Weather.png" height=250px alt = "Temperature">
+![Temperature](images/January_Weather.png)
 
 ####January AC Usage
-<img src="images/ac_01.png" height=250px alt = "AC">
+![AC](images/ac_01.png)
+
 ####April Temperature
 ![Temperature](images/April_Weather.png)
+
 ####April AC Usage
 ![AC](images/ac_04.png)
 
@@ -160,6 +162,7 @@ Use `get_weather_data(api_key,city,state,start_date,end_date)` to query historic
 
 ####October Temperature
 ![Temperature](images/October_Weather.png)
+
 ####October AC Usage
 ![AC](images/ac_10.png)
 
