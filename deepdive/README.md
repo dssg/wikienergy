@@ -112,6 +112,15 @@ _____________________________
 ###Accomplishments
 * Made HMM appliance models using Tracebase data
 * Made training data for FHMMs using appliance models
+
+####Aggregated Power Signal
+![Aggregated Power](images/aggpower.png)
+####Disaggregated Stove Power Signal (Real and Estimated)
+![Stove Disaggregated](images/disaggstove.png)
+
+####Disaggregated Refrigerator Power Signal (Real and Estimated)
+![Refrigerator Disaggregated](images/disaggref.png)
+
 * Disaggregated Tracebase test data
 * Used HMM models to train a neural network
  
