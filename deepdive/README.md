@@ -140,4 +140,20 @@ Jan July November plots
 ![Temperature](images/January_Weather.png)
 ####January AC Usage
 ![AC](images/ac_01.png)
+
+####April Temperature
+![Temperature](images/April_Weather.png)
+####January AC Usage
+![AC](images/ac_04.png)
+
+####July Temperature
+![Temperature](images/July_Weather.png)
+####January AC Usage
+![AC](images/ac_07.png)
+
+####October Temperature
+![Temperature](images/October_Weather.png)
+####January AC Usage
+![AC](images/ac_10.png)
+
 ###EV
