@@ -106,7 +106,7 @@ Hidden Markov Model | Factorial Hidden Markov Model | Neural Networks
 
 ####Aggregated Power Signal
 
-<img src="images/aggpower.png" height=200 width = 300 >
+<img src="images/aggpower.png" height=300 width = 900 >
 ####Disaggregated Stove Power Signal (Real and Estimated)
 ![Stove Disaggregated](images/disaggstove.png)
 
