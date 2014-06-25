@@ -17,6 +17,7 @@ _____________________________
   - Weather vs. Energy Usage
   - % HVAC
   - EV Analytics
+
  _____________________________
 
 ##Data Sources
@@ -93,7 +94,7 @@ _____________________________
     *  Often used for modeling probabalistic temporal processes
     *  Limited ability to model periodic signals
     *  
-![Hidden Markov Model Image](readme_images/bayesianhiddenmarkov.png)
+![Hidden Markov Model Image](images/bayesianhiddenmarkov.png)
 
 
 ###Factorial Hidden Markov Model (FHMM)
@@ -106,7 +107,7 @@ _____________________________
 * Mimics biological neurons
 * Multiple layers of neurons
 * Each neuron applies a sigmoidal function to the weighted sum of the activations of its input neurons
-![Neural Network](readme_images/bayesianhiddenmarkov.png)
+![Neural Network](images/neuralnetworks.png)
 
 ###Accomplishments
 * Made HMM appliance models using Tracebase data
