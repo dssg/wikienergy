@@ -137,4 +137,7 @@ Jan July November plots
 
 GRAPHS for JAN APR JUl OCT
 
+![January](images/January_Weather.png)
+
+
 ###EV
