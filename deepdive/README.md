@@ -136,7 +136,6 @@ Jan July November plots
     * This allows us to embed weather information in future models 
 
 GRAPHS for JAN APR JUl OCT
-
 ![January](images/January_Weather.png)
 
 
