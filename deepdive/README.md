@@ -105,7 +105,8 @@ Hidden Markov Model | Factorial Hidden Markov Model | Neural Networks
 * Made training data for FHMMs using appliance models
 
 ####Aggregated Power Signal
-![Aggregated Power](images/aggpower.png)
+
+<img src="images/aggpower.png" height=200 width = 300 >
 ####Disaggregated Stove Power Signal (Real and Estimated)
 ![Stove Disaggregated](images/disaggstove.png)
 
