@@ -147,8 +147,7 @@ Use `get_weather_data(api_key,city,state,start_date,end_date)` to query historic
 <img src="images/January_Weather.png" height=250px alt = "Temperature">
 
 ####January AC Usage
-![AC](images/ac_01.png)
-
+<img src="images/ac_01.png" height=250px alt = "AC">
 ####April Temperature
 ![Temperature](images/April_Weather.png)
 ####April AC Usage
