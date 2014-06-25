@@ -136,7 +136,7 @@ Jan July November plots
     * This allows us to embed weather information in future models 
 
 ###Usage:
-To use our historical query function, use `get_weather_data(api_key,city,state,start_date,end_date)`. The function will return a JSON object. To query live data, use `get_current_temp(city,state, zipcode = None)`.
+Use `get_weather_data(api_key,city,state,start_date,end_date)` to query historical weather data. The function will return a JSON object. To query live weather data, use `get_current_temp(city,state, zipcode = None)`.
 ####January Temperature
 ![Temperature](images/January_Weather.png)
 ####January AC Usage
