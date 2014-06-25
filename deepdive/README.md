@@ -164,3 +164,13 @@ Use `get_weather_data(api_key,city,state,start_date,end_date)` to query historic
 ![AC](images/ac_10.png)
 
 ###EV
+After speaking with Pecan Street we learned that there is need for a way to reliably classify an electric vehicle opposed to another large load, such as HVAC. We've started exploring the homes with EV data looking for the signatures of these cars. 
+
+![Daily Signature over Four Months](images/2014-EV.png)
+
+![Daily Signature over One Day](images/day_ev_charge_1.png)
+
+![Daily Signature over One Day](images/day_ev_charge_6.png)
+
+![Daily Signature over One Day](images/day_ev_charge_7.png)
+
