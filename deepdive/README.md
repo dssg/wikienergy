@@ -108,10 +108,9 @@ Hidden Markov Model | Factorial Hidden Markov Model | Neural Networks
 
 <img src="images/aggpower.png" height=300 width = 900 >
 ####Disaggregated Stove Power Signal (Real and Estimated)
-![Stove Disaggregated](images/disaggstove.png)
-
+<img src="images/disaggstove.png" height=300 width = 900 >
 ####Disaggregated Refrigerator Power Signal (Real and Estimated)
-![Refrigerator Disaggregated](images/disaggref.png)
+<img src="images/disaggref.png" height=300 width = 900 >
 
 * Disaggregated Tracebase test data
 * Used HMM models to train a neural network
@@ -145,10 +144,10 @@ ________________________
 ####Usage
 Use `get_weather_data(api_key,city,state,start_date,end_date)` to query historical weather data. The function will return a JSON object. To query live weather data, use `get_current_temp(city,state, zipcode = None)`.
 ####January Temperature
-![Temperature](images/January_Weather.png)
+<img src="images/January_Weather.png" height=300 width = 900 >
 
 ####January AC Usage
-![AC](images/ac_01.png)
+<img src="images/ac_01.png" height=300 width = 900 >
 
 ####April Temperature
 ![Temperature](images/April_Weather.png)
