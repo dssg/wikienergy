@@ -98,7 +98,7 @@ have a valid appliance set).
 - [`df`]: a pandas dataframe with all appliance instances?
 
 #### Methods
-- `top_k`: Get top k ernegy-consuming appliances
+- `top_k`: Get top k energy-consuming appliances
 
 #### Other properties
 Possibly combine traces into a single dataframe? Export particular datasets?
