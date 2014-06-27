@@ -101,7 +101,7 @@ _____________________________
 * Mimics biological neurons
 * Multiple layers of neurons
 * Each neuron applies a sigmoidal function to the weighted sum of the activations of its input neurons
-![Neural Network](../../images/neuralnetworks.png)
+![Neural Network](../../assets/images/neuralnetworks.png)
 
 ###Accomplishments
 * Made HMM appliance models using Tracebase data
@@ -109,11 +109,11 @@ _____________________________
 
 ####Aggregated Power Signal
 
-<img src="images/aggpower.png" height=300 width = 900 >
+<img src="../../assets/images/aggpower.png" height=300 width = 900 >
 ####Disaggregated Stove Power Signal (Real and Estimated)
-<img src="images/disaggstove.png" height=300 width = 900 >
+<img src="../../assets/images/disaggstove.png" height=300 width = 900 >
 ####Disaggregated Refrigerator Power Signal (Real and Estimated)
-<img src="images/disaggref.png" height=300 width = 900 >
+<img src="../../assets/images/disaggref.png" height=300 width = 900 >
 
 * Disaggregated Tracebase test data
 * Used HMM models to train a neural network
@@ -134,9 +134,9 @@ ________________________
 *Historically Heating Ventilation and Air Conditioning have consumed over half of all home energy. Nationwide the fraction of energy consumed by HVAC has gone down from 58% in 1993 to 48% in 2009, but the number is still large. In intense climates the percent used by HVAC can be even larger, in research done by Pecan Street HVAC demanded 82% of the energy of some homes. Here is what we found:
 
 
-<img src="images/Percent_Hvac_03.png" width=33% alt = "March">
-<img src="images/Percent_Hvac_07.png" width=33% alt = "July">
-<img src="images/Percent_Hvac_10.png" width=33% alt = "October">
+<img src="../../assets/images/Percent_Hvac_03.png" width=33% alt = "March">
+<img src="../../assets/images/Percent_Hvac_07.png" width=33% alt = "July">
+<img src="../../assets/images/Percent_Hvac_10.png" width=33% alt = "October">
 
 
 ###Weather
@@ -147,37 +147,37 @@ ________________________
 ####Usage
 Use `get_weather_data(api_key,city,state,start_date,end_date)` to query historical weather data. The function will return a JSON object. To query live weather data, use `get_current_temp(city,state, zipcode = None)`.
 ####January Temperature
-<img src="images/January_Weather.png" height=300 width = 900 >
+<img src="../../assets/images/January_Weather.png" height=300 width = 900 >
 
 ####January AC Usage
-<img src="images/ac_01.png" height=300 width = 900 >
+<img src="../../assets/images/ac_01.png" height=300 width = 900 >
 
 ####April Temperature
-<img src="images/April_Weather.png" height=300 width = 900 >
+<img src="../../assets/images/April_Weather.png" height=300 width = 900 >
 
 ####April AC Usage
-<img src="images/ac_04.png" height=300 width = 900 >
+<img src="../../assets/images/ac_04.png" height=300 width = 900 >
 
 ####July Temperature
-<img src="images/July_Weather.png" height=300 width = 900 >
+<img src="../../assets/images/July_Weather.png" height=300 width = 900 >
 
 ####July AC Usage
-<img src="images/ac_07.png" height=300 width = 900 >
+<img src="../../assets/images/ac_07.png" height=300 width = 900 >
 
 ####October Temperature
-<img src="images/October_Weather.png" height=300 width = 900 >
+<img src="../../assets/images/October_Weather.png" height=300 width = 900 >
 
 ####October AC Usage
-<img src="images/ac_10.png" height=300 width = 900 >
+<img src="../../assets/images/ac_10.png" height=300 width = 900 >
 
 ###EV
 After speaking with Pecan Street we learned that there is need for a way to reliably classify an electric vehicle opposed to another large load, such as HVAC. We've started exploring the homes with EV data looking for the signatures of these cars. 
 
 #####Daily Signature over Four Months
-![Daily Signature over Four Months](images/2014-EV.png)
+![Daily Signature over Four Months](../../assets/images/2014-EV.png)
 #####Daily Signature over One Day
-![Daily Signature over One Day](images/day_ev_charge_1.png)
+![Daily Signature over One Day](../../assets/images/day_ev_charge_1.png)
 
-![Daily Signature over One Day](images/day_ev_charge_6.png)
+![Daily Signature over One Day](../../assets/images/day_ev_charge_6.png)
 
-![Daily Signature over One Day](images/day_ev_charge_20.png)
+![Daily Signature over One Day](../../assets/images/day_ev_charge_20.png)
