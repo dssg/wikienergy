@@ -13,7 +13,7 @@ _____________________________
 ______________________________
   
 ##Data Sources
-Pecan Street | Tracebase | Weather | [Oak Park]
+[Pecan Street](#pecan-street) | [Tracebase](#tracebase) | [Weather](#weather) | [Oak Park](#oak-park)
 ###Pecan Street
 
 ####Overview
@@ -58,7 +58,7 @@ Pecan Street | Tracebase | Weather | [Oak Park]
 _____________________________
  
 ##Algorithms
-Hidden Markov Model | Factorial Hidden Markov Model | Neural Networks
+[Hidden Markov Model](#hidden-markov-model) | [Neural Networks](#neural-networks)
 
 ###Goals
 
@@ -88,7 +88,7 @@ Hidden Markov Model | Factorial Hidden Markov Model | Neural Networks
 ![Hidden Markov Model Image](images/bayesianhiddenmarkov.png)
 
 
-###Factorial Hidden Markov Model (FHMM)
+####Factorial Hidden Markov Model (FHMM)
 *  combines several hidden markov models in parallel
 *   state space comprises all possible combinations of appliance states
 
@@ -98,7 +98,7 @@ Hidden Markov Model | Factorial Hidden Markov Model | Neural Networks
 * Mimics biological neurons
 * Multiple layers of neurons
 * Each neuron applies a sigmoidal function to the weighted sum of the activations of its input neurons
-![Neural Network](images/neuralnetworks.png)
+![Neural Network](../../images/neuralnetworks.png)
 
 ###Accomplishments
 * Made HMM appliance models using Tracebase data
