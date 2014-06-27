@@ -48,8 +48,16 @@ timeseries of disaggregated or aggregated appliance traces
 - `dataid`: (pecan only) a string representing the dataid of the origin home
 - `schema`: (pecan only) a string representing the schema of origin
 - `hmm_params`: (hmm only) a list of parameters associated with the origin hmms
+- `instance_id`: (tracebase only) a string representing the id of the instance
 #### Methods
 - None
+#### Other properties
+Blank values are zero, values should be consecutive. Total use is considered
+a trace. Best practice: for 15min traces, keep time stamps at clean intervals.
+If trace represents a electricity generation such as that from a solar panel,
+(this usage of "generation" is meant to be distinct from the notion of data
+"generated" by or sampled from a hidden markov model), traces should have
+negative values.
 
 ### The ApplianceInstance class
 #### Attributes
@@ -57,6 +65,9 @@ timeseries of disaggregated or aggregated appliance traces
 overlap.**
 #### Methods
 - None
+#### Other properties
+Traces must have aligned (but not overlapping) time intervals sampled at the
+same rate with the same offset.
 
 ### The ApplianceType class
 #### Attributes
@@ -66,50 +77,22 @@ varying levels of functional generality for appliance types. Ex) Refrigerator
 vs. energy-star refrigerator).
 #### Methods
 - None
+#### Other properties
+Note: This will constitute a sort of way to standardize appliance names.
 
 ### The ApplianceSet class
 #### Attributes
 - `appliances`: a list of appliance instances with **enforced temporal
-alignment.**
+alignment** (i.e. Misaligned data must be dealt with upon initialization to
+have a valid appliance set).
+- [`df`]: a pandas dataframe with all appliance instances?
 #### Methods
-- None
+- `top_k`: Get top k ernegy-consuming appliances
+#### Other properties
+Possibly combine traces into a single dataframe? Export particular datasets?
+Note that an appliance set may have multiple instances of a particular type.
 
-
-(thought - organization around polymorphic appliances instead?)
-
-Pandas DataFrame, DatetimeIndex-ed
-Must include use column
-Columns are appliances
-Rows indexed by utc time
-Blank values are zero.
-Dataframe can have any number of rows
-Dataframe interval should be 15min.
-timestamps should be at clean 15min intervals (like at the hour)
-no time column (use index instead)
-dataframe is for one metered unit (house, building).
-gen values must be negative.
-get rid of subpanels. 
-Keep track of appliances per column?
-remove all-zero columns?
-map from numbers to names for columns?
-data
-Source attribute ("pecan", "tracebase", "hmm"..., "oak_park") - mostly for humans
-if pecan, must have dataid, table attribute (None, otherwise
-if hmm, must have hmm used to make it
-if tracebase, must have instance id. 
-could have any number of columns.
-dealing with multiples(2 fridges)?
-pick standard column names?
-Generated data format
-same
-
-Algorithmically disaggregated data
-same
-
-The following lists describes standards for the dataset class:
-- Datasets 
-- 
-
-
-Additional documentation and example usage can be found [here](#). A live example
-can be found [here](#).
+Additional Documentation
+------------------------
+Additional documentation and example usage can be found [here](#). A live
+example can be found [here](#).
