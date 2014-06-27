@@ -6,45 +6,74 @@ Basic usage
 Basic usage of the disaggregator module during development is as follows:
 
     import sys
-    sys.path.add('../../')
+    sys.path.add('../../') # or non-Unix equivalent
 
     import disaggregator
 
 Disaggregator Module
 --------------------
-The disaggregator module is structured around appliances. We've use the
+The disaggregator module is structured around appliances. We use the
 following terms through the documentation:
 
 ### Terms
-- ***appliance trace***:
-- ***appliance instance***:
-- ***appliance type***:
-- ***appliance set***:
+- ***[appliance trace](#appliance-trace)***: a sequence of consecutive average
+power measurements (usually in 15 minute itervals) for a specific appliance
+instance for an arbitrary length of time. Ex) Readings from Refrigerator 003
+for the day of 01/01/2014
+- ***[appliance instance](#appliance-instance)***: a specific device or example
+of an appliance model which may have any number of traces associated with it.
+Could additionally be a particular set of parameters for a generative model
+such as a HMM. Furthermore, an appliance instance might be an aggregated (i.e.
+not yet disaggregated) set of appliances. This is distinct from *appliance set*
+below because its measured traces will not temporally overlap.
+Ex) Refrigerator 006; \lambda=(\pi,\A,\mu,\sigma)
+- ***[appliance type](#appliance-type)***: a category of appliances which share
+a set of meaningful features which may be used to distinguish it from other
+appliance types.
+- ***[appliance set](#appliance-set)***: a set of appliance instances which
+form a metered unit. Appliance sets might also be fabricated to form
+ground-truth training, validation or testing sets for algorithmic
+disaggregation tasks.
 
 Given that datasets might be loaded from many external sources and combined or
 manipulated in a variety of ways, we organize a general hierarchical structure
-described briefly below.
+around these terms which is described briefly below. In general, the categories
+below could be formed from sampled, generated, or disaggregated data.
 
-### The Dataset class
-
-The main data structure of the disaggregation library is called the Dataset.
-Datasets are formed from sampled, generated, or disaggregated data. Datasets are
-meant to model metered units such as a building or home, and contain
-descriptions of the power traces of the appliances (either directly measured or
-generated) which they contain. They are meant to be versatile data structures
-which facilitate use in algorithms.
-
-Datasets have the following attributes:
-- `df`, a pandas dataframe with a `DatetimeIndex` containing columns which are
+### The ApplianceTrace class
+#### Attributes
+- `trace`: a pandas Series with a single `DatetimeIndex`ed columns which are
 timeseries of disaggregated or aggregated appliance traces
-- `source` a list of length `n_columns` containing a string ("pecan","oakpark",
-"hmm",...) describing its origin
-- `dataid` (pecan only) a list of length `n_columns` containing integers
-representing the dataid of the origin home
-- `table` (pecan only) a list of length `n_columns` containing an (per column)
-- `column_mapping` a list of length `n_columns`, describing
-- `hmm_params` (hmm only) a list of parameters associated with the origin hmms
-instance_id
+- `source`: a string ("pecan","oakpark","hmm",...) describing its origin
+- `dataid`: (pecan only) a string representing the dataid of the origin home
+- `schema`: (pecan only) a string representing the schema of origin
+- `hmm_params`: (hmm only) a list of parameters associated with the origin hmms
+#### Methods
+- None
+
+### The ApplianceInstance class
+#### Attributes
+- `traces`: a temporally ordered list of traces with **enforced lack of time
+overlap.**
+#### Methods
+- None
+
+### The ApplianceType class
+#### Attributes
+- `appliances`: a set of appliance instances of this type. An appliance could
+belong to more than one type, which may arise for situations in which we have
+varying levels of functional generality for appliance types. Ex) Refrigerator
+vs. energy-star refrigerator).
+#### Methods
+- None
+
+### The ApplianceSet class
+#### Attributes
+- `appliances`: a list of appliance instances with **enforced temporal
+alignment.**
+#### Methods
+- None
+
 
 (thought - organization around polymorphic appliances instead?)
 

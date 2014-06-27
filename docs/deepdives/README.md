@@ -2,8 +2,7 @@
 
 -----
 
-#####[Goals](#principal-goals) | [Data Sources](#data-sources) |
-[Algorithms](#algorithms) | [Analysis](#analysis)
+#####[Goals](#principal-goals) | [Data Sources](#data-sources) | [Algorithms](#algorithms) | [Analysis](#analysis)
 
 </br>
 
