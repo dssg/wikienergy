@@ -1,5 +1,5 @@
-Wikienergy
-==========
+Energy Disaggregation
+=====================
 
 Energy efficiency makes up over half of the potential carbon reduction that
 the world needs to combat climate change. However, individual homeowners are
@@ -11,6 +11,11 @@ use. It will use the largest database of smart meter data available to
 researchers through a partnership with Pecan Street, a nonprofit based out of
 Austin, Texas with a mission to make energy efficiency easy and affordable
 for every American.
+
+Parners
+-------
+- Pecan Street/WikiEnergy
+- Oak Park
 
 ## Team Members:
  - Stephen Suffian
