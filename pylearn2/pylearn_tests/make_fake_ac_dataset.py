@@ -57,9 +57,9 @@ if __name__ == "__main__":
     model = fake_hmm_appliance(pi,a,mean,cov)
 
     # randomly sample one day of data and format it as a pylearn2 dataset
-    dataset = build_dataset(model,96,5,2,2)
-    train, valid, test = get_train_valid_test(dataset,48,22,22)
-    train,valid,test = convert_to_pylearn_ds(train,valid,test)
+    dataset = build_dataset(model,10000,100,99,2)
+    train, valid, test = get_train_valid_test(dataset,5000,2400,2400)
+    train, valid, test = convert_to_pylearn_ds(train,valid,test)
 
     # export datasets
     export_datasets("/home/pngo/data",[train,valid,test],["train_fake_ac_day","valid_fake_ac_day","test_fake_ac_day"])
