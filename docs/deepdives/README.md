@@ -1,20 +1,24 @@
 #Wikienergy Deep Dive 1
-_____________________________
 
-#####[Goals](#principal-goals) | [Data Sources](#data-sources) | [Algorithms](#algorithms) | [Analysis](#analysis)
+-----
+
+#####[Goals](#principal-goals) | [Data Sources](#data-sources) |
+[Algorithms](#algorithms) | [Analysis](#analysis)
 
 </br>
-_____________________________
- 
+
+-----
+
 ##Principal Goals
   - Create a tool for evaluating energy-saving interventions
-  - Create an accurate energy disaggregator (15 minutes)    
-  
-______________________________
-  
+  - Create an accurate energy disaggregator (15 minutes)
+
+-----
+
 ##Data Sources
 [Pecan Street](#pecan-street) | [Tracebase](#tracebase) |
 [Weather](#weather) | [Oak Park](#oak-park)
+
 ###Pecan Street
 
 ####Overview
@@ -56,8 +60,8 @@ ______________________________
 - green button API
 - LIVE!!
 
-_____________________________
- 
+-----
+
 ##Algorithms
 [Hidden Markov Model](#hidden-markov-model-hmm) |
 [Factorial Hidden Markov Model](#factorial-hidden-markov-model-fhmm) |
@@ -75,19 +79,21 @@ _____________________________
 ###Hidden Markov Model (HMM)
 
 -  Develop appliance instance parameters using hidden markov models
-    *   z<sub>t</sub>(discrete variable) corresponds to one of K states (state1=on, state2=off)
+    *   z<sub>t</sub>(discrete variable) corresponds to one of K states
+(state1=on, state2=off)
     *   x<sub>t</sub> (continous variable) is amount of power > 0 (e.x. 100 W)
     *   Hidden Markov Parameters:
         *   Initial Probabilities (&alpha;)
-        *   Transition matrix (C) (probability of transition between hidden states)
-        *   Emission variables (&phi;) – Gaussian-Gamma, hyperparameters: 
+        *   Transition matrix (C) (probability of transition between hidden
+states)
+        *   Emission variables (&phi;) – Gaussian-Gamma, hyperparameters:
             *   mean, precision, shape, scale
         *   Observed Data (power values, other features)
         *   Hidden States (ON or OFF)
     *  Can be used to generate sample data, predict states, evaluate likelihood
     *  Often used for modeling probabalistic temporal processes
     *  Limited ability to model periodic signals
- 
+
 ![Hidden Markov Model Image](../../assets/images/bayesianhiddenmarkov.png)
 
 
@@ -100,7 +106,8 @@ _____________________________
 * Good for modeling non-linear functions
 * Mimics biological neurons
 * Multiple layers of neurons
-* Each neuron applies a sigmoidal function to the weighted sum of the activations of its input neurons
+* Each neuron applies a sigmoidal function to the weighted sum of the
+activations of its input neurons
 ![Neural Network](../../assets/images/neuralnetworks.png)
 
 ###Accomplishments
@@ -117,21 +124,25 @@ _____________________________
 
 * Disaggregated Tracebase test data
 * Used HMM models to train a neural network
- 
+
 ###Challenges
-* Detecting appliance existence 
+* Detecting appliance existence
 * Encoding time in FHMMs
 * Understand Step Variant Convolutional Neural Networks
 
-________________________
+-----
 
-
-##Analysis 
+##Analysis
 ###Most Common Appliances in Homes
 * Ask for suggestions
 
-###Percent HVAC 
-*Historically Heating Ventilation and Air Conditioning have consumed over half of all home energy. Nationwide the fraction of energy consumed by HVAC has gone down from 58% in 1993 to 48% in 2009, but the number is still large. In intense climates the percent used by HVAC can be even larger, in research done by Pecan Street HVAC demanded 82% of the energy of some homes. Here is what we found:
+###Percent HVAC
+Historically, heating, ventilation, and air conditioning have consumed over
+half of all home energy. Nationwide the fraction of energy consumed by HVAC
+has gone down from 58% in 1993 to 48% in 2009, but the number is still large.
+In intense climates the percent used by HVAC can be even larger, in research
+done by Pecan Street HVAC demanded 82% of the energy of some homes.
+Here is what we found:
 
 
 <img src="../../assets/images/Percent_Hvac_03.png" width=33% alt = "March">
