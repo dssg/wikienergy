@@ -58,7 +58,7 @@ ______________________________
 _____________________________
  
 ##Algorithms
-[Hidden Markov Model](#hidden-markov-model) | [Neural Networks](#neural-networks)
+[Hidden Markov Model](#hidden-markov-model-hmm) | [Factorial Hidden Markov Model](#factorial-hidden-markov-model-fhmm)|[Neural Networks](#neural-networks)
 
 ###Goals
 
@@ -84,11 +84,11 @@ _____________________________
     *  Can be used to generate sample data, predict states, evaluate likelihood
     *  Often used for modeling probabalistic temporal processes
     *  Limited ability to model periodic signals
-    *  
+ 
 ![Hidden Markov Model Image](images/bayesianhiddenmarkov.png)
 
 
-####Factorial Hidden Markov Model (FHMM)
+###Factorial Hidden Markov Model (FHMM)
 *  combines several hidden markov models in parallel
 *   state space comprises all possible combinations of appliance states
 
