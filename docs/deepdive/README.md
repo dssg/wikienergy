@@ -13,7 +13,8 @@ _____________________________
 ______________________________
   
 ##Data Sources
-[Pecan Street](#pecan-street) | [Tracebase](#tracebase) | [Weather](#weather) | [Oak Park](#oak-park)
+[Pecan Street](#pecan-street) | [Tracebase](#tracebase) |
+[Weather](#weather) | [Oak Park](#oak-park)
 ###Pecan Street
 
 ####Overview
@@ -25,7 +26,7 @@ ______________________________
   - city
   - type of insulation
   - type of HVAC
-  
+
 ####Curated Dataset
 - Austin, TX
 - 75 households
@@ -58,7 +59,9 @@ ______________________________
 _____________________________
  
 ##Algorithms
-[Hidden Markov Model](#hidden-markov-model-hmm) | [Factorial Hidden Markov Model](#factorial-hidden-markov-model-fhmm)|[Neural Networks](#neural-networks)
+[Hidden Markov Model](#hidden-markov-model-hmm) |
+[Factorial Hidden Markov Model](#factorial-hidden-markov-model-fhmm) |
+[Neural Networks](#neural-networks)
 
 ###Goals
 
@@ -85,7 +88,7 @@ _____________________________
     *  Often used for modeling probabalistic temporal processes
     *  Limited ability to model periodic signals
  
-![Hidden Markov Model Image](images/bayesianhiddenmarkov.png)
+![Hidden Markov Model Image](../../assets/images/bayesianhiddenmarkov.png)
 
 
 ###Factorial Hidden Markov Model (FHMM)
