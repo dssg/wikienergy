@@ -17,7 +17,8 @@ Parners
 - Pecan Street/WikiEnergy
 - Oak Park
 
-## Team Members:
+Team Members
+------------
  - Stephen Suffian
  - Phil Ngo
  - Miguel Perez
