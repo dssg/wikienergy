@@ -12,6 +12,11 @@ the effectiveness of new algorithms, please instead use
 Monitoring Toolkit), which is designed with the needs of researchers in mind.
 
 
+How to use this toolkit
+-----------------------
+Quick-start documentation and iPython notebook tutorials can be found in the
+docs/ directory.
+
 Background
 ----------
 Energy efficiency makes up over half of the potential carbon reduction that
@@ -31,7 +36,7 @@ Parners
 - Pecan Street/WikiEnergy
 - Oak Park
 
-Team Members
+Team members
 ------------
  - Stephen Suffian
  - Phil Ngo
