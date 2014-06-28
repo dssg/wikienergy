@@ -1,19 +1,23 @@
 #Wikienergy Deep Dive 1
-_____________________________
+
+-----
 
 #####[Goals](#principal-goals) | [Data Sources](#data-sources) | [Algorithms](#algorithms) | [Analysis](#analysis)
 
 </br>
-_____________________________
- 
+
+-----
+
 ##Principal Goals
   - Create a tool for evaluating energy-saving interventions
-  - Create an accurate energy disaggregator (15 minutes)    
-  
-______________________________
-  
+  - Create an accurate energy disaggregator (15 minutes)
+
+-----
+
 ##Data Sources
-Pecan Street | Tracebase | Weather | [Oak Park]
+[Pecan Street](#pecan-street) | [Tracebase](#tracebase) |
+[Weather](#weather) | [Oak Park](#oak-park)
+
 ###Pecan Street
 
 ####Overview
@@ -25,7 +29,7 @@ Pecan Street | Tracebase | Weather | [Oak Park]
   - city
   - type of insulation
   - type of HVAC
-  
+
 ####Curated Dataset
 - Austin, TX
 - 75 households
@@ -55,10 +59,12 @@ Pecan Street | Tracebase | Weather | [Oak Park]
 - green button API
 - LIVE!!
 
-_____________________________
- 
+-----
+
 ##Algorithms
-Hidden Markov Model | Factorial Hidden Markov Model | Neural Networks
+[Hidden Markov Model](#hidden-markov-model-hmm) |
+[Factorial Hidden Markov Model](#factorial-hidden-markov-model-fhmm) |
+[Neural Networks](#neural-networks)
 
 ###Goals
 
@@ -72,20 +78,22 @@ Hidden Markov Model | Factorial Hidden Markov Model | Neural Networks
 ###Hidden Markov Model (HMM)
 
 -  Develop appliance instance parameters using hidden markov models
-    *   z<sub>t</sub>(discrete variable) corresponds to one of K states (state1=on, state2=off)
+    *   z<sub>t</sub>(discrete variable) corresponds to one of K states
+(state1=on, state2=off)
     *   x<sub>t</sub> (continous variable) is amount of power > 0 (e.x. 100 W)
     *   Hidden Markov Parameters:
         *   Initial Probabilities (&alpha;)
-        *   Transition matrix (C) (probability of transition between hidden states)
-        *   Emission variables (&phi;) – Gaussian-Gamma, hyperparameters: 
+        *   Transition matrix (C) (probability of transition between hidden
+states)
+        *   Emission variables (&phi;) – Gaussian-Gamma, hyperparameters:
             *   mean, precision, shape, scale
         *   Observed Data (power values, other features)
         *   Hidden States (ON or OFF)
     *  Can be used to generate sample data, predict states, evaluate likelihood
     *  Often used for modeling probabalistic temporal processes
     *  Limited ability to model periodic signals
-    *  
-![Hidden Markov Model Image](images/bayesianhiddenmarkov.png)
+
+![Hidden Markov Model Image](../../assets/images/bayesianhiddenmarkov.png)
 
 
 ###Factorial Hidden Markov Model (FHMM)
@@ -97,8 +105,9 @@ Hidden Markov Model | Factorial Hidden Markov Model | Neural Networks
 * Good for modeling non-linear functions
 * Mimics biological neurons
 * Multiple layers of neurons
-* Each neuron applies a sigmoidal function to the weighted sum of the activations of its input neurons
-![Neural Network](images/neuralnetworks.png)
+* Each neuron applies a sigmoidal function to the weighted sum of the
+activations of its input neurons
+![Neural Network](../../assets/images/neuralnetworks.png)
 
 ###Accomplishments
 * Made HMM appliance models using Tracebase data
@@ -106,34 +115,38 @@ Hidden Markov Model | Factorial Hidden Markov Model | Neural Networks
 
 ####Aggregated Power Signal
 
-<img src="images/aggpower.png" height=300 width = 900 >
+<img src="../../assets/images/aggpower.png" height=300 width = 900 >
 ####Disaggregated Stove Power Signal (Real and Estimated)
-<img src="images/disaggstove.png" height=300 width = 900 >
+<img src="../../assets/images/disaggstove.png" height=300 width = 900 >
 ####Disaggregated Refrigerator Power Signal (Real and Estimated)
-<img src="images/disaggref.png" height=300 width = 900 >
+<img src="../../assets/images/disaggref.png" height=300 width = 900 >
 
 * Disaggregated Tracebase test data
 * Used HMM models to train a neural network
- 
+
 ###Challenges
-* Detecting appliance existence 
+* Detecting appliance existence
 * Encoding time in FHMMs
 * Understand Step Variant Convolutional Neural Networks
 
-________________________
+-----
 
-
-##Analysis 
+##Analysis
 ###Most Common Appliances in Homes
 * Ask for suggestions
 
-###Percent HVAC 
-*Historically Heating Ventilation and Air Conditioning have consumed over half of all home energy. Nationwide the fraction of energy consumed by HVAC has gone down from 58% in 1993 to 48% in 2009, but the number is still large. In intense climates the percent used by HVAC can be even larger, in research done by Pecan Street HVAC demanded 82% of the energy of some homes. Here is what we found:
+###Percent HVAC
+Historically, heating, ventilation, and air conditioning have consumed over
+half of all home energy. Nationwide the fraction of energy consumed by HVAC
+has gone down from 58% in 1993 to 48% in 2009, but the number is still large.
+In intense climates the percent used by HVAC can be even larger, in research
+done by Pecan Street HVAC demanded 82% of the energy of some homes.
+Here is what we found:
 
 
-<img src="images/Percent_Hvac_03.png" width=33% alt = "March">
-<img src="images/Percent_Hvac_07.png" width=33% alt = "July">
-<img src="images/Percent_Hvac_10.png" width=33% alt = "October">
+<img src="../../assets/images/Percent_Hvac_03.png" width=33% alt = "March">
+<img src="../../assets/images/Percent_Hvac_07.png" width=33% alt = "July">
+<img src="../../assets/images/Percent_Hvac_10.png" width=33% alt = "October">
 
 
 ###Weather
@@ -144,37 +157,37 @@ ________________________
 ####Usage
 Use `get_weather_data(api_key,city,state,start_date,end_date)` to query historical weather data. The function will return a JSON object. To query live weather data, use `get_current_temp(city,state, zipcode = None)`.
 ####January Temperature
-<img src="images/January_Weather.png" height=300 width = 900 >
+<img src="../../assets/images/January_Weather.png" height=300 width = 900 >
 
 ####January AC Usage
-<img src="images/ac_01.png" height=300 width = 900 >
+<img src="../../assets/images/ac_01.png" height=300 width = 900 >
 
 ####April Temperature
-<img src="images/April_Weather.png" height=300 width = 900 >
+<img src="../../assets/images/April_Weather.png" height=300 width = 900 >
 
 ####April AC Usage
-<img src="images/ac_04.png" height=300 width = 900 >
+<img src="../../assets/images/ac_04.png" height=300 width = 900 >
 
 ####July Temperature
-<img src="images/July_Weather.png" height=300 width = 900 >
+<img src="../../assets/images/July_Weather.png" height=300 width = 900 >
 
 ####July AC Usage
-<img src="images/ac_07.png" height=300 width = 900 >
+<img src="../../assets/images/ac_07.png" height=300 width = 900 >
 
 ####October Temperature
-<img src="images/October_Weather.png" height=300 width = 900 >
+<img src="../../assets/images/October_Weather.png" height=300 width = 900 >
 
 ####October AC Usage
-<img src="images/ac_10.png" height=300 width = 900 >
+<img src="../../assets/images/ac_10.png" height=300 width = 900 >
 
 ###EV
 After speaking with Pecan Street we learned that there is need for a way to reliably classify an electric vehicle opposed to another large load, such as HVAC. We've started exploring the homes with EV data looking for the signatures of these cars. 
 
 #####Daily Signature over Four Months
-![Daily Signature over Four Months](images/2014-EV.png)
+![Daily Signature over Four Months](../../assets/images/2014-EV.png)
 #####Daily Signature over One Day
-![Daily Signature over One Day](images/day_ev_charge_1.png)
+![Daily Signature over One Day](../../assets/images/day_ev_charge_1.png)
 
-![Daily Signature over One Day](images/day_ev_charge_6.png)
+![Daily Signature over One Day](../../assets/images/day_ev_charge_6.png)
 
-![Daily Signature over One Day](images/day_ev_charge_20.png)
+![Daily Signature over One Day](../../assets/images/day_ev_charge_20.png)
