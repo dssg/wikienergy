@@ -12,6 +12,7 @@ class PecanStreetDatasetAdapter(object):
         db_url="postgresql"+"://"+user_name+":"+ps+"@"+host+":"+port+"/"+db
         '''
         self.eng = sqlalchemy.create_engine(db_url)
+        self.source = "PecanStreet"
 
     def get_unique_dataids(self,schema,month,year,group=None):
         '''
@@ -29,14 +30,19 @@ class PecanStreetDatasetAdapter(object):
         else:
             raise SchemaError(schema)
 
-    def get_month_traces(self,schema,year,month,dataid,group=None,sample_rate="15T"):
+    def get_month_traces(self,schema,year,month,dataid,group=None,sampling_rate="15T"):
         '''
         Returns a month-long traces for the specified month and sampling rate. Specify
         sampling rate using pandas offset aliases (Ex. 15 mins -> "15T")
         '''
         if schema == "curated":
+            # Lowest possible sampling rate is 15T
             query = 'select * from "PecanStreet_CuratedSets".group{0}_disaggregated_{1}_{2:02d} where dataid={3}'.format(group,year,month,dataid)
             df = self.get_dataframe(query).fillna(0)
+            df.index = df['utc_15min'].apply(pandas.to_datetime)
+            if not (sampling_rate == '15T' or sampling_rate == '15Min'):
+                how = {col:'sum' for col in dataframe.columns}
+                df = df.resample(sampling_rate, how=how)
             print df
         elif schema == "shared":
             raise NotImplementedError
@@ -44,9 +50,9 @@ class PecanStreetDatasetAdapter(object):
             raise NotImplementedError
         else:
             raise SchemaError(schema)
-        for series in df:
-            print series
-            ApplianceTrace(series)
+        for column, series in df.iteritems():
+            print column, series
+            #ApplianceTrace(series,self.source)
 
     def get_dataframe(self,query):
         '''Returns a pandas dataframe with the query results'''
