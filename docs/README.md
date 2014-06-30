@@ -43,7 +43,7 @@ below could be formed from sampled, generated, or disaggregated data.
 ### The ApplianceTrace class
 
 #### Attributes
-- `trace`: a pandas Series with a single `DatetimeIndex`ed columns which are
+- `series`: a pandas Series with a single `DatetimeIndex`ed columns which are
 timeseries of disaggregated or aggregated appliance traces
 - `source`: a string ("pecan","oakpark","hmm",...) describing its origin
 - `dataid`: (pecan only) a string representing the dataid of the origin home
