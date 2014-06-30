@@ -78,7 +78,7 @@ same rate with the same offset.
 ### The ApplianceType class
 
 #### Attributes
-- `appliances`: a set of appliance instances of this type. An appliance could
+- `appliances`: a list of appliance instances of this type. An appliance could
 belong to more than one type, which may arise for situations in which we have
 varying levels of functional generality for appliance types. Ex) Refrigerator
 vs. energy-star refrigerator).
