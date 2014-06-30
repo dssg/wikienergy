@@ -43,7 +43,7 @@ below could be formed from sampled, generated, or disaggregated data.
 ### The ApplianceTrace class
 
 #### Attributes
-- `trace`: a pandas Series with a single `DatetimeIndex`ed columns which are
+- `series`: a pandas Series with a single `DatetimeIndex`ed columns which are
 timeseries of disaggregated or aggregated appliance traces
 - `source`: a string ("pecan","oakpark","hmm",...) describing its origin
 - `dataid`: (pecan only) a string representing the dataid of the origin home
@@ -78,7 +78,7 @@ same rate with the same offset.
 ### The ApplianceType class
 
 #### Attributes
-- `appliances`: a set of appliance instances of this type. An appliance could
+- `appliances`: a list of appliance instances of this type. An appliance could
 belong to more than one type, which may arise for situations in which we have
 varying levels of functional generality for appliance types. Ex) Refrigerator
 vs. energy-star refrigerator).
