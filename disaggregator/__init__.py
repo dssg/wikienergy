@@ -1,5 +1,5 @@
-from ApplianceTrace import *
-from ApplianceInstance import *
-from ApplianceType import *
-from ApplianceSet import *
-from utils import *
+from ApplianceTrace import ApplianceTrace
+from ApplianceInstance import ApplianceInstance
+from ApplianceType import ApplianceType
+from ApplianceSet import ApplianceSet
+import utils
