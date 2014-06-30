@@ -1,1 +1,5 @@
 .DS_Store
+data/*
+!data/README.md
+*.csv
+*.json
