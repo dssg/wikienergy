@@ -39,20 +39,22 @@ class PecanStreetDatasetAdapter(object):
             # Lowest possible sampling rate is 15T
             query = 'select * from "PecanStreet_CuratedSets".group{0}_disaggregated_{1}_{2:02d} where dataid={3}'.format(group,year,month,dataid)
             df = self.get_dataframe(query).fillna(0)
-            df.index = df['utc_15min'].apply(pandas.to_datetime)
+            df.rename(columns={'utc_15min': 'time'}, inplace=True)
+            df.index = df['time'].apply(pandas.to_datetime)
+            df = df.drop(['id','dataid','time'], axis=1)
             if not (sampling_rate == '15T' or sampling_rate == '15Min'):
                 how = {col:'sum' for col in dataframe.columns}
                 df = df.resample(sampling_rate, how=how)
-            print df
         elif schema == "shared":
             raise NotImplementedError
         elif schema == "raw":
             raise NotImplementedError
         else:
             raise SchemaError(schema)
+        traces = []
         for column, series in df.iteritems():
-            print column, series
-            #ApplianceTrace(series,self.source)
+            traces.append(ApplianceTrace(series,self.source))
+        return traces
 
     def get_dataframe(self,query):
         '''Returns a pandas dataframe with the query results'''
