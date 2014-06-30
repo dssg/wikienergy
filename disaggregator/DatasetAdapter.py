@@ -6,14 +6,18 @@ class DatasetAdapter(object):
     def __init__(self):
         pass
 
+    @abstractmethod
     def createTrace(self):
         pass
 
+    @abstractmethod
     def createInstance(self):
         pass
 
+    @abstractmethod
     def createType(self);
         pass
 
+    @abstractmethod
     def createSet(self):
         pass
