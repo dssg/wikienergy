@@ -1,7 +1,4 @@
 from ApplianceTrace import ApplianceTrace
-from ApplianceInstance import ApplianceInstance
-from ApplianceType import ApplianceType
-from ApplianceSet import ApplianceSet
 
 import sqlalchemy
 import pandas
@@ -16,27 +13,56 @@ class PecanStreetDatasetAdapter(object):
         '''
         self.eng = sqlalchemy.create_engine(db_url)
 
-    def get_unique_dataids(self,schema,month,group=None):
+    def get_unique_dataids(self,schema,month,year,group=None):
         '''
         Returns a list of dataids for a specifc schema ("curated","shared", or
         "raw"), month (int), year (int), and group (int).
         '''
         if schema == "curated":
-            query = 'select distinct dataid from "PecanStreet_CuratedSets".group{0}_disaggregated_2013_{1:02d}'.format(group,month)
-            eng_object = self.eng.execute(query)
-            df = pandas.DataFrame.from_records(eng_object.fetchall())
-            return list(df[0])
+            query = 'select distinct dataid from "PecanStreet_CuratedSets".group{0}_disaggregated_{1}_{2:02d}'.format(group,year,month)
+            df = self.get_dataframe(query)
+            return list(df["dataid"])
         elif schema == "shared":
             raise NotImplementedError
         elif schema == "raw":
             raise NotImplementedError
         else:
-            raise NonexistentSchemaError
+            raise SchemaError(schema)
 
-    def getApplianceTraces(self,schema,group):
+    def get_month_traces(self,schema,year,month,dataid,group=None,sample_rate="15T"):
         '''
-        Returns traces for the specified time and sampling rate. Specify
+        Returns a month-long traces for the specified month and sampling rate. Specify
         sampling rate using pandas offset aliases (Ex. 15 mins -> "15T")
         '''
-        pass
+        if schema == "curated":
+            query = 'select * from "PecanStreet_CuratedSets".group{0}_disaggregated_{1}_{2:02d} where dataid={3}'.format(group,year,month,dataid)
+            df = self.get_dataframe(query).fillna(0)
+            print df
+        elif schema == "shared":
+            raise NotImplementedError
+        elif schema == "raw":
+            raise NotImplementedError
+        else:
+            raise SchemaError(schema)
+        for series in df:
+            print series
+            ApplianceTrace(series)
 
+    def get_dataframe(self,query):
+        '''Returns a pandas dataframe with the query results'''
+        eng_object = self.eng.execute(query)
+        df = pandas.DataFrame.from_records(eng_object.fetchall())
+        df.columns = eng_object.keys()
+        return df
+
+class SchemaError(Exception):
+    """Exception raised for errors in the schema.
+
+        Attributes:
+            schema  -- nonexistent schema
+    """
+    def __init__(self,schema):
+        self.schema = schema
+
+    def __str__(self):
+        return "Schema {} not supported or nonexistent.".format(self.schema)
