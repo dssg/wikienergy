@@ -18,3 +18,8 @@ if __name__=='__main__':
     print 'The sum of the squared residuals(evm) is {} '.format(evm.rss(truth,prediction))
     print 'The sum of the squared residuals(unit) is {}'.format(unit_rss(truth,prediction))
 
+    print evm.guess_truth_from_power(np.array([2,3,4,51,2]),3)
+    stats =  evm.get_positive_negative_stats([1],[1])
+    print stats[0]
+    print stats[1]
+    print evm.get_specificity(stats[0],stats[1])
