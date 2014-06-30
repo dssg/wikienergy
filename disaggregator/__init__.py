@@ -5,3 +5,4 @@ from ApplianceSet import ApplianceSet
 import utils
 import evaluation_metrics
 from PecanStreetDatasetAdapter import PecanStreetDatasetAdapter
+from TracebaseDatasetAdapter import TracebaseDatasetAdapter
