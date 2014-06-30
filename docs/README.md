@@ -6,7 +6,7 @@ Basic usage
 Basic usage of the disaggregator module during development is as follows:
 
     import sys
-    sys.path.add('../../') # or non-Unix equivalent
+    sys.path.append('../../') # or non-Unix equivalent (add wikienergy/ to path)
 
     import disaggregator
 
