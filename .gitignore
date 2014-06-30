@@ -3,3 +3,4 @@ data/*
 !data/README.md
 *.csv
 *.json
+*.pyc
