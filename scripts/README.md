@@ -1,1 +1,1 @@
-Folder for scripts
+Folder for install scripts, etc
