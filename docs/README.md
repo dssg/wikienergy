@@ -26,7 +26,7 @@ Could additionally be a particular set of parameters for a generative model
 such as a HMM. Furthermore, an appliance instance might be an aggregated (i.e.
 not yet disaggregated) set of appliances. This is distinct from *appliance set*
 below because its measured traces will not temporally overlap.
-Ex) Refrigerator 006; \lambda=(\pi,\A,\mu,\sigma)
+Ex) Refrigerator 006; &lambda;=(&pi;,A,&mu;,&sigma;).
 - ***[appliance type](#the-appliancetype-class)***: a category of appliances which share
 a set of meaningful features which may be used to distinguish it from other
 appliance types.
