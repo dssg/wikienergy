@@ -9,7 +9,6 @@ class ApplianceTrace(object):
         '''
         self.series = series
         self.source = source
-        assert(series.index.isinstance(pandas.tseries.index.DatetimeIndex))
 
     def get_series(self):
         return self.series
