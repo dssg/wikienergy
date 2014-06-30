@@ -4,3 +4,4 @@ data/*
 *.csv
 *.json
 *.pyc
+*.pkl
