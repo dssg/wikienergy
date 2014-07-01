@@ -113,7 +113,16 @@ have a valid appliance set).
 - [`df`]: a pandas dataframe with all appliance instances?
 
 #### Methods
+- `add_instances(instances)`: Adds the list of appliances to the appliance set.
+- `add_to_dataframe(instances)`: Adds a new list of appliances to the
+dataframe.
+- `get_dataframe()`: Returns the dataframe object representing the dataset.
+- `make_dataframe()`: Makes a new dataframe of the appliance instances. Throws
+an exception if the appliance instances have traces that don't align.
+- `set_instances(instances)`: Replaces the old instances with the new list.
+Makes a new dataframe using those instances.
 - `top_k`: Get top k energy-consuming appliances
+
 
 #### Other properties
 Possibly combine traces into a single dataframe? Export particular datasets?
