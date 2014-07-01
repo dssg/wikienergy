@@ -22,8 +22,16 @@ class PecanStreetDatasetAdapter():
         return tables
     
     
-    def set_meta_table(self,table):
+    def verify_same_range():
+        '''check that all data points have the same range'''
         pass
+    
+    def get_meta_table(self,schema,table):
+        '''would prefer that this be a class that these be attributes'''
+        return self.get_list('select distinct dataid from {}.{}'.format(schema,table))
+        # date_start =
+        # date_end =
+        # step_size =
     
     def get_unique_dataids(self,schema,month,year,group=None):
         '''
@@ -74,8 +82,8 @@ class PecanStreetDatasetAdapter():
         df.columns = eng_object.keys()
         return df
 
-    def query(self,query):
-        result  = self.eng.execute(query)
+    def get_list(self,query):
+        result  = self.eng.execute(query).fetchall()
         return result
 
 
