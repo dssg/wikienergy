@@ -3,7 +3,7 @@
     model: !obj:pylearn2.models.softmax_regression.SoftmaxRegression {
         n_classes: 2,
         irange: 0.,
-        nvis: 100,
+        nvis: 10,
     },
     algorithm: !obj:pylearn2.training_algorithms.bgd.BGD {
         batch_size: 100,
@@ -22,9 +22,9 @@
     extensions: [
         !obj:pylearn2.train_extensions.best_params.MonitorBasedSaveBest {
              channel_name: 'valid_y_misclass',
-             save_path: "softmax_regression_best.pkl"
+             save_path: "models/softmax_regression_best.pkl"
         },
     ],
-    save_path: "softmax_regression.pkl",
+    save_path: "models/softmax_regression.pkl",
     save_freq: 1
 }
