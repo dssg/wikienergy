@@ -11,7 +11,9 @@ db = "postgres"
 db_url = "postgresql"+"://"+user_name+":"+pw+"@"+host+":"+port+"/"+db
 
 p = pecan(db_url)
-test= p.set_table_names('PecanStreet_SharedData')
+tables= p.set_table_names('PecanStreet_SharedData')
+ids = p.get_meta_table('\"PecanStreet_SharedData\"',str(tables[0]))
+print ids
 #test = p.get_dataframe('select * from information_schema.tables')
 #print test.columns
 #for i in test['table_schema']:
