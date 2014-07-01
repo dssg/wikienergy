@@ -28,4 +28,6 @@ class ApplianceInstance(object):
         Given a set of traces, orders them chronologically and catches
         overlapping traces.
         '''
-        return traces
+        order = np.argsort([s[0] for s in traces.series])
+        new_traces = [traces[i] for i in order]
+        return new_traces
