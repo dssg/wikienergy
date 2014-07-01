@@ -1,1 +1,10 @@
-/* custom faq styles
+/* custom faq styles */
+
+.faq-header {
+  margin-top:100px;
+}
+
+.answer {
+  margin-top:20px;
+  margin-left:20px;
+}
