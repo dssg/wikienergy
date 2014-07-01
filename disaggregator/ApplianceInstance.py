@@ -1,8 +1,10 @@
+import numpy as np
+
 class ApplianceInstance(object):
 
     def __init__(self,traces):
         '''Initialize an appliance trace with a list of traces'''
-        self.traces = order_traces(traces)
+        self.traces = self.order_traces(traces)
 
     def add_traces(self,traces):
         '''
@@ -21,13 +23,13 @@ class ApplianceInstance(object):
         '''
         Sets the list of traces owned by the appliance
         '''
-        self.traces = order_traces(traces)
+        self.traces = self.order_traces(traces)
 
     def order_traces(self,traces):
         '''
         Given a set of traces, orders them chronologically and catches
         overlapping traces.
         '''
-        order = np.argsort([s[0] for s in traces.series])
+        order = np.argsort([t.series[0] for t in traces])
         new_traces = [traces[i] for i in order]
         return new_traces
