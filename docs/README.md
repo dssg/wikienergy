@@ -1,5 +1,20 @@
-Disaggregator Documentation
-===========================
+Disaggregator Package Overview
+==============================
+
+Datasets might be loaded from many external sources and combined or
+manipulated in a variety of ways toward the end of energy disaggregation;
+therefore, we organize a general hierarchical structure around appliance traces
+and other elements described below in order to serve as ground truth training
+sets for algorithmic models.
+
+The main tasks facilitated by this package are:
+- Importing appliance traces
+- Organizing appliance traces into appliance instances, types, and sets
+- Algorithms for completing the following three tasks:
+  - Determining appliance presence in new traces
+  - Given appliance presence, determine on-off states for each time point
+  - Given appliance states, reconstruct original signals
+- Evaluating algorithmic results
 
 Basic usage
 -----------
@@ -8,14 +23,13 @@ Basic usage of the disaggregator module during development is as follows:
     import sys
     sys.path.append('../../') # or non-Unix equivalent (add wikienergy/ to path)
 
-    import disaggregator
+    import disaggregator as dis
 
-Disaggregator Module
---------------------
-The disaggregator module is structured around appliances. We use the
-following terms through the documentation:
-
-### Terms
+Terms
+-----
+We use the following terms throughout the documentation to refer to different
+aspects of appliance level energy usage. In general, items in the categories
+described below could be formed from sampled, generated, or disaggregated data.
 - ***[appliance trace](#the-appliancetrace-class)***: a sequence of consecutive average
 power measurements (usually in 15 minute itervals) for a specific appliance
 instance for an arbitrary length of time. Ex) Readings from Refrigerator 003
@@ -35,10 +49,53 @@ form a metered unit. Appliance sets might also be fabricated to form
 ground-truth training, validation or testing sets for algorithmic
 disaggregation tasks.
 
-Given that datasets might be loaded from many external sources and combined or
-manipulated in a variety of ways, we organize a general hierarchical structure
-around these terms which is described briefly below. In general, the categories
-below could be formed from sampled, generated, or disaggregated data.
+Structural Elements
+-------------------
+[Dataset Adapters](#dataset-adapters) |
+[Appliance Classes](#appliance-classes) |
+[Algorithm Classes](#algorithm-classes) |
+## Dataset Adapters
+
+Dataset Adapters are built for importing specific datasets into the format
+used throughout the package which is described below. If you wish to use a
+different source of data with the disaggregator library, your main task will be
+to build a dataset adapter. A few examples have already been built by us.
+
+Dataset adapters may make use of the methods in the `utils` module, but their
+main purpose is to provide an interface for collecting appliance traces from
+various traces.
+
+
+### PecanStreetDatasetAdapter
+#### Overview
+The Pecan Street dataset includes a large repository of disaggregated traces
+from submetered homes sampled at one-minute or fifteen-minute intervals.
+Credentials are required for access to the database.
+
+#### Methods
+- None
+
+### TracebaseDatasetAdapter
+#### Overview
+The Tracebase dataset contains many different types of individual appliance
+twenty-four hour traces sampled at one-second intervals and grouped by
+appliance-type. The traces for an individual appliance instance may or may not
+be consecutive or temporally aligned with traces from other appliances. Traces
+are grouped by filetype and their filenames indicate the appliance instance
+and time period.
+
+#### Methods
+- None
+
+### GreenButtonDatasetAdapter [Future]
+#### Overview
+The Green Button xml format is a standard which is used by commercial energy
+suppliers to provide end-users with historical energy usages
+
+#### Methods
+- None
+
+## Appliance classes
 
 ### The ApplianceTrace class
 
@@ -127,6 +184,10 @@ Makes a new dataframe using those instances.
 #### Other properties
 Possibly combine traces into a single dataframe? Export particular datasets?
 Note that an appliance set may have multiple instances of a particular type.
+
+## Algorithm Classes
+
+[TODO]
 
 
 Additional Documentation
