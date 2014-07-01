@@ -1,5 +1,9 @@
-Disaggregator Documentation
-===========================
+Disaggregator Package Overview
+==============================
+
+The disaggregator package is structured around appliances and their traces. We
+use the following terms throughout the documentation to refer to different
+aspects of appliances:
 
 Basic usage
 -----------
@@ -8,13 +12,7 @@ Basic usage of the disaggregator module during development is as follows:
     import sys
     sys.path.append('../../') # or non-Unix equivalent (add wikienergy/ to path)
 
-    import disaggregator
-
-Disaggregator Module Overview
------------------------------
-The disaggregator package is structured around appliances and their traces. We
-use the following terms throughout the documentation to refer to different
-aspects of appliances:
+    import disaggregator as 
 
 Terms
 -----
