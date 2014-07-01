@@ -175,6 +175,10 @@ Makes a new dataframe using those instances.
 Possibly combine traces into a single dataframe? Export particular datasets?
 Note that an appliance set may have multiple instances of a particular type.
 
+## Algorithm Classes
+
+[TODO]
+
 
 Additional Documentation
 ------------------------
