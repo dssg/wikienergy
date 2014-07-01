@@ -94,7 +94,12 @@ varying levels of functional generality for appliance types. Ex) Refrigerator
 vs. energy-star refrigerator).
 
 #### Methods
-- None
+- `add_instances(instances)`: Add instances to the list of instances. (Check
+for uniqueness?)
+- `get_instances()`: Returns the list of appliance instances which are members
+of this type.
+- `set_instances(instances)`: Replaces the old list of instances with the new
+set of instances. (Check for uniqueness?)
 
 #### Other properties
 Note: This will constitute a sort of way to standardize appliance names.
