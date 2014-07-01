@@ -3,19 +3,11 @@
     model: !obj:pylearn2.models.mlp.MLP {
         batch_size: 100,
         input_space: !obj:pylearn2.space.Conv2DSpace {
-            shape: [100, 1],
+            shape: [10,1],
             num_channels: 1
         },
         layers: [ !obj:pylearn2.models.mlp.ConvRectifiedLinear {
                      layer_name: 'h2',
-                     output_channels: 64,
-                     irange: .05,
-                     kernel_shape: [5, 1],
-                     pool_shape: [4, 1],
-                     pool_stride: [2, 1],
-                     max_kernel_norm: 1.9365
-                 }, !obj:pylearn2.models.mlp.ConvRectifiedLinear {
-                     layer_name: 'h3',
                      output_channels: 64,
                      irange: .05,
                      kernel_shape: [5, 1],
@@ -29,16 +21,16 @@
                      istdev: .05
                  }
                 ],
-    },
+},
     algorithm: !obj:pylearn2.training_algorithms.bgd.BGD {
-        batch_size: 10,
+        batch_size: 100,
         line_search_mode: 'exhaustive',
         conjugate: 1,
         monitoring_dataset:
         {
             'train' : *train,
-            'valid' : !pkl: "/home/pngo/data/train_fake_ac_day.pkl",
-            'test'  : !pkl: "/home/pngo/data/train_fake_ac_day.pkl",
+            'valid' : !pkl: "/home/pngo/data/valid_fake_ac_day.pkl",
+            'test'  : !pkl: "/home/pngo/data/test_fake_ac_day.pkl",
         },
         termination_criterion: !obj:pylearn2.termination_criteria.MonitorBased {
             channel_name: "valid_y_misclass"

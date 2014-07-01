@@ -1,6 +1,13 @@
 from pylearn2.config import yaml_parse
+import argparse
 
-simple_nn = open('simple_nn.yaml','r').read()
+parser = argparse.ArgumentParser()
+parser.add_argument("filename",type=str,
+    help="The filename of the yaml model.")
+args = parser.parse_args()
+
+with open(args.filename,'r') as f:
+    simple_nn = f.read()
 
 print simple_nn
 
