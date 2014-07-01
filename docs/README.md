@@ -49,31 +49,39 @@ below could be formed from sampled, generated, or disaggregated data.
 Dataset Adapters are built for importing specific datasets into the format
 used throughout the package which is described below. If you wish to use a
 different source of data with the disaggregator library, your main task will be
-to build a dataset adapter.
+to build a dataset adapter. A few examples have already been built by us.
 
 Dataset adapters may make use of the methods in the `utils` module, but their
 main purpose is to provide an interface for collecting appliance traces from
 various traces.
 
-A few examples have already been built by us.
 
 ### PecanStreetDatasetAdapter
 #### Overview
 The Pecan Street dataset includes a large repository of disaggregated traces
-from submetered houses at one-minute or fifteen-minute intervals. The 
+from submetered homes sampled at one-minute or fifteen-minute intervals.
+Credentials are required for access to the database.
 
 #### Methods
 - None
 
 ### TracebaseDatasetAdapter
 #### Overview
-- None
+The Tracebase dataset contains many different types of individual appliance
+twenty-four hour traces sampled at one-second intervals and grouped by
+appliance-type. The traces for an individual appliance instance may or may not
+be consecutive or temporally aligned with traces from other appliances. Traces
+are grouped by filetype and their filenames indicate the appliance instance
+and time period.
+
 #### Methods
 - None
 
 ### GreenButtonDatasetAdapter [Future]
-#### Attributes
-- None
+#### Overview
+The Green Button xml format is a standard which is used by commercial energy
+suppliers to provide end-users with historical energy usages
+
 #### Methods
 - None
 
