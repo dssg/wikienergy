@@ -1,10 +1,6 @@
 Disaggregator Package Overview
 ==============================
 
-The disaggregator package is structured around appliances and their traces. We
-use the following terms throughout the documentation to refer to different
-aspects of appliances:
-
 Basic usage
 -----------
 Basic usage of the disaggregator module during development is as follows:
@@ -12,10 +8,12 @@ Basic usage of the disaggregator module during development is as follows:
     import sys
     sys.path.append('../../') # or non-Unix equivalent (add wikienergy/ to path)
 
-    import disaggregator as 
+    import disaggregator as dis
 
 Terms
 -----
+We use the following terms throughout the documentation to refer to different
+aspects of appliance level energy usage.
 - ***[appliance trace](#the-appliancetrace-class)***: a sequence of consecutive average
 power measurements (usually in 15 minute itervals) for a specific appliance
 instance for an arbitrary length of time. Ex) Readings from Refrigerator 003
