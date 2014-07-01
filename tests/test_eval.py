@@ -3,7 +3,7 @@ sys.path.append('../')
 #print sys.path
 import numpy as np
 
-import numpy as np
+
 from disaggregator import evaluation_metrics as evm
 
 def unit_rss(t,p):
