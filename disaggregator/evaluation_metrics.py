@@ -40,4 +40,4 @@ def get_precision(true_positives,false_positives):
 
 
 def get_accuracy():
-    pass
+    
