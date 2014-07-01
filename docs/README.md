@@ -52,7 +52,11 @@ timeseries of disaggregated or aggregated appliance traces
 - `instance_id`: (tracebase only) a string representing the id of the instance
 
 #### Methods
-- None
+- `get_sampling_rate()`: Returns a string representing the rate at which the series was sampled.
+- `get_series()`: Returns the pandas series object representing this trace.
+- `get_source()`: Returns the user-supplied trace source string.
+- `set_series(series)`: Updates the series (such as after a resampling).
+- `set_source(source)`: Updates the user-supplied source string.
 
 #### Other properties
 Blank values are zero, values should be consecutive. Total use is considered
