@@ -52,7 +52,11 @@ timeseries of disaggregated or aggregated appliance traces
 - `instance_id`: (tracebase only) a string representing the id of the instance
 
 #### Methods
-- None
+- `get_sampling_rate()`: Returns a string representing the rate at which the series was sampled.
+- `get_series()`: Returns the pandas series object representing this trace.
+- `get_source()`: Returns the user-supplied trace source string.
+- `set_series(series)`: Updates the series (such as after a resampling).
+- `set_source(source)`: Updates the user-supplied source string.
 
 #### Other properties
 Blank values are zero, values should be consecutive. Total use is considered
@@ -69,7 +73,13 @@ negative values.
 overlap.**
 
 #### Methods
-- None
+- `add_traces(traces)`: Updates the list of traces to include the traces in the
+newly supplied list of traces.
+- `get_traces()`: Returns a reference to the list of traces owned by the
+appliance.
+- `set_traces()`: Sets the list of traces owned by the appliance
+- `order_traces(traces)`: Given a set of traces, orders them chronologically
+and catches overlapping traces.
 
 #### Other properties
 Traces must have aligned (but not overlapping) time intervals sampled at the
@@ -84,7 +94,12 @@ varying levels of functional generality for appliance types. Ex) Refrigerator
 vs. energy-star refrigerator).
 
 #### Methods
-- None
+- `add_instances(instances)`: Add instances to the list of instances. (Check
+for uniqueness?)
+- `get_instances()`: Returns the list of appliance instances which are members
+of this type.
+- `set_instances(instances)`: Replaces the old list of instances with the new
+set of instances. (Check for uniqueness?)
 
 #### Other properties
 Note: This will constitute a sort of way to standardize appliance names.
@@ -98,7 +113,16 @@ have a valid appliance set).
 - [`df`]: a pandas dataframe with all appliance instances?
 
 #### Methods
+- `add_instances(instances)`: Adds the list of appliances to the appliance set.
+- `add_to_dataframe(instances)`: Adds a new list of appliances to the
+dataframe.
+- `get_dataframe()`: Returns the dataframe object representing the dataset.
+- `make_dataframe()`: Makes a new dataframe of the appliance instances. Throws
+an exception if the appliance instances have traces that don't align.
+- `set_instances(instances)`: Replaces the old instances with the new list.
+Makes a new dataframe using those instances.
 - `top_k`: Get top k energy-consuming appliances
+
 
 #### Other properties
 Possibly combine traces into a single dataframe? Export particular datasets?
