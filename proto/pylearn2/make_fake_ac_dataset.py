@@ -5,16 +5,16 @@ from sklearn import hmm
 import os
 import pickle
 
-def build_dataset(model,length,window_size,label_index,num_classes):
+def build_dataset(model,num_samples,sample_length,label_index,num_classes):
     all_data = []
     all_labels = []
-    data,labels = model.sample(length)
-    data = data.T[0]
-    labels = labels.T
-    for i in range(length - window_size + 1):
-        all_data.append(data[i:i+window_size])
+    for i in range(num_samples):
+        data,labels = model.sample(sample_length)
+        data = data.T[0]
+        labels = labels.T
+        all_data.append(data)
         label_one_hot = np.zeros(num_classes)
-        label_one_hot[labels[i+label_index]] = 1
+        label_one_hot[labels[label_index]] = 1
         all_labels.append(label_one_hot)
     return zip(np.array(all_data), np.array(all_labels).astype(int))
         
@@ -57,8 +57,8 @@ if __name__ == "__main__":
     model = fake_hmm_appliance(pi,a,mean,cov)
 
     # randomly sample one day of data and format it as a pylearn2 dataset
-    dataset = build_dataset(model,10000,100,99,2)
-    train, valid, test = get_train_valid_test(dataset,5000,2400,2400)
+    dataset = build_dataset(model,10000,10,7,2)
+    train, valid, test = get_train_valid_test(dataset,5000,2500,2500)
     train, valid, test = convert_to_pylearn_ds(train,valid,test)
 
     # export datasets
