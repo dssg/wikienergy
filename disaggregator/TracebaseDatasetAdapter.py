@@ -26,13 +26,16 @@ class TracebaseDatasetAdapter(object):
     def get_trace(self,device,instance_id,date):
         '''
         Returns trace:
-	series: indexed by time with column name 'time', series is series of average power value
+	    series: indexed by time with column name 'time', series is series of average power value
 
         '''
         filename=self.path+device+'/dev_'+instance_id+'_'+date+'.csv'
-        df = pd.read_csv(filename,sep=';',header=None,names=['time','1s_W','8s_W'])
+        df = pd.read_csv(filename,sep=';',header=None,names=['time','1s_W','8s_W'])	
 	df.index=df['time'].apply(pd.to_datetime)
-	series=df['1s_W'].resample(self.sample_rate,how='sum')/3600.0
+	try:
+	    series=df['1s_W'].resample(self.sample_rate,how='sum')/3600.0
+        except ValueError:
+	    raise SampleError(sample_rate)
 	return ApplianceTrace(series,self.source)
         
     
@@ -44,9 +47,10 @@ class TracebaseDatasetAdapter(object):
         instance=[]
         instance_dates=get_instance_dates(device,instance_id)
 	for date in instance_dates:
-	    instance.append(get_trace(device,instance_id,date))
-        #return ApplianceInstance(instance)
+            instance.append(get_trace(device,instance_id,date))
+        return ApplianceInstance(instance)
 
+    
     def get_type(self,device):
         '''
         This function imports the CSV files from ALL device instances in a single device folder
@@ -56,7 +60,7 @@ class TracebaseDatasetAdapter(object):
         instance_ids=get_unique_instance_ids(device)
 	for instance_id in instance_ids:
 	    device_type.append(get_instance(device,instance_id))
-        #return ApplianceType(device_type)
+        return ApplianceType(device_type)
 
     def get_unique_instance_ids(self,device):
         '''
@@ -80,4 +84,17 @@ class TracebaseDatasetAdapter(object):
 	    trace_date=instance_name_trace_date[instance_name_trace_date.index('_')+1:]
             trace_dates.add(trace_date[:trace_date.index('.csv')])
 	return list(trace_dates)
-          
+	
+
+       
+class SampleError(Exception):
+    """
+
+    Exception raised for errors in the re-sampling of the data.
+
+    """
+    def __init__(self,sample_rate):
+        self.sample_rate = sample_rate
+
+    def __str__(self):
+        return "Improperly formatted sampling rate. Please 
