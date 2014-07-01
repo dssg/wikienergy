@@ -1,6 +1,21 @@
 Disaggregator Package Overview
 ==============================
 
+Datasets might be loaded from many external sources and combined or
+manipulated in a variety of ways toward the end of energy disaggregation;
+therefore, we organize a general hierarchical structure around appliance traces
+and other elements described below in order to serve as ground truth training
+sets for algorithmic models.
+
+The main tasks facilitated by this package are:
+- Importing appliance traces
+- Organizing appliance traces into appliance instances, types, and sets
+- Algorithms for completing the following three tasks:
+  - Determining appliance presence in new traces
+  - Given appliance presence, determine on-off states for each time point
+  - Given appliance states, reconstruct original signals
+- Evaluating algorithmic results
+
 Basic usage
 -----------
 Basic usage of the disaggregator module during development is as follows:
@@ -13,7 +28,8 @@ Basic usage of the disaggregator module during development is as follows:
 Terms
 -----
 We use the following terms throughout the documentation to refer to different
-aspects of appliance level energy usage.
+aspects of appliance level energy usage. In general, items in the categories
+described below could be formed from sampled, generated, or disaggregated data.
 - ***[appliance trace](#the-appliancetrace-class)***: a sequence of consecutive average
 power measurements (usually in 15 minute itervals) for a specific appliance
 instance for an arbitrary length of time. Ex) Readings from Refrigerator 003
@@ -35,11 +51,9 @@ disaggregation tasks.
 
 Structural Elements
 -------------------
-Given that datasets might be loaded from many external sources and combined or
-manipulated in a variety of ways, we organize a general hierarchical structure
-around these terms which is described briefly below. In general, the categories
-below could be formed from sampled, generated, or disaggregated data.
-
+[Dataset Adapters](#dataset-adapters) |
+[Appliance Classes](#appliance-classes) |
+[Algorithm Classes](#algorithm-classes) |
 ## Dataset Adapters
 
 Dataset Adapters are built for importing specific datasets into the format
