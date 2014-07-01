@@ -10,12 +10,14 @@ Basic usage of the disaggregator module during development is as follows:
 
     import disaggregator
 
-Disaggregator Module
---------------------
-The disaggregator module is structured around appliances. We use the
-following terms through the documentation:
+Disaggregator Module Overview
+-----------------------------
+The disaggregator package is structured around appliances and their traces. We
+use the following terms throughout the documentation to refer to different
+aspects of appliances:
 
-### Terms
+Terms
+-----
 - ***[appliance trace](#the-appliancetrace-class)***: a sequence of consecutive average
 power measurements (usually in 15 minute itervals) for a specific appliance
 instance for an arbitrary length of time. Ex) Readings from Refrigerator 003
@@ -35,10 +37,47 @@ form a metered unit. Appliance sets might also be fabricated to form
 ground-truth training, validation or testing sets for algorithmic
 disaggregation tasks.
 
+Structural Elements
+-------------------
 Given that datasets might be loaded from many external sources and combined or
 manipulated in a variety of ways, we organize a general hierarchical structure
 around these terms which is described briefly below. In general, the categories
 below could be formed from sampled, generated, or disaggregated data.
+
+## Dataset Adapters
+
+Dataset Adapters are built for importing specific datasets into the format
+used throughout the package which is described below. If you wish to use a
+different source of data with the disaggregator library, your main task will be
+to build a dataset adapter.
+
+Dataset adapters may make use of the methods in the `utils` module, but their
+main purpose is to provide an interface for collecting appliance traces from
+various traces.
+
+A few examples have already been built by us.
+
+### PecanStreetDatasetAdapter
+#### Overview
+The Pecan Street dataset includes a large repository of disaggregated traces
+from submetered houses at one-minute or fifteen-minute intervals. The 
+
+#### Methods
+- None
+
+### TracebaseDatasetAdapter
+#### Overview
+- None
+#### Methods
+- None
+
+### GreenButtonDatasetAdapter [Future]
+#### Attributes
+- None
+#### Methods
+- None
+
+## Appliance classes
 
 ### The ApplianceTrace class
 
