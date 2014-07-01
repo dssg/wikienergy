@@ -8,7 +8,7 @@ import csv
 import glob
 import os
 from datetime import datetime
-
+#####TO DO - incorporate TRACE_LENGTH
 class TracebaseDatasetAdapter(object):
 
     def __init__(self,path,trace_length='D',sample_rate='15T'):
