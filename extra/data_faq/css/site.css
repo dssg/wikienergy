@@ -1,0 +1,455 @@
+/* Remove padding from body so navbar and footer don't look weird */
+body {
+        padding: 0;
+}
+
+/* Add padding back in through container so text looks right on small screens */
+.container {
+        padding: 0 20px;
+}
+
+/* Space out each section on home and people pages */
+.section {
+        margin-top: 60px;
+}
+
+/* Make <h1> page headings stick out */
+.page-title {
+        font-size: 50px;
+        font-weight: bold;
+        margin: 120px 0 30px 0;
+}
+
+/* Adjust the top margin when fixed navbar is deactivated and navbar menu is displayed */
+@media (max-width: 980px) {
+        .page-title {
+                margin-top: 20px;
+        }
+}
+
+p {
+        font-size: 20px;
+        line-height: 32px;
+        color: rgb(73, 78, 85);
+        font-family: 'ff-tisa-web-pro', Georgia, Cambria, 'Times New Roman', Times, serif;
+        margin-bottom: 30px;
+}
+
+
+/* Pretty text highlighting */
+::selection {
+  background: #494e55;
+  color:#fff;
+  }
+::-moz-selection {
+  background: #494e55;
+  color:#fff;
+}
+
+/* NAVBAR */
+
+/* Make navbar logo small so navbar fits on one line on phones */
+@media (max-width: 480px) {
+        #nav-logo {
+                margin-top: 7px;
+                font-size: 18px;
+        }
+}
+
+/* HOME PAGE */
+/* Headline styles */
+
+#splash {
+        /*background-color: black;        */
+        /*background-image:url(/img/shoreline.png); */
+        /*background-repeat:no-repeat;*/
+        /*background-attachment: fixed;*/
+        /*padding-bottom: 120px;*/
+}
+
+.headline {
+        font-size: 90px;
+        font-weight: 900;
+        letter-spacing: -2px;
+        line-height: 80px; 
+        text-align: center;
+        padding: 0 10px;
+        /*Overwrite default h1 margin so page fits*/
+        margin-bottom: 0px;
+        color: rgb(52, 73, 94);
+}
+
+.headline p {
+        color: rgb(189, 195, 199);
+        font-size: 50px; 
+        font-weight: 400;
+        font-family: 'Lato', sans-serif;
+        line-height: 60px; 
+        letter-spacing: -2px;
+        margin: 0;
+        text-align: center;
+}
+
+#logo {
+        margin-top: 40px;
+        margin-bottom: 20px;
+}
+
+/* Adjust the top margin when fixed navbar is deactivated and navbar menu is displayed */
+@media (max-width: 980px) {
+        #logo {
+                margin-top: 20px;
+        }
+}
+
+#uofc {
+        margin: 50px 0 50px 0;
+}
+
+#slogan {
+        font-size: 35px;
+}
+
+/* Adjust headline for small screens */
+@media (max-width: 480px) {
+        .headline {
+                font-size: 65px;
+                line-height: 50px;
+        }
+        .headline p {
+                font-size: 30px;
+                line-height: 50px;
+        }
+        .headline small {
+                font-size: 30px;
+        }
+}
+
+.button-link h3 {
+        font-size: 20px;
+}
+
+#partners h1 {
+        margin-bottom: 40px;
+}
+
+/* Fellowship patners. Line up partner logos*/
+#partners .span2 {
+        width: 170px;
+        height: 80px;
+        margin: 70px 0 50px 70px;
+        display: block;
+}
+
+#partners img {
+        vertical-align: bottom;
+}
+
+#uofc {
+        margin-top: 10px;
+}
+
+#ci {
+        margin-top: -8px; 
+}
+
+#urbanccd {
+        margin-top: 0px;
+}
+
+
+#harris {
+        margin-top: 15px;
+}
+
+#argonne {
+        margin-top: -18px;
+}
+
+
+/* Project partners */
+#partners .span3 {
+        margin: 30px 0 30px 30px;
+        height: 150px;
+}
+
+#partners img {
+        display: block;
+        margin-right: auto;
+        margin-left: auto;
+}
+
+#aws-logo {
+        margin-top: -35px;
+}
+
+#qcri-logo {
+        margin-top: -20px;
+}
+
+#sheriff-logo {
+        margin-top: -35px;
+}
+
+/* Adjust project partner pics for small screens */
+@media (max-width: 480px) {
+        #partners .span3 {
+        width: 280px;
+        }
+}
+
+/* Adapt people pics for front page */
+.people-spacing .span2 {
+        margin-bottom: 30px;
+        margin-right: 50px;
+        height: 250px;
+}
+
+
+/* PEOPLE PAGE */
+/* Makes people headshots and bios look right */
+
+.people .span2 {
+        height: 350px;
+        width: 200px;
+        display: block;
+        margin-left: 40px;
+        margin-bottom: 5px;
+}
+
+@media (max-width: 767px) { 
+        .people .span2 {
+                margin-left: auto;
+                margin-right: auto;
+        }
+}
+
+/* Creates 3 people rows for advisors and staff on home and people pages */
+.people .span4 {
+        height:  280px;
+        display: block;
+        margin-bottom: 80px;
+}
+
+.people img {
+        width: 150px;
+        height: 150px;
+        border-radius: 50%;
+        display: block;
+        margin-left: auto;
+        margin-right: auto;
+}
+
+.people p {
+        text-align: center;
+        font-size: 15px;
+        margin: 0px;
+}
+
+.people .span4 p {
+        margin: 0 auto;
+}
+
+.people h6 {
+        text-align: center;
+        font-size: 18px;
+        font-weight: bold;
+        font-family: 'ff-tisa-web-pro', Georgia, Cambria, 'Times New Roman', Times, serif;
+        color: rgb(73, 78, 85);
+        line-height: 20px;
+        margin-top: 20px;
+}
+
+.people .icons {
+        width: 60px;
+        height: 10px;
+        display: block;
+        margin: 5px auto;
+        font-size: 25px;
+}
+
+.people .icons a {
+        text-decoration: none;
+        color: rgba(66,63,55,0.15);
+        -webkit-transition: color 0.15s;
+        -moz-transition: color 0.15s;
+        -o-transition: color 0.15s;
+        transition: color 0.15s;
+}
+
+.people .icons a:hover {
+        color: rgb(26, 188, 156);
+}
+
+/* PROJECT page */
+
+.project-title {
+        margin-bottom: 40px;
+}
+
+#projects img {
+        margin-bottom: 30px;
+        display: block;
+        margin-right: auto;
+        margin-left: auto;
+}
+
+/* EVENTS page */
+
+.event-title {
+        margin-bottom: 40px;
+}
+
+#events img {
+        margin-bottom: 30px;
+        display: block;
+        margin-right: auto;
+        margin-left: auto;
+}
+
+/* POST */
+
+#post-pic {
+        background-repeat: no-repeat;
+        background-position: left;
+        background-attachment: fixed;
+        -webkit-background-size: cover;
+        -moz-background-size: cover;
+        -o-background-size: cover;
+        background-size: cover;
+        margin: 0;
+        height: 500px;
+}
+
+/*Adds space fills space behind navbar so post pics or titles don't fall behind it.*/
+#navbar-padding {
+        padding-top: 50px;
+}
+
+@media (max-width: 980px) {
+        #post-pic {
+                margin-top: -20px;
+        }
+        #navbar-padding {
+                padding-top: 0;
+        }
+}
+
+@media (max-width: 767px) {
+        #post-pic {
+                height: 200px;
+        }
+}
+
+.post-title {
+        text-align: center;
+        margin-top: 30px;
+}
+
+.post-date-author {
+        text-align: center;
+        font-style: italic;
+}
+
+#post p {
+        width: 65%;
+        margin-right: auto;
+        margin-left: auto;
+}
+
+/* Add room below photo captions */ 
+#post .small {
+        margin-bottom: 40px;
+}
+
+/*Assigning narrower width to p elements so pics can be wider than text screws */
+/*up h4, li, and blockquote elements. Making them the same narrow width - and the */
+/*p elements inside them 100% - fixes this.*/
+
+
+#post h4 {
+        width: 65%;
+        margin-right: auto;
+        margin-left: auto;
+}
+
+#post li {
+        width: 65%;
+        margin-right: auto;
+        margin-left: auto;
+}
+
+#post li p {
+        width: 100%;
+}
+
+#post blockquote {
+        width: 65%;
+        margin-right: auto;
+        margin-left: auto;
+}
+
+#post blockquote p {
+        width: 100%;
+}
+
+#post iframe {
+        margin-right: auto;
+        margin-left: auto;
+        display: block;
+}
+
+/*Make all elements 100% when screen gets small enough*/
+
+@media (max-width: 767px) {
+        #post p {
+        width: 100%;
+        }
+        #post h4 {
+        width: 100%;
+        }
+        #post blockquote {
+        width: 100%;
+        }
+        #post li {
+        width: 100%;
+        }
+}
+
+/*Make post images full fize, give them comfy bottom margin to separate from text*/
+#post img {
+        display: block;
+        margin-top: 10px;
+        margin-right: 20px;
+        margin-left: 0px;
+        margin-bottom: 10px;
+}
+
+/* CONTACT PAGE */
+#contact img {
+        height: 150px;
+        width: 150px;
+        display: block;
+        margin: 30px auto;
+}
+
+#email-list {
+        display: block;
+        margin: 60px auto;
+}
+
+/* FOOTER */
+
+#footer h6 {
+        text-align: center;
+        margin-bottom: 50px;
+}
+
+#footer i {
+        font-size: 120px;
+        display: block;
+        height: 130px;
+        width: 130px;
+        margin-left: auto;
+        margin-right: auto;
+}
