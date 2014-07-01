@@ -12,10 +12,10 @@ db_url = "postgresql"+"://"+user_name+":"+pw+"@"+host+":"+port+"/"+db
 
 p = pecan(db_url)
 tables= p.set_table_names('PecanStreet_SharedData')
-ids = p.get_meta_table('\"PecanStreet_SharedData\"',str(tables[0]))
-print ids
-#test = p.get_dataframe('select * from information_schema.tables')
-#print test.columns
-#for i in test['table_schema']:
-#    print i
+
+[i,a] = p.get_meta_table('\"PecanStreet_SharedData\"',str(tables[0]))
+#apps = p.get_meta_table('\"PecanStreet_SharedData\"',str(tables[0]))
+#traces = p.get_month_traces('SharedData',tables[0])
+#print a
+p.get_app_traces('\"PecanStreet_SharedData\"',str(tables[0]),'refrigerator1')
 
