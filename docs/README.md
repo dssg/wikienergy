@@ -73,7 +73,13 @@ negative values.
 overlap.**
 
 #### Methods
-- None
+- `add_traces(traces)`: Updates the list of traces to include the traces in the
+newly supplied list of traces.
+- `get_traces()`: Returns a reference to the list of traces owned by the
+appliance.
+- `set_traces()`: Sets the list of traces owned by the appliance
+- `order_traces(traces)`: Given a set of traces, orders them chronologically
+and catches overlapping traces.
 
 #### Other properties
 Traces must have aligned (but not overlapping) time intervals sampled at the
