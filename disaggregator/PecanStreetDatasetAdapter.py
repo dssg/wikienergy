@@ -19,6 +19,8 @@ class PecanStreetDatasetAdapter():
         df=(df.groupby(['table_schema','table_name']))
         d = [k for k in df.groups]
         tables = [l[1] for l in d if l[0]==schema]
+        
+        
         return tables
     
     
@@ -28,10 +30,17 @@ class PecanStreetDatasetAdapter():
     
     def get_meta_table(self,schema,table):
         '''would prefer that this be a class that these be attributes'''
-        return self.get_list('select distinct dataid from {}.{}'.format(schema,table))
+        q = 'select distinct dataid from {}.{}'.format(schema,table)
+        result = self.eng.execute(q)
+        ids = result.fetchall()
+        q = 'select * from {}.{} where dataid={}'.format(schema,table,ids[0][0])
+        result = self.eng.execute(q)
+        apps = result.keys()
+        #print apps
         # date_start =
         # date_end =
         # step_size =
+        return [ids,apps]
     
     def get_unique_dataids(self,schema,month,year,group=None):
         '''
@@ -65,7 +74,7 @@ class PecanStreetDatasetAdapter():
                 how = {col:'sum' for col in dataframe.columns}
                 df = df.resample(sampling_rate, how=how)
         elif schema == "shared":
-            raise NotImplementedError
+            pass
         elif schema == "raw":
             raise NotImplementedError
         else:
@@ -74,6 +83,30 @@ class PecanStreetDatasetAdapter():
         for column, series in df.iteritems():
             traces.append(ApplianceTrace(series,self.source))
         return traces
+    
+    def get_total_month_traces(self,schema,table):
+        if schema not in ['CuratedSets','RawData','SharedData']:
+            raise SchemaError(schema)
+        query = 'select * from \"PecanStreet_{0}\".{1}'.format(schema, table)
+        df = self.get_dataframe(query).fillna(0)
+        time_cols = {'CuratedSets':'utc_15min','RawData':'localminute15minute','SharedData':'localminute'}
+        df.rename(columns={time_cols[schema]: 'time'}, inplace=True)
+        df.index = df['time'].apply(pandas.to_datetime)
+        df = df.drop(['id','time'], axis=1)
+        
+        traces = []
+        for column, series in df.iteritems():
+            traces.append(ApplianceTrace(series,self.source))
+        return traces
+
+
+    
+    def get_app_traces(self,schema,table,app):
+        query= 'select {2} from {0}.{1}'.format(schema,table,app)
+        df=self.get_dataframe(query)
+        print df.shape()
+    
+
 
     def get_dataframe(self,query):
         '''Returns a pandas dataframe with the query results'''
@@ -84,7 +117,7 @@ class PecanStreetDatasetAdapter():
 
     def get_list(self,query):
         result  = self.eng.execute(query).fetchall()
-        return result
+        return [result,result.keys()]
 
 
 class SchemaError(Exception):
