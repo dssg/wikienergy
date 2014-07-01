@@ -3,8 +3,7 @@ from ApplianceTrace import ApplianceTrace
 import sqlalchemy
 import pandas
 
-class PecanStreetDatasetAdapter(object):
-
+class PecanStreetDatasetAdapter():
     def __init__(self,db_url):
         '''
         Initialize an adapter using a database url_string.
@@ -12,8 +11,20 @@ class PecanStreetDatasetAdapter(object):
         db_url="postgresql"+"://"+user_name+":"+ps+"@"+host+":"+port+"/"+db
         '''
         self.eng = sqlalchemy.create_engine(db_url)
-        self.source = "PecanStreet"
-
+    # self.source = "PecanStreet"
+    
+    def set_table_names(self,schema):
+        ''''''
+        df = self.get_dataframe('select * from information_schema.tables')
+        df=(df.groupby(['table_schema','table_name']))
+        d = [k for k in df.groups]
+        tables = [l[1] for l in d if l[0]==schema]
+        return tables
+    
+    
+    def set_meta_table(self,table):
+        pass
+    
     def get_unique_dataids(self,schema,month,year,group=None):
         '''
         Returns a list of dataids for a specifc schema ("curated","shared", or
@@ -62,6 +73,11 @@ class PecanStreetDatasetAdapter(object):
         df = pandas.DataFrame.from_records(eng_object.fetchall())
         df.columns = eng_object.keys()
         return df
+
+    def query(self,query):
+        result  = self.eng.execute(query)
+        return result
+
 
 class SchemaError(Exception):
     """Exception raised for errors in the schema.
