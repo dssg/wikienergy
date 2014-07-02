@@ -8,7 +8,7 @@ import csv
 import glob
 import os
 from datetime import datetime
-
+#####TO DO - incorporate TRACE_LENGTH
 class TracebaseDatasetAdapter(object):
 
     def __init__(self,path,trace_length='D',sample_rate='15T'):
@@ -23,6 +23,18 @@ class TracebaseDatasetAdapter(object):
 	self.sample_rate=sample_rate
 	self.source='Tracebase'
 
+    def get_instance_dates(self,device,instance):
+        '''
+        This function returns a unique set of dates (corresponding to individual files) for a single device instance id
+
+        '''
+        trace_dates=set()
+        for filename in glob.glob(self.path+device+'/dev_'+instance+'*'):
+            instance_name_trace_date= filename[filename.index('dev_')+4:]
+	    trace_date=instance_name_trace_date[instance_name_trace_date.index('_')+1:]
+            trace_dates.add(trace_date[:trace_date.index('.csv')])
+	return list(trace_dates)
+
     def get_trace(self,device,instance_id,date):
         '''
         Returns trace:
@@ -31,11 +43,12 @@ class TracebaseDatasetAdapter(object):
         '''
         filename=self.path+device+'/dev_'+instance_id+'_'+date+'.csv'
         df = pd.read_csv(filename,sep=';',header=None,names=['time','1s_W','8s_W'])	
-	df.index=df['time'].apply(pd.to_datetime)
+	df['time']=pd.to_datetime(df['time'], format='%d/%m/%Y %H:%M:%S')
+	df.set_index('time', inplace=True)	
 	try:
 	    series=df['1s_W'].resample(self.sample_rate,how='sum')/3600.0
         except ValueError:
-	    raise SampleError(sample_rate)
+	    raise SampleError(self.sample_rate)
 	return ApplianceTrace(series,self.source)
         
     
@@ -45,9 +58,9 @@ class TracebaseDatasetAdapter(object):
 
         '''
         instance=[]
-        instance_dates=get_instance_dates(device,instance_id)
+        instance_dates=self.get_instance_dates(device,instance_id)
 	for date in instance_dates:
-            instance.append(get_trace(device,instance_id,date))
+            instance.append(self.get_trace(device,instance_id,date))
         return ApplianceInstance(instance)
 
     
@@ -72,18 +85,6 @@ class TracebaseDatasetAdapter(object):
             instance_name_trace_date= filename[filename.index('dev_')+4:]
 	    instance_names.add(instance_name_trace_date[:instance_name_trace_date.index('_')])
 	return list(instance_names)
-
-    def get_instance_dates(self,device,instance):
-        '''
-        This function returns a unique set of dates (corresponding to individual files) for a single device instance id
-
-        '''
-        trace_dates=set()
-        for filename in glob.glob(self.path+device+'/*'):
-            instance_name_trace_date= filename[filename.index('dev_')+4:]
-	    trace_date=instance_name_trace_date[instance_name_trace_date.index('_')+1:]
-            trace_dates.add(trace_date[:trace_date.index('.csv')])
-	return list(trace_dates)
 	
 
        
@@ -97,4 +98,6 @@ class SampleError(Exception):
         self.sample_rate = sample_rate
 
     def __str__(self):
-        return "Improperly formatted sampling rate. Please "
+
+        return "Improperly formatted sampling rate. Check http://pandas.pydata.org/pandas-docs/stable/timeseries.html#offset-aliases for proper formats.  Ex) For 15 minute sampling, do 15T"
+
