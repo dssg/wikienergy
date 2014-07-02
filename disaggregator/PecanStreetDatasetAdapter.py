@@ -42,7 +42,7 @@ class PecanStreetDatasetAdapter():
         '''
         pass
 
-    def get_meta_table(self,schema,table): # TODO change this func name to "get_table_metadata"
+    def get_table_metadata(self,schema,table):
         '''
         Returns a tuple where the first element is a list of data ids for this
         schema.table and the second element is a list of the appliances
@@ -56,7 +56,7 @@ class PecanStreetDatasetAdapter():
         apps = result.keys()
         ids= [a[0] for a in ids]
         apps = [str(a) for a in apps ]
-        return [ids,apps]
+        return ids, apps
 
     def get_unique_dataids(self,schema,month,year,group=None):
         '''
