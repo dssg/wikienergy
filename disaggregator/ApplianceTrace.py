@@ -31,3 +31,9 @@ class ApplianceTrace(object):
     def set_source(self,source):
         '''Updates the user-supplied source string.'''
         self.source = source
+
+    def print_trace(self,series):
+        trace_info={}
+        trace_info['len'] = 'The len of this trace is {}'.format(len(series))
+        t = self.series[]
+
