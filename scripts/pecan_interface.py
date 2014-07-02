@@ -3,31 +3,37 @@ sys.path.append('../')
 #print sys.path
 
 '''
-    
+
    An interface for adapting Pecan Street data.
-    
+
 '''
 
 
 import disaggregator.PecanStreetDatasetAdapter as pecan
-
 import pickle
 
-user_name = 'stomkins'
-pw='PASSWORD'
-host = "db.wiki-energy.org"
-port = "5432"
-db = "postgres"
-db_url = "postgresql"+"://"+user_name+":"+pw+"@"+host+":"+port+"/"+db
-
-table = {'curated':'\"PecanStreet_CuratedSets\"','raw':'\"PecanStreet_RawData\"','shared':'\"PecanStreet_SharedData\"'}
-
-print 'There are two datasets you can view right now, one is called curated, and one is called shared.\n The shared data set has one minute interval data for Jan-May 2014, for about 200 homes. \n\n The curated data set has 15 mintue interval data for different intervals in 2013 and 2012, the largest interval lasting from 12/12-11/13. \n\n If you want to analyze longer term data, the curated set is recommended, whereas if you want shorter but more frequent data the shared set is recommended. \n\n Would you like to recieve data from the shared or curated set?'
-
-dataset = input('Please enter either shared or curated in string format')
-
+# Open db connection
+db_url = "postgresql://USERNAME:PASSWORD@db.wiki-energy.org:5432/postgres"
 p = pecan(db_url)
 
+table = {'curated':'\"PecanStreet_CuratedSets\"',
+        'raw':'\"PecanStreet_RawData\"',
+        'shared':'\"PecanStreet_SharedData\"'}
+
+print '''There are two datasets you can view right now, one is called curated,
+and one is called shared. The shared data set has one minute interval data
+for Jan-May 2014, for about 200 homes.
+
+The curated data set has 15 minute interval data for 2013 and 2012 (the largest
+interval lasts from 12/12-11/13.
+
+If you want to analyze longer term data, the curated set is recommended,
+whereas if you want shorter but more frequent data the shared set
+is recommended.
+
+Would you like to recieve data from the shared or curated set?'''
+
+dataset = input('Please enter either shared or curated in string format')
 schema = table[dataset]
 
 schema_e= schema[1:len(schema)-1]
