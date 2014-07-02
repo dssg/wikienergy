@@ -33,38 +33,42 @@ is recommended.
 
 Would you like to recieve data from the shared or curated set?'''
 
-dataset = input('Please enter either shared or curated in string format')
+# get tables from schema
+dataset = input('Please enter either "shared" or "curated"(no quotes):\n')
 schema = table[dataset]
-
 schema_e= schema[1:len(schema)-1]
-
 tables= p.set_table_names(schema_e)
-
 print 'You can now view data for any of these months\n'
-
 for i in tables:
     print i + '\n'
 
-print 'Which month would you like to view data for?\nPlease enter one of the table names exactly as it is printed and as a string'
-
-month = input("Please enter month\n")
+print '''Which month would you like to view data for?
+Please enter one of the table names exactly as it is printed and as a string:
+'''
+month = raw_input()
 print month
-print "don't worry next step takes about a minute"
+print "This next step takes about a minute..."
 
 [i,a] = p.get_meta_table(schema,str(tables[0]))
 
-print 'You can now load data for a single home. Here are the homes you can choose from:\n'
+print '''You can now load data for a single home.
+Here are the homes you can choose from:\n'''
 
 for home in i:
     print home
 
-print 'each home has the same kind of appliances, here is a list of those appliances:'
+print '''Each home has the same kind of appliances. Here is a list of those
+appliances:'''
 print a
 
-print 'You can now get trace information per house. You can also see the trace of a particular appliance. However this is the point where you are informed that \'seeing\' is actually a step that comes after pickling. So long story short what house, what appliance do you want to check out?'
+print '''You can now get trace information per house. You can also see the
+trace of a particular appliance. However this is the point where you are
+informed that "seeing" is actually a step that comes after pickling. So long
+story short what house, what appliance do you want to check out?'''
 
 house = input('Enter a home id\n')
-appliance = input('Enter an appliance name (this is not actually necessary at this point)\n')
+appliance = input('Enter an appliance name (this is not actually necessary at\
+this point):')
 
 query = 'select * from {0}.{1} where dataid={2}'.format(schema, month,house)
 df = p.get_dataframe(query).fillna(0)
