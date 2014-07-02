@@ -9,4 +9,4 @@ ps_adapter = da.PecanStreetDatasetAdapter(db_url)
 dataids = ps_adapter.get_unique_dataids("curated",1,2013,group=1)
 traces = ps_adapter.get_month_traces("curated",2013,1,dataids[-1],group=1)
 
-print [t.get_total_usage() for t in traces]
+print [float(t.get_total_usage()) for t in traces]
