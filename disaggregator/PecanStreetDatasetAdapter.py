@@ -11,7 +11,7 @@ class PecanStreetDatasetAdapter():
         db_url="postgresql"+"://"+user_name+":"+ps+"@"+host+":"+port+"/"+db
         '''
         self.eng = sqlalchemy.create_engine(db_url)
-    # self.source = "PecanStreet"
+        self.source = "PecanStreet"
     
     def set_table_names(self,schema):
         ''''''
@@ -19,8 +19,6 @@ class PecanStreetDatasetAdapter():
         df=(df.groupby(['table_schema','table_name']))
         d = [k for k in df.groups]
         tables = [l[1] for l in d if l[0]==schema]
-        
-        
         return tables
     
     
@@ -84,19 +82,45 @@ class PecanStreetDatasetAdapter():
             traces.append(ApplianceTrace(series,self.source))
         return traces
     
-    def get_total_month_traces(self,schema,table):
-        if schema not in ['CuratedSets','RawData','SharedData']:
+    ##do table work
+    
+    def time_align():
+        pass
+    
+    def clean_dataframe(self,df,schema,drop_cols):
+            time_cols = {'\"PecanStreet_CuratedSets\"':'utc_15min','\"PecanStreet_RawData\"':'localminute15minute','\"PecanStreet_SharedData\"':'localminute'}
+            print time_cols[schema]
+            print time_cols[schema]  in df.columns
+            df=df.rename(columns={time_cols[schema]: 'time'})
+            #print 'in clean'
+            #print type(df)
+            #print df.columns
+            print df.shape
+            df.index = df['time'].apply(pandas.to_datetime)
+            #df = df.drop(['id','dataid','time'], axis=1)
+            print df.shape
+            # df = df.drop(['id','time'], axis=1)
+            if len(drop_cols)!=0:
+                df= df.drop(drop_cols,axis=1)
+            return df
+    
+    
+    def get_month_traces_wo_time_align(self,schema,table,dataid):
+        ##change this name
+        if schema not in ['\"PecanStreet_CuratedSets\"','\"PecanStreet_RawData\"','\"PecanStreet_SharedData\"']:
             raise SchemaError(schema)
-        query = 'select * from \"PecanStreet_{0}\".{1}'.format(schema, table)
-        df = self.get_dataframe(query).fillna(0)
-        time_cols = {'CuratedSets':'utc_15min','RawData':'localminute15minute','SharedData':'localminute'}
-        df.rename(columns={time_cols[schema]: 'time'}, inplace=True)
-        df.index = df['time'].apply(pandas.to_datetime)
-        df = df.drop(['id','time'], axis=1)
+        query = 'select * from {0}.{1} where dataid={2}'.format(schema, table,dataid)
+        ##NEED TO CHANGE IDS
         
+        ##error checking that query worked
+        
+        df = self.get_dataframe(query).fillna(0)
+        
+        df = self.clean_dataframe(df, schema,[])
         traces = []
         for column, series in df.iteritems():
             traces.append(ApplianceTrace(series,self.source))
+        
         return traces
 
 
@@ -105,12 +129,12 @@ class PecanStreetDatasetAdapter():
         query= 'select {2} from {0}.{1}'.format(schema,table,app)
         df=self.get_dataframe(query)
         print df.shape()
-    
 
 
     def get_dataframe(self,query):
         '''Returns a pandas dataframe with the query results'''
         eng_object = self.eng.execute(query)
+        
         df = pandas.DataFrame.from_records(eng_object.fetchall())
         df.columns = eng_object.keys()
         return df

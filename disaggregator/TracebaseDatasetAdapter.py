@@ -97,4 +97,4 @@ class SampleError(Exception):
         self.sample_rate = sample_rate
 
     def __str__(self):
-        return "Improperly formatted sampling rate. Please 
+        return "Improperly formatted sampling rate. Please "
