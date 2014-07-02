@@ -5,28 +5,28 @@ import pandas as pd
 
 class PecanStreetDatasetAdapter():
 
-    schema_names = {'curated': '\"PecanStreet_CuratedSets\"',
-                   'raw':     '\"PecanStreet_RawData\"',
-                   'shared'  :'\"PecanStreet_SharedData\"'}
+    schema_names =    {'curated': '\"PecanStreet_CuratedSets\"',
+                       'raw':     '\"PecanStreet_RawData\"',
+                       'shared':  '\"PecanStreet_SharedData\"'}
 
-    time_columns = {'curated': 'utc_15min',
-                    'raw':     'localminute15minute',
-                    'shared':  'localminute'}
+    time_columns =    {'curated': 'utc_15min',
+                       'raw':     'localminute15minute',
+                       'shared':  'localminute'}
 
     invalid_columns = {'curated': ['id', 'utc_15min'],
-                             'raw':     ['localminute15minute'],
-                             'shared':  ['localminute']}
+                       'raw':     ['localminute15minute'],
+                       'shared':  ['localminute']}
 
     def __init__(self,db_url):
         '''
         Initialize an adapter using a database url_string.
         Consider the following example:
-        db_url="postgresql"+"://"+user_name+":"+ps+"@"+host+":"+port+"/"+db
+        db_url="postgresql://user_name:password@host.url:port/db"
         '''
         self.eng = sqlalchemy.create_engine(db_url)
         self.source = "PecanStreet"
 
-    def set_table_names(self,schema): #TODO Change this func name to "get_table_names"
+    def get_table_names(self,schema):
         '''
         Returns a list of tables in the schema.
         '''
@@ -166,15 +166,11 @@ class PecanStreetDatasetAdapter():
         '''by house is fastest also have get all apps below'''
         pass
 
-
     def get_app_traces_all(self,schema,table,app):
         schema_name = schema_names[schema]
         query= 'select {2} from {0}.{1}'.format(schema_name,table,app)
         df=self.get_dataframe(query)
         # TODO - does this need to be cleaned differently?
-
-
-
 
     def get_dataframe(self,query):
         '''
@@ -184,14 +180,6 @@ class PecanStreetDatasetAdapter():
         df = pd.DataFrame.from_records(eng_object.fetchall())
         df.columns = eng_object.keys()
         return df
-
-    def get_list(self,query):
-        '''
-        Returns a list with query results.
-        '''
-        result  = self.eng.execute(query).fetchall()
-        return [result,result.keys()]
-
 
 class SchemaError(Exception):
     '''Exception raised for errors in the schema.
