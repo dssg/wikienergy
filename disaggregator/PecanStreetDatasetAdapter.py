@@ -1,4 +1,6 @@
 from ApplianceTrace import ApplianceTrace
+from ApplianceInstance import ApplianceInstance
+from ApplianceSet import ApplianceSet
 
 import sqlalchemy
 import pandas as pd
