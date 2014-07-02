@@ -24,6 +24,12 @@ class ApplianceTrace(object):
         '''Returns the user-supplied trace source string.'''
         return self.source
 
+    def get_total_usage(self):
+        '''
+        Returns the total usage of this trace
+        '''
+        return self.series.sum()
+
     def set_series(self,series):
         '''Updates the series (such as after a resampling)'''
         self.series = series
