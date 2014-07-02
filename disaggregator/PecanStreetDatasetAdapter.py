@@ -1,7 +1,7 @@
 from ApplianceTrace import ApplianceTrace
 
 import sqlalchemy
-import pandas
+import pandas as pd
 
 class PecanStreetDatasetAdapter():
     def __init__(self,db_url):
@@ -59,14 +59,14 @@ class PecanStreetDatasetAdapter():
     def get_month_traces(self,schema,year,month,dataid,group=None,sampling_rate="15T"):
         '''
         Returns a month-long traces for the specified month and sampling rate. Specify
-        sampling rate using pandas offset aliases (Ex. 15 mins -> "15T")
+        sampling rate using pd offset aliases (Ex. 15 mins -> "15T")
         '''
         if schema == "curated":
             # Lowest possible sampling rate is 15T
             query = 'select * from "PecanStreet_CuratedSets".group{0}_disaggregated_{1}_{2:02d} where dataid={3}'.format(group,year,month,dataid)
             df = self.get_dataframe(query).fillna(0)
             df.rename(columns={'utc_15min': 'time'}, inplace=True)
-            df.index = df['time'].apply(pandas.to_datetime)
+            df.index = df['time'].apply(pd.to_datetime)
             df = df.drop(['id','dataid','time'], axis=1)
             if not (sampling_rate == '15T' or sampling_rate == '15Min'):
                 how = {col:'sum' for col in dataframe.columns}
@@ -96,14 +96,21 @@ class PecanStreetDatasetAdapter():
             #print type(df)
             #print df.columns
             print df.shape
-            df.index = df['time'].apply(pandas.to_datetime)
+            df['time']=pd.to_datetime(df['time'], format='%d/%m/%Y %H:%M:%S')
+            df.set_index('time', inplace=True)
             #df = df.drop(['id','dataid','time'], axis=1)
-            print df.shape
-            # df = df.drop(['id','time'], axis=1)
+            #print df.shape
+            dataid = df['dataid'][0]
+            df = df.drop(['dataid'], axis=1)
+            if schema=='\"PecanStreet_CuratedSets\"':
+                df = df.drop(['id'], axis=1)
             if len(drop_cols)!=0:
                 df= df.drop(drop_cols,axis=1)
-            return df
+            return [df,dataid]
     
+    def invalid_col(self,col,schema):
+        invalids={'\"PecanStreet_CuratedSets\"':['id','utc_15min'],'\"PecanStreet_RawData\"':['localminute15min'], '\"PecanStreet_SharedData\"':['localminute']}
+        return col in invalids[schema]
     
     def get_month_traces_wo_time_align(self,schema,table,dataid):
         ##change this name
@@ -116,10 +123,12 @@ class PecanStreetDatasetAdapter():
         
         df = self.get_dataframe(query).fillna(0)
         
-        df = self.clean_dataframe(df, schema,[])
+        [df,da] = self.clean_dataframe(df, schema,[])
         traces = []
-        for column, series in df.iteritems():
-            traces.append(ApplianceTrace(series,self.source))
+        for col in df.columns:
+            if not self.invalid_col(col,schema):
+                meta={'source':self.source,'schema':schema,'table':table ,'dataid':da}
+                traces.append(ApplianceTrace(df[col],meta))
         
         return traces
 
@@ -132,10 +141,10 @@ class PecanStreetDatasetAdapter():
 
 
     def get_dataframe(self,query):
-        '''Returns a pandas dataframe with the query results'''
+        '''Returns a pd dataframe with the query results'''
         eng_object = self.eng.execute(query)
         
-        df = pandas.DataFrame.from_records(eng_object.fetchall())
+        df = pd.DataFrame.from_records(eng_object.fetchall())
         df.columns = eng_object.keys()
         return df
 
