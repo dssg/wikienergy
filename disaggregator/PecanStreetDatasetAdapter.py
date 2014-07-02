@@ -12,7 +12,11 @@ class PecanStreetDatasetAdapter():
         '''
         self.eng = sqlalchemy.create_engine(db_url)
         self.source = "PecanStreet"
-    
+   
+    def look_up_schema_map(self,schema):
+        table = {'curated':'\"PecanStreet_CuratedSets\"','raw':'\"PecanStreet_RawData\"','shared':'\"PecanStreet_SharedData\"'}
+        return table[schema]
+   
     def set_table_names(self,schema):
         ''''''
         df = self.get_dataframe('select * from information_schema.tables')
@@ -27,21 +31,15 @@ class PecanStreetDatasetAdapter():
         pass
     
     def get_meta_table(self,schema,table):
-        '''would prefer that this be a class that these be attributes'''
+        '''Returns a tuple where the first element is a list of data ids for this schema.table and the second element is a list of the appliances included in this schema.table'''
         q = 'select distinct dataid from {}.{}'.format(schema,table)
         result = self.eng.execute(q)
         ids = result.fetchall()
         q = 'select * from {}.{} where dataid={}'.format(schema,table,ids[0][0])
         result = self.eng.execute(q)
         apps = result.keys()
-        ##not totally necessary and should find faster way
-        # df = pd.DataFrame.from_records(result.fetchall())
-        # df.columns=apps
-        
-        #print apps
-        # date_start =df[][]
-        #date_end =
-        #step_size =
+        ids= [a[0] for a in ids]
+        apps = [str(a) for a in apps ]
         return [ids,apps]
     
     def get_unique_dataids(self,schema,month,year,group=None):
@@ -89,17 +87,12 @@ class PecanStreetDatasetAdapter():
     ##do table work
     
     def time_align():
+        '''Checks that for all traces in a home the total time lengths are the same'''
         pass
     
     def clean_dataframe(self,df,schema,drop_cols):
             time_cols = {'\"PecanStreet_CuratedSets\"':'utc_15min','\"PecanStreet_RawData\"':'localminute15minute','\"PecanStreet_SharedData\"':'localminute'}
-            print time_cols[schema]
-            print time_cols[schema]  in df.columns
             df=df.rename(columns={time_cols[schema]: 'time'})
-            #print 'in clean'
-            #print type(df)
-            #print df.columns
-            print df.shape
             df['time']=pd.to_datetime(df['time'], format='%d/%m/%Y %H:%M:%S')
             start_time = df['time'][0]
             end_time = df['time'][len(df['time'])-1]
@@ -111,7 +104,6 @@ class PecanStreetDatasetAdapter():
             df = df.drop(['dataid'], axis=1)
             if schema=='\"PecanStreet_CuratedSets\"':
                 df = df.drop(['id'], axis=1)
-            
             if len(drop_cols)!=0:
                 df= df.drop(drop_cols,axis=1)
             times = [start_time,end_time, step_size]
@@ -121,15 +113,18 @@ class PecanStreetDatasetAdapter():
         invalids={'\"PecanStreet_CuratedSets\"':['id','utc_15min'],'\"PecanStreet_RawData\"':['localminute15min'], '\"PecanStreet_SharedData\"':['localminute']}
         return col in invalids[schema]
     
+    def check_sample_rate(self,schema,sampling_rate):
+        ##get from the data directly not like this
+        accepted_rates = {'curated':'15T' ,'raw':'15' ,'shared':'1T' }
+
+    
     def get_month_traces_per_dataid(self,schema,table,dataid):
         ##change this name
         if schema not in ['\"PecanStreet_CuratedSets\"','\"PecanStreet_RawData\"','\"PecanStreet_SharedData\"']:
             raise SchemaError(schema)
         query = 'select * from {0}.{1} where dataid={2}'.format(schema, table,dataid)
         ##NEED TO CHANGE IDS
-        
         ##error checking that query worked
-        
         df = self.get_dataframe(query).fillna(0)
         
         [df,da,times] = self.clean_dataframe(df, schema,[])
@@ -141,13 +136,15 @@ class PecanStreetDatasetAdapter():
         
         return traces
 
+    def get_single_app_trace_need_house_id(self,house_df, app):
+        '''by house is fastest also have get all apps below'''
+        pass
 
 
-
-    def get_app_traces(self,schema,table,app):
+    def get_app_traces_all(self,schema,table,app):
         query= 'select {2} from {0}.{1}'.format(schema,table,app)
         df=self.get_dataframe(query)
-        print df.shape()
+        ##does this need to be cleaned differently?
 
 
 
