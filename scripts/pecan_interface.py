@@ -16,7 +16,7 @@ import pickle
 db_url = "postgresql://USERNAME:PASSWORD@db.wiki-energy.org:5432/postgres"
 p = pecan(db_url)
 
-table = {'curated':'\"PecanStreet_CuratedSets\"',
+schema_names = {'curated':'\"PecanStreet_CuratedSets\"',
         'raw':'\"PecanStreet_RawData\"',
         'shared':'\"PecanStreet_SharedData\"'}
 
@@ -35,9 +35,9 @@ Would you like to recieve data from the shared or curated set?'''
 
 # get tables from schema
 dataset = input('Please enter either "shared" or "curated"(no quotes):\n')
-schema = table[dataset]
-schema_e= schema[1:len(schema)-1]
-tables= p.set_table_names(schema_e)
+schema = schema_names[dataset]
+schema_e = schema[1:-1]
+tables = p.get_table_names(schema_e)
 print 'You can now view data for any of these months\n'
 for i in tables:
     print i + '\n'
