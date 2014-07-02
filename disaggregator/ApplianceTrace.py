@@ -35,5 +35,5 @@ class ApplianceTrace(object):
     def print_trace(self,series):
         trace_info={}
         trace_info['len'] = 'The len of this trace is {}'.format(len(series))
-        t = self.series[]
+#t = self.series[]
 
