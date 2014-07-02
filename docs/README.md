@@ -111,10 +111,11 @@ timeseries of disaggregated or aggregated appliance traces
 #### Methods
 - `get_sampling_rate()`: Returns a string representing the rate at which the series was sampled.
 - `get_series()`: Returns the pandas series object representing this trace.
-- `get_source()`: Returns the user-supplied trace source string.
+- `get_metadata()`: Returns the user-supplied trace metadata dict.
 - `get_total_usage()`: Computes and returns the total usage of the trace.
 - `set_series(series)`: Updates the series (such as after a resampling).
-- `set_source(source)`: Updates the user-supplied source string.
+- `set_metadata(metadata)`: Updates the user-supplied metadata dict.
+- `print_trace()`: Prints a summary of the trace
 
 #### Other properties
 Blank values are zero, values should be consecutive. Total use is considered

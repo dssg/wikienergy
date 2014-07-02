@@ -1,14 +1,15 @@
 import pandas
+import pprint
 
 class ApplianceTrace(object):
 
-    def __init__(self, series, source):
+    def __init__(self, series, metadata):
         '''
-        Initializes a trace object from a series and a source.
+        Initializes a trace object from a series and a metadata dictionary.
         Series must be sampled at a particular sample rate
         '''
         self.series = series
-        self.source = source
+        self.metadata = metadata
 
     def get_sampling_rate(self):
         '''
@@ -20,9 +21,9 @@ class ApplianceTrace(object):
         '''Returns the pandas series object representing this trace.'''
         return self.series
 
-    def get_source(self):
-        '''Returns the user-supplied trace source string.'''
-        return self.source
+    def get_metadata(self):
+        '''Returns the user-supplied trace metadata dictionary.'''
+        return self.metadata
 
     def get_total_usage(self):
         '''
@@ -34,12 +35,15 @@ class ApplianceTrace(object):
         '''Updates the series (such as after a resampling)'''
         self.series = series
 
-    def set_source(self,source):
-        '''Updates the user-supplied source string.'''
-        self.source = source
+    def set_metadata(self,metadata):
+        '''Updates the user-supplied metadata dict.'''
+        self.metadata = metadata
 
-    def print_trace(self,series):
-        trace_info={}
-        trace_info['len'] = 'The len of this trace is {}'.format(len(series))
-#t = self.series[]
-
+    def print_trace(self):
+        '''
+        Prints a summary of the trace
+        '''
+        print 'Series size: {}'.format(self.series.size)
+        print 'Sampling rate: {}'.format(self.get_sampling_rate)
+        print 'Metadata: '
+        pprint.pprint(self.metadata)
