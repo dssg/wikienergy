@@ -49,7 +49,7 @@ month = raw_input()
 print month
 print "This next step takes about a minute..."
 
-[i,a] = p.get_meta_table(schema,str(tables[0]))
+[i,a] = p.get_table_metadata(schema,str(tables[0]))
 
 print '''You can now load data for a single home.
 Here are the homes you can choose from:\n'''
