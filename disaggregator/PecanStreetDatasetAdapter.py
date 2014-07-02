@@ -7,17 +7,6 @@ import pandas as pd
 
 class PecanStreetDatasetAdapter():
 
-    schema_names =    {'curated': '\"PecanStreet_CuratedSets\"',
-                       'raw':     '\"PecanStreet_RawData\"',
-                       'shared':  '\"PecanStreet_SharedData\"'}
-
-    time_columns =    {'curated': 'utc_15min',
-                       'raw':     'localminute15minute',
-                       'shared':  'localminute'}
-
-    invalid_columns = {'curated': ['id', 'utc_15min'],
-                       'raw':     ['localminute15minute'],
-                       'shared':  ['localminute']}
 
     def __init__(self,db_url):
         '''
@@ -27,6 +16,17 @@ class PecanStreetDatasetAdapter():
         '''
         self.eng = sqlalchemy.create_engine(db_url)
         self.source = "PecanStreet"
+        self.schema_names =    {'curated': 'PecanStreet_CuratedSets',
+                           'raw':     'PecanStreet_RawData',
+                           'shared':  'PecanStreet_SharedData'}
+
+        self.time_columns =    {'curated': 'utc_15min',
+                           'raw':     'localminute15minute',
+                           'shared':  'localminute'}
+
+        self.invalid_columns = {'curated': ['id', 'utc_15min'],
+                           'raw':     ['localminute15minute'],
+                           'shared':  ['localminute']}
 
     def get_table_names(self,schema):
         '''
@@ -35,7 +35,8 @@ class PecanStreetDatasetAdapter():
         df = self.get_dataframe('select * from information_schema.tables')
         df = df.groupby(['table_schema','table_name'])
         groups = [group for group in df.groups]
-        table_names = [t for (s,t) in groups if s == schema_names[schema]]
+        print self.schema_names[schema]
+        table_names = [t for (s,t) in groups if s == self.schema_names[schema]]
         return table_names
 
     def verify_same_range(self):
@@ -50,10 +51,10 @@ class PecanStreetDatasetAdapter():
         schema.table and the second element is a list of the appliances
         included in this schema.table
         '''
-        q = 'select distinct dataid from {}.{}'.format(schema_names[schema],table)
+        q = 'select distinct dataid from "{}".{}'.format(self.schema_names[schema],table)
         result = self.eng.execute(q)
         ids = result.fetchall()
-        q = 'select * from {}.{} where dataid={}'.format(schema_names[schema],table,ids[0][0])
+        q = 'select * from "{}".{} where dataid={}'.format(self.schema_names[schema],table,ids[0][0])
         result = self.eng.execute(q)
         apps = result.keys()
         ids= [a[0] for a in ids]
@@ -66,8 +67,8 @@ class PecanStreetDatasetAdapter():
         "raw"), month (int), year (int), and [group (int) - only if "curated"].
         '''
         if schema == "curated":
-            schema_name = schema_names[schema]
-            query = 'select distinct dataid from {0}.group{1}_disaggregated_{2}_{3:02d}'.format(schema_name,group,year,month)
+            schema_name = self.schema_names[schema]
+            query = 'select distinct dataid from "{0}".group{1}_disaggregated_{2}_{3:02d}'.format(schema_name,group,year,month)
             df = self.get_dataframe(query)
             return list(df["dataid"])
         elif schema == "shared":
@@ -84,8 +85,8 @@ class PecanStreetDatasetAdapter():
         '''
         if schema == "curated": # Lowest possible sampling rate is 15T
             # load dataframe and fill with zeros
-            schema_name = schema_names[schema]
-            query = 'select * from {0}.group{1}_disaggregated_{2}_{3:02d} where dataid={4}'.format(schema_name,group,year,month,dataid)
+            schema_name = self.schema_names[schema]
+            query = 'select * from "{0}".group{1}_disaggregated_{2}_{3:02d} where dataid={4}'.format(schema_name,group,year,month,dataid)
             df = self.get_dataframe(query).fillna(0)
 
             # column name for a trace series DatetimeIndex should be "time"
@@ -150,8 +151,8 @@ class PecanStreetDatasetAdapter():
         # TODO change this name
         if schema not in ['curated','raw','shared']:
             raise SchemaError(schema)
-        schema_name = schema_names[schema]
-        query = 'select * from {0}.{1} where dataid={2}'.format(schema_name, table, dataid)
+        schema_name = self.schema_names[schema]
+        query = 'select * from "{0}".{1} where dataid={2}'.format(schema_name, table, dataid)
         # TODO NEED TO CHANGE IDS
         # TODO error checking that query worked
         df = self.get_dataframe(query).fillna(0)
@@ -159,7 +160,7 @@ class PecanStreetDatasetAdapter():
         df,times = self.clean_dataframe(df, schema,[])
         traces = []
         for col in df.columns:
-            if not col in invalid_columns[schema]:
+            if not col in self.invalid_columns[schema]:
                 meta={'source':self.source,'schema':schema,'table':table ,'dataid':dataid, 'start_time': times[0],'end_time':times[1], 'step_size':times[2] }
                 traces.append(ApplianceTrace(df[col],meta))
         return traces
@@ -169,8 +170,8 @@ class PecanStreetDatasetAdapter():
         pass
 
     def get_app_traces_all(self,schema,table,app):
-        schema_name = schema_names[schema]
-        query= 'select {2} from {0}.{1}'.format(schema_name,table,app)
+        schema_name = self.schema_names[schema]
+        query= 'select {2} from "{0}".{1}'.format(schema_name,table,app)
         df=self.get_dataframe(query)
         # TODO - does this need to be cleaned differently?
 
