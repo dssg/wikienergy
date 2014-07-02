@@ -60,10 +60,10 @@ class PecanStreetDatasetAdapter():
         apps = [str(a) for a in apps ]
         return ids, apps
 
-    def get_unique_dataids(self,schema,month,year,group=None):
+    def get_unique_dataids(self,schema,year,month,group=None):
         '''
         Returns a list of dataids for a specifc schema ("curated","shared", or
-        "raw"), month (int), year (int), and group (int).
+        "raw"), month (int), year (int), and [group (int) - only if "curated"].
         '''
         if schema == "curated":
             schema_name = schema_names[schema]
