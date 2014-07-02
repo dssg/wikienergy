@@ -14,7 +14,19 @@ class ApplianceTraceTestCase(unittest.TestCase):
         self.normal_trace = da.ApplianceTrace(series,{})
 
     def test_get_metadata(self):
-        self.assertDictEqual(self.normal_trace.get_metadata(),{})
+        self.assertIsInstance(self.normal_trace.get_metadata(),dict,
+                              'metadata should be a dict')
+
+    def test_get_sampling_rate(self):
+        self.assertEqual(self.normal_trace.get_sampling_rate(),'15T',
+                         'sampling rate of test should be "15T"')
+
+    def test_get_series(self):
+        self.assertIsInstance(self.normal_trace.get_series(),pd.Series,
+                              'series should be pd.Series')
+        self.assertIsInstance(self.normal_trace.get_series().index,
+                              pd.DatetimeIndex,
+                              'trace series index should be pd.DatetimeIndex')
 
 if __name__ == "__main__":
     unittest.main()
