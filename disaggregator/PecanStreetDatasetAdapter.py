@@ -12,26 +12,38 @@ class PecanStreetDatasetAdapter():
         '''
         self.eng = sqlalchemy.create_engine(db_url)
         self.source = "PecanStreet"
-   
+
     def look_up_schema_map(self,schema):
-        table = {'curated':'\"PecanStreet_CuratedSets\"','raw':'\"PecanStreet_RawData\"','shared':'\"PecanStreet_SharedData\"'}
+        '''
+        Gets the table name from the table shorthand name.
+        '''
+        table = {'curated':'\"PecanStreet_CuratedSets\"',
+                'raw':'\"PecanStreet_RawData\"',
+                'shared':'\"PecanStreet_SharedData\"'}
         return table[schema]
-   
-    def set_table_names(self,schema):
-        ''''''
+
+    def set_table_names(self,schema): #TODO Change this func name to "get_table_names"
+        '''
+        Returns a list of tables in the schema.
+        '''
         df = self.get_dataframe('select * from information_schema.tables')
-        df=(df.groupby(['table_schema','table_name']))
-        d = [k for k in df.groups]
-        tables = [l[1] for l in d if l[0]==schema]
-        return tables
-    
-    
-    def verify_same_range():
-        '''check that all data points have the same range'''
+        df = df.groupby(['table_schema','table_name'])
+        groups = [group for group in df.groups]
+        table_names = [t for (s,t) in groups if s==schema]
+        return table_names
+
+    def verify_same_range(self):
+        '''
+        Check that all data points have the same range
+        '''
         pass
-    
+
     def get_meta_table(self,schema,table):
-        '''Returns a tuple where the first element is a list of data ids for this schema.table and the second element is a list of the appliances included in this schema.table'''
+        '''
+        Returns a tuple where the first element is a list of data ids for this
+        schema.table and the second element is a list of the appliances
+        included in this schema.table
+        '''
         q = 'select distinct dataid from {}.{}'.format(schema,table)
         result = self.eng.execute(q)
         ids = result.fetchall()
@@ -41,7 +53,7 @@ class PecanStreetDatasetAdapter():
         ids= [a[0] for a in ids]
         apps = [str(a) for a in apps ]
         return [ids,apps]
-    
+
     def get_unique_dataids(self,schema,month,year,group=None):
         '''
         Returns a list of dataids for a specifc schema ("curated","shared", or
