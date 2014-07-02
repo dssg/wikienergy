@@ -67,5 +67,11 @@ def get_precision(true_positives,false_positives):
     return true_positives.sum()/(np.sum(true_positives.sum(),false_positives.sum()))
 
 
-def get_accuracy():
-    
+def get_accuracy(stats):
+    '''
+        Takes an array of true positives, false negatives, true negatives, and falso positives. Returns the Accuracy measure where accuracy is tp+tn/(tn+fn+tp+fp)
+        '''
+    return (stats[0]+stats[2])/sum(stats)
+
+
+
