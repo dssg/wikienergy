@@ -34,10 +34,14 @@ class PecanStreetDatasetAdapter():
         q = 'select * from {}.{} where dataid={}'.format(schema,table,ids[0][0])
         result = self.eng.execute(q)
         apps = result.keys()
+        ##not totally necessary and should find faster way
+        # df = pd.DataFrame.from_records(result.fetchall())
+        # df.columns=apps
+        
         #print apps
-        # date_start =
-        # date_end =
-        # step_size =
+        # date_start =df[][]
+        #date_end =
+        #step_size =
         return [ids,apps]
     
     def get_unique_dataids(self,schema,month,year,group=None):
@@ -97,6 +101,9 @@ class PecanStreetDatasetAdapter():
             #print df.columns
             print df.shape
             df['time']=pd.to_datetime(df['time'], format='%d/%m/%Y %H:%M:%S')
+            start_time = df['time'][0]
+            end_time = df['time'][len(df['time'])-1]
+            step_size = df['time'][1]-start_time
             df.set_index('time', inplace=True)
             #df = df.drop(['id','dataid','time'], axis=1)
             #print df.shape
@@ -104,15 +111,17 @@ class PecanStreetDatasetAdapter():
             df = df.drop(['dataid'], axis=1)
             if schema=='\"PecanStreet_CuratedSets\"':
                 df = df.drop(['id'], axis=1)
+            
             if len(drop_cols)!=0:
                 df= df.drop(drop_cols,axis=1)
-            return [df,dataid]
+            times = [start_time,end_time, step_size]
+            return [df,dataid,times]
     
     def invalid_col(self,col,schema):
         invalids={'\"PecanStreet_CuratedSets\"':['id','utc_15min'],'\"PecanStreet_RawData\"':['localminute15min'], '\"PecanStreet_SharedData\"':['localminute']}
         return col in invalids[schema]
     
-    def get_month_traces_wo_time_align(self,schema,table,dataid):
+    def get_month_traces_per_dataid(self,schema,table,dataid):
         ##change this name
         if schema not in ['\"PecanStreet_CuratedSets\"','\"PecanStreet_RawData\"','\"PecanStreet_SharedData\"']:
             raise SchemaError(schema)
@@ -123,21 +132,24 @@ class PecanStreetDatasetAdapter():
         
         df = self.get_dataframe(query).fillna(0)
         
-        [df,da] = self.clean_dataframe(df, schema,[])
+        [df,da,times] = self.clean_dataframe(df, schema,[])
         traces = []
         for col in df.columns:
             if not self.invalid_col(col,schema):
-                meta={'source':self.source,'schema':schema,'table':table ,'dataid':da}
+                meta={'source':self.source,'schema':schema,'table':table ,'dataid':da, 'start_time': times[0],'end_time':times[1], 'step_size':times[2] }
                 traces.append(ApplianceTrace(df[col],meta))
         
         return traces
 
 
-    
+
+
     def get_app_traces(self,schema,table,app):
         query= 'select {2} from {0}.{1}'.format(schema,table,app)
         df=self.get_dataframe(query)
         print df.shape()
+
+
 
 
     def get_dataframe(self,query):
