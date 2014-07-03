@@ -30,8 +30,8 @@ class PecanStreetDatasetAdapterTestCase(unittest.TestCase):
         pass
 
     def test_get_month_traces(self):
-        #traces = p.get_month_traces('SharedData',tables[0])
-        #trace = p.get_month_traces_wo_time_align('shared',str(tables[0]),i[0])
+        # traces = self.pdsa.get_month_traces('shared','validated_01_2014')
+        # trace = p.get_month_traces_wo_time_align('shared',str(tables[0]),i[0])
         pass
 
 if __name__ == '__main__':
