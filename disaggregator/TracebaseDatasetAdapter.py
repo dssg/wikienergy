@@ -35,7 +35,7 @@ class TracebaseDatasetAdapter(object):
             trace_dates.add(trace_date[:trace_date.index('.csv')])
         return list(trace_dates)
 
-    def generate_trace(self,device,instance_id,date):
+    def generate_traces(self,device,instance_id,date):
         '''
         Returns trace:
 	    series: indexed by time with column name 'time', series is series of average power value
@@ -44,16 +44,30 @@ class TracebaseDatasetAdapter(object):
         filename=self.path+device+'/dev_'+instance_id+'_'+date+'.csv'
         df = pd.read_csv(filename,sep=';',header=None,names=['time','1s_W','8s_W'])
         df['time']=pd.to_datetime(df['time'], format='%d/%m/%Y %H:%M:%S')
-        metadata={'source':self.source,'device_name':device,'instance_name':instance_id ,'date':date}
         df.set_index('time', inplace=True)	
         try:
 	        series=df['1s_W'].resample(self.sample_rate,how='sum')/3600.0
         except ValueError:
 	        raise SampleError(self.sample_rate)
-		
-        return ApplianceTrace(series,metadata)
+        series_mult=self.split_on_NANs(series)
+        return [ApplianceTrace(single_series,{'source':self.source,'device_name':device,'instance_name':instance_id ,'date':date,'trace_num':i}) for i,single_series in enumerate(series_mult)]
         
-    
+    def split_on_NANs(self,series):
+        '''
+        This function splits a trace into several traces, divided by the NAN values. Only outputs traces that have at least an hour of real values
+        '''
+        nan_indices=series[series.isnull()].index
+        series_mult=[]
+        prev_index=0
+        if(nan_indices.size>0):
+            for nan_index in nan_indices:
+                series_sect=series[prev_index:nan_index]
+                if(series_sect.size>6):
+                    series_mult.append(series_sect[prev_index:nan_index].dropna())
+                prev_index=nan_index
+        else:
+            series_mult=[series]
+        return series_mult
     def generate_instance(self,device,instance_id):
         '''
         This function imports the CSV files from a single device instance in a device folder
@@ -62,7 +76,8 @@ class TracebaseDatasetAdapter(object):
         instance=[]
         instance_dates=self.generate_instance_dates(device,instance_id)
         for date in instance_dates:
-            instance.append(self.generate_trace(device,instance_id,date))
+            for trace in self.generate_traces(device,instance_id,date):
+                instance.append(trace)
         return ApplianceInstance(instance)
 
     
