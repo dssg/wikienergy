@@ -45,7 +45,7 @@ def aggregate_instances(instances,how="strict"):
     else:
         return NotImplementedError
 
-def order_traces(self,traces):
+def order_traces(traces):
     '''
     Given a set of traces, orders them chronologically and catches
     overlapping traces.
