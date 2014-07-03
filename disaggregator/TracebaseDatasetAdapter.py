@@ -78,7 +78,7 @@ class TracebaseDatasetAdapter(object):
         for date in instance_dates:
             for trace in self.generate_traces(device,instance_id,date):
                 instance.append(trace)
-        return ApplianceInstance(instance)
+        return ApplianceInstance(instance,{'source':self.source,'device_name':device,'instance_name':instance_id})
 
     
     def generate_type(self,device):
