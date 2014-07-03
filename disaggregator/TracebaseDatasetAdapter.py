@@ -54,7 +54,7 @@ class TracebaseDatasetAdapter(object):
         
     def split_on_NANs(self,series):
         '''
-        This function splits a trace into several traces, divided by the NAN values. Only outputs traces that have at least an hour of real values
+        This function splits a trace into several traces, divided by the NAN values. Only outputs traces that have at least 6 hours of real values
         '''
         nan_indices=series[series.isnull()].index
         series_mult=[]
@@ -62,7 +62,7 @@ class TracebaseDatasetAdapter(object):
         if(nan_indices.size>0):
             for nan_index in nan_indices:
                 series_sect=series[prev_index:nan_index]
-                if(series_sect.size>6):
+                if(series_sect.size>26):
                     series_mult.append(series_sect[prev_index:nan_index].dropna())
                 prev_index=nan_index
         else:
