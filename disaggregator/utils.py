@@ -22,7 +22,7 @@ def concatenate_traces(traces, metadata=None, how="strict"):
 
 def aggregate_traces(traces, metadata, how="strict"):
     '''
-    Given an array of temporally aligned traces, aggregate them into a single
+    Given a list of temporally aligned traces, aggregate them into a single
     signal.
     '''
     if how == "strict":
@@ -33,3 +33,20 @@ def aggregate_traces(traces, metadata, how="strict"):
         return ApplianceTrace(summed_series,metadata)
     else:
         return NotImplementedError
+
+def aggregate_instances(instances,how="strict"):
+    '''
+    Given a list of temporally aligned instances, aggregate them into a single
+    signal.
+    '''
+    if how == "strict":
+        traces = [instance.traces for instance in instances]
+        traces = [list(t) for t in zip(*traces)] # transpose
+        traces = [ aggregate_traces(t,{}) for t in traces]
+        # TODO how to aggregate metadata?
+        return ApplianceInstance(traces)
+    else:
+        return NotImplementedError
+
+
+
