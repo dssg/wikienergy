@@ -14,7 +14,7 @@ def concatenate_traces(traces, metadata=None, how="strict"):
     if how == "strict":
         # require ordered list of consecutive, similarly sampled traces with no
         # missing data.
-        return ApplianceTrace(concat([t.series for t in traces],metadata))
+        return appliance.ApplianceTrace(concat([t.series for t in traces],metadata))
     else:
         raise NotImplementedError
 
@@ -28,7 +28,7 @@ def aggregate_traces(traces, metadata, how="strict"):
         summed_series = traces[0].series
         for trace in traces[1:]:
             summed_series += trace.series
-        return ApplianceTrace(summed_series, metadata)
+        return appliance.ApplianceTrace(summed_series, metadata)
     else:
         return NotImplementedError
 
@@ -41,7 +41,7 @@ def aggregate_instances(instances, metadata, how="strict"):
         traces = [instance.traces for instance in instances]
         traces = [list(t) for t in zip(*traces)] # transpose
         traces = [ aggregate_traces(t,{}) for t in traces]
-        return ApplianceInstance(traces, metadata)
+        return appliance.ApplianceInstance(traces, metadata)
     else:
         return NotImplementedError
 
