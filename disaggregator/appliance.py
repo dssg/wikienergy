@@ -62,11 +62,12 @@ class ApplianceInstance(object):
 
 class ApplianceSet(object):
 
-    def __init__(self,instances):
+    def __init__(self,instances,metadata):
         '''
         Initializes an appliance set given a list of instances.
         '''
         self.instances = instances
+        self.metadata = metadata
         self.make_dataframe()
 
     def add_instances(self,instances):
@@ -82,21 +83,15 @@ class ApplianceSet(object):
         '''
         pass
 
-    def get_dataframe(self):
-        '''
-        Returns the dataframe object representing the dataset.
-        '''
-        return self.df
-
     def make_dataframe(self):
         '''
         Makes a new dataframe of the appliance instances. Throws an exception if
         if the appliance instances have traces that don't align.
         '''
         # TODO concatenate all traces into a single trace
-        # TODO use real column_name
-        series_dict = {"column_name":instance.traces[0].series for instance in instances}
-        self.df = pd.Dataframe.from_dict(series_dict)
+        # TODO change this to ordered dict
+        series_dict = {instance.traces[0].series.name:instance.traces[0].series for instance in self.instances}
+        self.df = pd.DataFrame.from_dict(series_dict)
 
     def set_instances(self,instances):
         '''
@@ -106,40 +101,25 @@ class ApplianceSet(object):
         self.instances = instances
         self.make_dataframe()
 
-    def top_k(self):
+    def top_k_set(self,k):
         '''
         Get top k energy-consuming appliances
         '''
-        pass
+        # TODO compare speeds of individual instance summing vs dataframe building and summing
+        total_usages = self.df.sum(axis=0)
+        usage_order = np.argsort(total_usages)[::-1] # assumes correctly ordered columns
+        top_5_instances = [self.instances[i] for i in usage_order[:k]]
+        return ApplianceSet(top_5_instances,
+                            {"name":"top_{}".format(k)})
 
 class ApplianceType(object):
 
-    def __init__(self, instances):
+    def __init__(self, instances, metadata):
         '''
         Initialize a type object with a list of instances. (Check for
         uniqueness?)
         '''
         # TODO Check for uniqueness?
         self.instances = instances
-
-    def add_instances(self,instances):
-        '''
-        Add instances to the list of instances. (Check for uniqueness?)
-        '''
-        # TODO Check for uniqueness?
-        self.instances += instances
-
-    def get_instances(self):
-        '''
-        Returns the list of appliance instances which are members of this type.
-        '''
-        return self.instances
-
-    def set_instances(self,instances):
-        '''
-        Replaces the old list of instances with the new set of instances.
-        (Check for uniqueness?)
-        '''
-        # TODO Check for uniqueness?
-        self.instances = instances
+        self.metadata = metadata
 

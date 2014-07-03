@@ -14,7 +14,22 @@ def concatenate_traces(traces, metadata=None, how="strict"):
     if how == "strict":
         # require ordered list of consecutive, similarly sampled traces with no
         # missing data.
-        return ApplianceTrace(concat([t.series for t in traces],metadata))
+        return appliance.ApplianceTrace(pd.concat([t.series for t in traces]),metadata)
+    else:
+        raise NotImplementedError
+
+def concatenate_traces_lists(traces, metadata=None, how="strict"):
+    '''
+    Takes a list of lists of n traces and concatenates them into a single
+    list of n traces.
+    '''
+    if not metadata:
+        metadata = [trace.metadata for trace in traces[0]]
+
+    if how == "strict":
+        traces = [list(t) for t in zip(*traces)]
+        traces = [concatenate_traces(t,m) for t,m in zip(traces,metadata)]
+        return traces
     else:
         raise NotImplementedError
 
@@ -28,11 +43,11 @@ def aggregate_traces(traces, metadata, how="strict"):
         summed_series = traces[0].series
         for trace in traces[1:]:
             summed_series += trace.series
-        return ApplianceTrace(summed_series,metadata)
+        return appliance.ApplianceTrace(summed_series, metadata)
     else:
         return NotImplementedError
 
-def aggregate_instances(instances,how="strict"):
+def aggregate_instances(instances, metadata, how="strict"):
     '''
     Given a list of temporally aligned instances, aggregate them into a single
     signal.
@@ -41,8 +56,7 @@ def aggregate_instances(instances,how="strict"):
         traces = [instance.traces for instance in instances]
         traces = [list(t) for t in zip(*traces)] # transpose
         traces = [ aggregate_traces(t,{}) for t in traces]
-        # TODO how to aggregate metadata?
-        return ApplianceInstance(traces)
+        return appliance.ApplianceInstance(traces, metadata)
     else:
         return NotImplementedError
 
