@@ -1,5 +1,6 @@
 import appliance
-import pandas
+import pandas as pd
+import numpy as np
 
 def concatenate_traces(traces, metadata=None, how="strict"):
     '''
