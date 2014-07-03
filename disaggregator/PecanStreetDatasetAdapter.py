@@ -1,7 +1,4 @@
-from ApplianceTrace import ApplianceTrace
-from ApplianceInstance import ApplianceInstance
-from ApplianceSet import ApplianceSet
-
+import appliance
 import sqlalchemy
 import pandas as pd
 
@@ -17,16 +14,16 @@ class PecanStreetDatasetAdapter():
         self.eng = sqlalchemy.create_engine(db_url)
         self.source = "PecanStreet"
         self.schema_names =    {'curated': 'PecanStreet_CuratedSets',
-                           'raw':     'PecanStreet_RawData',
-                           'shared':  'PecanStreet_SharedData'}
+                                'raw':     'PecanStreet_RawData',
+                                'shared':  'PecanStreet_SharedData'}
 
         self.time_columns =    {'curated': 'utc_15min',
-                           'raw':     'localminute15minute',
-                           'shared':  'localminute'}
+                                'raw':     'localminute15minute',
+                                'shared':  'localminute'}
 
         self.invalid_columns = {'curated': ['id', 'utc_15min'],
-                           'raw':     ['localminute15minute'],
-                           'shared':  ['localminute']}
+                                'raw':     ['localminute15minute'],
+                                'shared':  ['localminute']}
 
 
         self.table_lookup= {'shared':{'2014':{'01':'validated_01_2014','02':'validated_02_2014','03':'validated_03_2014','04':'validated_04_2014','05':'validated_05_2014'}},'curated':{'1': {'2012': {'12': 'group1_disaggregated_2012_12'},'2013': {'01': 'group1_disaggregated_2013_01','02': 'group1_disaggregated_2013_02','03': 'group1_disaggregated_2013_03','04': 'group1_disaggregated_2013_04','05': 'group1_disaggregated_2013_05','06': 'group1_disaggregated_2013_06','07': 'group1_disaggregated_2013_07', '08': 'group1_disaggregated_2013_08', '09': 'group1_disaggregated_2013_09','10': 'group1_disaggregated_2013_10', '11': 'group1_disaggregated_2013_11'}},'2': {'2012': {}, '2013': {'01': 'group2_disaggregated_2013_01', '02': 'group2_disaggregated_2013_02', '03': 'group2_disaggregated_2013_03', '04': 'group2_disaggregated_2013_04', '05': 'group2_disaggregated_2013_05', '06': 'group2_disaggregated_2013_06', '07': 'group2_disaggregated_2013_07', '08': 'group2_disaggregated_2013_08', '09': 'group2_disaggregated_2013_09', '10': 'group2_disaggregated_2013_10', '11': 'group2_disaggregated_2013_11'}},'3': {'2012': {}, '2013': {'05': 'group3_disaggregated_2013_05', '06': 'group3_disaggregated_2013_06','07': 'group3_disaggregated_2013_07', '08': 'group3_disaggregated_2013_08', '09': 'group3_disaggregated_2013_09', '10': 'group3_disaggregated_2013_10','11': 'group3_disaggregated_2013_11'} }, 'other':['west_pv_fall_2013','south_pv_fall_2013','pv_summer_2013', 'southwest_pv_fall_2013','ev_fall_2013']},'raw': {'2014':{'1T':'egauge_minutes_2014','15T':'egauge_15min_2014'},'2013':{'1T':'egauge_minutes_2013','15T':'egauge_15min_2013'},'2012':{'1T':'egauge_minutes_2012','15T':'egauge_15min_2012'}} }
@@ -124,7 +121,7 @@ class PecanStreetDatasetAdapter():
         # make traces for each column
         traces = []
         for column, series in df.iteritems():
-            traces.append(ApplianceTrace(series,self.source))
+            traces.append(appliance.ApplianceTrace(series,self.source))
         return traces
 
     def time_align():
@@ -177,7 +174,7 @@ class PecanStreetDatasetAdapter():
         for col in df.columns:
             if not col in self.invalid_columns[schema]:
                 meta={'source':self.source,'schema':schema,'table':table ,'dataid':dataid, 'start_time': times[0],'end_time':times[1], 'step_size':times[2] }
-                traces.append(ApplianceTrace(df[col],meta))
+                traces.append(appliance.ApplianceTrace(df[col],meta))
         return traces
 
     def get_single_app_trace_need_house_id(self,house_df, app):
