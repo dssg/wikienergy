@@ -28,11 +28,11 @@ def aggregate_traces(traces, metadata, how="strict"):
         summed_series = traces[0].series
         for trace in traces[1:]:
             summed_series += trace.series
-        return ApplianceTrace(summed_series,metadata)
+        return ApplianceTrace(summed_series, metadata)
     else:
         return NotImplementedError
 
-def aggregate_instances(instances,how="strict"):
+def aggregate_instances(instances, metadata, how="strict"):
     '''
     Given a list of temporally aligned instances, aggregate them into a single
     signal.
@@ -41,8 +41,7 @@ def aggregate_instances(instances,how="strict"):
         traces = [instance.traces for instance in instances]
         traces = [list(t) for t in zip(*traces)] # transpose
         traces = [ aggregate_traces(t,{}) for t in traces]
-        # TODO how to aggregate metadata?
-        return ApplianceInstance(traces)
+        return ApplianceInstance(traces, metadata)
     else:
         return NotImplementedError
 
