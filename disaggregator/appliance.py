@@ -82,12 +82,6 @@ class ApplianceSet(object):
         '''
         pass
 
-    def get_dataframe(self):
-        '''
-        Returns the dataframe object representing the dataset.
-        '''
-        return self.df
-
     def make_dataframe(self):
         '''
         Makes a new dataframe of the appliance instances. Throws an exception if
@@ -114,32 +108,12 @@ class ApplianceSet(object):
 
 class ApplianceType(object):
 
-    def __init__(self, instances):
+    def __init__(self, instances, metadata):
         '''
         Initialize a type object with a list of instances. (Check for
         uniqueness?)
         '''
         # TODO Check for uniqueness?
         self.instances = instances
-
-    def add_instances(self,instances):
-        '''
-        Add instances to the list of instances. (Check for uniqueness?)
-        '''
-        # TODO Check for uniqueness?
-        self.instances += instances
-
-    def get_instances(self):
-        '''
-        Returns the list of appliance instances which are members of this type.
-        '''
-        return self.instances
-
-    def set_instances(self,instances):
-        '''
-        Replaces the old list of instances with the new set of instances.
-        (Check for uniqueness?)
-        '''
-        # TODO Check for uniqueness?
-        self.instances = instances
+        self.metadata = metadata
 
