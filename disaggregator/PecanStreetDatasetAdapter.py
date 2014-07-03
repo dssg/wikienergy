@@ -17,16 +17,16 @@ class PecanStreetDatasetAdapter():
         self.eng = sqlalchemy.create_engine(db_url)
         self.source = "PecanStreet"
         self.schema_names =    {'curated': 'PecanStreet_CuratedSets',
-                           'raw':     'PecanStreet_RawData',
-                           'shared':  'PecanStreet_SharedData'}
+                                'raw':     'PecanStreet_RawData',
+                                'shared':  'PecanStreet_SharedData'}
 
         self.time_columns =    {'curated': 'utc_15min',
-                           'raw':     'localminute15minute',
-                           'shared':  'localminute'}
+                                'raw':     'localminute15minute',
+                                'shared':  'localminute'}
 
         self.invalid_columns = {'curated': ['id', 'utc_15min'],
-                           'raw':     ['localminute15minute'],
-                           'shared':  ['localminute']}
+                                'raw':     ['localminute15minute'],
+                                'shared':  ['localminute']}
 
     def get_table_names(self,schema):
         '''
