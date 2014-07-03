@@ -14,7 +14,22 @@ def concatenate_traces(traces, metadata=None, how="strict"):
     if how == "strict":
         # require ordered list of consecutive, similarly sampled traces with no
         # missing data.
-        return appliance.ApplianceTrace(concat([t.series for t in traces],metadata))
+        return appliance.ApplianceTrace(pd.concat([t.series for t in traces]),metadata)
+    else:
+        raise NotImplementedError
+
+def concatenate_traces_lists(traces, metadata=None, how="strict"):
+    '''
+    Takes a list of lists of n traces and concatenates them into a single
+    list of n traces.
+    '''
+    if not metadata:
+        metadata = [trace.metadata for trace in traces[0]]
+
+    if how == "strict":
+        traces = [list(t) for t in zip(*traces)]
+        traces = [concatenate_traces(t,m) for t,m in zip(traces,metadata)]
+        return traces
     else:
         raise NotImplementedError
 
