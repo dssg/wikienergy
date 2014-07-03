@@ -28,6 +28,11 @@ class PecanStreetDatasetAdapter():
                            'raw':     ['localminute15minute'],
                            'shared':  ['localminute']}
 
+
+        self.table_lookup= {'shared':{'2014':{'01':'validated_01_2014','02':'validated_02_2014','03':'validated_03_2014','04':'validated_04_2014','05':'validated_05_2014'}},'curated':{'1': {'2012': {'12': 'group1_disaggregated_2012_12'},'2013': {'01': 'group1_disaggregated_2013_01','02': 'group1_disaggregated_2013_02','03': 'group1_disaggregated_2013_03','04': 'group1_disaggregated_2013_04','05': 'group1_disaggregated_2013_05','06': 'group1_disaggregated_2013_06','07': 'group1_disaggregated_2013_07', '08': 'group1_disaggregated_2013_08', '09': 'group1_disaggregated_2013_09','10': 'group1_disaggregated_2013_10', '11': 'group1_disaggregated_2013_11'}},'2': {'2012': {}, '2013': {'01': 'group2_disaggregated_2013_01', '02': 'group2_disaggregated_2013_02', '03': 'group2_disaggregated_2013_03', '04': 'group2_disaggregated_2013_04', '05': 'group2_disaggregated_2013_05', '06': 'group2_disaggregated_2013_06', '07': 'group2_disaggregated_2013_07', '08': 'group2_disaggregated_2013_08', '09': 'group2_disaggregated_2013_09', '10': 'group2_disaggregated_2013_10', '11': 'group2_disaggregated_2013_11'}},'3': {'2012': {}, '2013': {'05': 'group3_disaggregated_2013_05', '06': 'group3_disaggregated_2013_06','07': 'group3_disaggregated_2013_07', '08': 'group3_disaggregated_2013_08', '09': 'group3_disaggregated_2013_09', '10': 'group3_disaggregated_2013_10','11': 'group3_disaggregated_2013_11'} }, 'other':['west_pv_fall_2013','south_pv_fall_2013','pv_summer_2013', 'southwest_pv_fall_2013','ev_fall_2013']},'raw': {'2014':{'1T':'egauge_minutes_2014','15T':'egauge_15min_2014'},'2013':{'1T':'egauge_minutes_2013','15T':'egauge_15min_2013'},'2012':{'1T':'egauge_minutes_2012','15T':'egauge_15min_2012'}} }
+    
+    
+
     def get_table_names(self,schema):
         '''
         Returns a list of tables in the schema.
@@ -39,11 +44,20 @@ class PecanStreetDatasetAdapter():
         table_names = [t for (s,t) in groups if s == self.schema_names[schema]]
         return table_names
 
-    def verify_same_range(self):
+    def verify_same_range(self, pair):
         '''
         Check that all data points have the same range
         '''
-        pass
+        if len(pair)==2:
+        #check that start and end times are the same
+        #check that
+            start_time_one = pair[0].series.index(pair[0].series[0])
+            start_time_two = pair[0].series.index(pair[0].series[0])
+            print start_time_one == start_time_two
+            end_time_one = pair[0].series.index(pair[0].series[len(pair[0])-1])
+            end_time_two = pair[0].series.index(pair[0].series[len(pair[1])]-1)
+            print end_time_one==end_time_two
+    
 
     def get_table_metadata(self,schema,table):
         '''
@@ -122,17 +136,18 @@ class PecanStreetDatasetAdapter():
         Cleans a dataframe queried directly from the database.
         '''
         # change the time column name
-        df = df.rename(columns={time_colums[schema]: 'time'})
-
+        df = df.rename(columns={self.time_columns[schema]: 'time'})
+        print df.columns
         # use a DatetimeIndex
         df['time'] = pd.to_datetime(df['time'], format='%d/%m/%Y %H:%M:%S')
-        df.set_index('time', inplace=True)
-
         # get some info about times
         start_time = df['time'][0]
-        end_time = df['time'][-1]
+        end_time = df['time'][len(df['time'])-1]
         step_size = df['time'][1]-start_time # will error out if we only have one time point
         times = (start_time, end_time, step_size)
+        df.set_index('time', inplace=True)
+
+
 
         # drop unnecessary columns
         df = df.drop(['dataid'], axis=1)
