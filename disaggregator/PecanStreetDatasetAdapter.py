@@ -37,7 +37,6 @@ class PecanStreetDatasetAdapter():
         df = self.get_dataframe('select * from information_schema.tables')
         df = df.groupby(['table_schema','table_name'])
         groups = [group for group in df.groups]
-        print self.schema_names[schema]
         table_names = [t for (s,t) in groups if s == self.schema_names[schema]]
         return table_names
 
