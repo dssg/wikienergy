@@ -1,61 +1,58 @@
-import appliance
+from ApplianceTrace import ApplianceTrace
+from ApplianceInstance import ApplianceInstance
+from ApplianceSet import ApplianceSet
+
 import sqlalchemy
 import pandas as pd
 
-class PecanStreetDatasetAdapter():
+url = ''
 
 
-    def __init__(self,db_url):
-        '''
-        Initialize an adapter using a database url_string.
-        Consider the following example:
-        db_url="postgresql://user_name:password@host.url:port/db"
-        '''
-        self.eng = sqlalchemy.create_engine(db_url)
-        self.source = "PecanStreet"
-        self.schema_names =    {'curated': 'PecanStreet_CuratedSets',
-                                'raw':     'PecanStreet_RawData',
-                                'shared':  'PecanStreet_SharedData'}
 
-        self.time_columns =    {'curated': 'utc_15min',
-                                'raw':     'localminute15minute',
-                                'shared':  'localminute'}
+def set_url(db_url):
+    url = db_url
+    '''Initialize an adapter using a database url_string.Consider the following example: db_url="postgresql://user_name:password@host.url:port/db"
+    '''
+    eng = sqlalchemy.create_engine(url)
+    source = "PecanStreet"
+    schema_names =    {'curated': 'PecanStreet_CuratedSets',
+                           'raw':     'PecanStreet_RawData',
+                           'shared':  'PecanStreet_SharedData'}
 
-        self.invalid_columns = {'curated': ['id', 'utc_15min'],
-                                'raw':     ['localminute15minute'],
-                                'shared':  ['localminute']}
+    time_columns =    {'curated': 'utc_15min',
+                           'raw':     'localminute15minute',
+                           'shared':  'localminute'}
+
+    invalid_columns = {'curated': ['id', 'utc_15min'],
+                           'raw':     ['localminute15minute'],
+                           'shared':  ['localminute']}
 
 
-        self.table_lookup= {'shared':{'2014':{'01':'validated_01_2014','02':'validated_02_2014','03':'validated_03_2014','04':'validated_04_2014','05':'validated_05_2014'}},'curated':{'1': {'2012': {'12': 'group1_disaggregated_2012_12'},'2013': {'01': 'group1_disaggregated_2013_01','02': 'group1_disaggregated_2013_02','03': 'group1_disaggregated_2013_03','04': 'group1_disaggregated_2013_04','05': 'group1_disaggregated_2013_05','06': 'group1_disaggregated_2013_06','07': 'group1_disaggregated_2013_07', '08': 'group1_disaggregated_2013_08', '09': 'group1_disaggregated_2013_09','10': 'group1_disaggregated_2013_10', '11': 'group1_disaggregated_2013_11'}},'2': {'2012': {}, '2013': {'01': 'group2_disaggregated_2013_01', '02': 'group2_disaggregated_2013_02', '03': 'group2_disaggregated_2013_03', '04': 'group2_disaggregated_2013_04', '05': 'group2_disaggregated_2013_05', '06': 'group2_disaggregated_2013_06', '07': 'group2_disaggregated_2013_07', '08': 'group2_disaggregated_2013_08', '09': 'group2_disaggregated_2013_09', '10': 'group2_disaggregated_2013_10', '11': 'group2_disaggregated_2013_11'}},'3': {'2012': {}, '2013': {'05': 'group3_disaggregated_2013_05', '06': 'group3_disaggregated_2013_06','07': 'group3_disaggregated_2013_07', '08': 'group3_disaggregated_2013_08', '09': 'group3_disaggregated_2013_09', '10': 'group3_disaggregated_2013_10','11': 'group3_disaggregated_2013_11'} }, 'other':['west_pv_fall_2013','south_pv_fall_2013','pv_summer_2013', 'southwest_pv_fall_2013','ev_fall_2013']},'raw': {'2014':{'1T':'egauge_minutes_2014','15T':'egauge_15min_2014'},'2013':{'1T':'egauge_minutes_2013','15T':'egauge_15min_2013'},'2012':{'1T':'egauge_minutes_2012','15T':'egauge_15min_2012'}} }
+
+    table_lookup= {'shared':{'2014':{'01':'validated_01_2014','02':'validated_02_2014','03':'validated_03_2014','04':'validated_04_2014','05':'validated_05_2014'}},'curated':{'1': {'2012': {'12': 'group1_disaggregated_2012_12'},'2013': {'01': 'group1_disaggregated_2013_01','02': 'group1_disaggregated_2013_02','03': 'group1_disaggregated_2013_03','04': 'group1_disaggregated_2013_04','05': 'group1_disaggregated_2013_05','06': 'group1_disaggregated_2013_06','07': 'group1_disaggregated_2013_07', '08': 'group1_disaggregated_2013_08', '09': 'group1_disaggregated_2013_09','10': 'group1_disaggregated_2013_10', '11': 'group1_disaggregated_2013_11'}},'2': {'2012': {}, '2013': {'01': 'group2_disaggregated_2013_01', '02': 'group2_disaggregated_2013_02', '03': 'group2_disaggregated_2013_03', '04': 'group2_disaggregated_2013_04', '05': 'group2_disaggregated_2013_05', '06': 'group2_disaggregated_2013_06', '07': 'group2_disaggregated_2013_07', '08': 'group2_disaggregated_2013_08', '09': 'group2_disaggregated_2013_09', '10': 'group2_disaggregated_2013_10', '11': 'group2_disaggregated_2013_11'}},'3': {'2012': {}, '2013': {'05': 'group3_disaggregated_2013_05', '06': 'group3_disaggregated_2013_06','07': 'group3_disaggregated_2013_07', '08': 'group3_disaggregated_2013_08', '09': 'group3_disaggregated_2013_09', '10': 'group3_disaggregated_2013_10','11': 'group3_disaggregated_2013_11'} }, 'other':['west_pv_fall_2013','south_pv_fall_2013','pv_summer_2013', 'southwest_pv_fall_2013','ev_fall_2013']},'raw': {'2014':{'1T':'egauge_minutes_2014','15T':'egauge_15min_2014'},'2013':{'1T':'egauge_minutes_2013','15T':'egauge_15min_2013'},'2012':{'1T':'egauge_minutes_2012','15T':'egauge_15min_2012'}} }
     
-    
 
-    def get_table_names(self,schema):
+def get_table_names(schema):
         '''
         Returns a list of tables in the schema.
         '''
         df = self.get_dataframe('select * from information_schema.tables')
         df = df.groupby(['table_schema','table_name'])
         groups = [group for group in df.groups]
+        print self.schema_names[schema]
         table_names = [t for (s,t) in groups if s == self.schema_names[schema]]
         return table_names
 
-    def verify_same_range(self, pair):
+def verify_same_range(pair,pairs):
         '''
         Check that all data points have the same range
         '''
-        if len(pair)==2:
-        #check that start and end times are the same
-        #check that
-            start_time_one = pair[0].series.index(pair[0].series[0])
-            start_time_two = pair[0].series.index(pair[0].series[0])
-            print start_time_one == start_time_two
-            end_time_one = pair[0].series.index(pair[0].series[len(pair[0])-1])
-            end_time_two = pair[0].series.index(pair[0].series[len(pair[1])]-1)
-            print end_time_one==end_time_two
-    
+        
+        
+        
+        pass
 
-    def get_table_metadata(self,schema,table):
+def get_table_metadata(schema,table):
         '''
         Returns a tuple where the first element is a list of data ids for this
         schema.table and the second element is a list of the appliances
@@ -71,7 +68,7 @@ class PecanStreetDatasetAdapter():
         apps = [str(a) for a in apps ]
         return ids, apps
 
-    def get_unique_dataids(self,schema,year,month,group=None):
+def get_unique_dataids(schema,year,month,group=None):
         '''
         Returns a list of dataids for a specifc schema ("curated","shared", or
         "raw"), month (int), year (int), and [group (int) - only if "curated"].
@@ -88,7 +85,7 @@ class PecanStreetDatasetAdapter():
         else:
             raise SchemaError(schema)
 
-    def get_month_traces(self,schema,year,month,dataid,group=None,sampling_rate="15T"):
+def get_month_traces(schema,year,month,dataid,group=None,sampling_rate="15T"):
         '''
         Returns a month-long traces for the specified month and sampling rate. Specify
         sampling rate using pd offset aliases (Ex. 15 mins -> "15T")
@@ -120,30 +117,29 @@ class PecanStreetDatasetAdapter():
         # make traces for each column
         traces = []
         for column, series in df.iteritems():
-            traces.append(appliance.ApplianceTrace(series,self.source))
+            traces.append(ApplianceTrace(series,self.source))
         return traces
 
-    def time_align():
+def time_align():
         '''Checks that for all traces in a home the total time lengths are the same'''
         pass
 
-    def clean_dataframe(self,df,schema,drop_cols): # TODO update this to use "curated" "shared" or "raw" instead of full frame name
+def clean_dataframe(df,schema,drop_cols): # TODO update this to use "curated" "shared" or "raw" instead of full frame name
         '''
         Cleans a dataframe queried directly from the database.
         '''
         # change the time column name
-        df = df.rename(columns={self.time_columns[schema]: 'time'})
-        print df.columns
+        df = df.rename(columns={time_colums[schema]: 'time'})
+
         # use a DatetimeIndex
         df['time'] = pd.to_datetime(df['time'], format='%d/%m/%Y %H:%M:%S')
-        # get some info about times
-        start_time = df['time'][0]
-        end_time = df['time'][len(df['time'])-1]
-        step_size = df['time'][1]-start_time # will error out if we only have one time point
-        times = (start_time, end_time, step_size)
         df.set_index('time', inplace=True)
 
-
+        # get some info about times
+        start_time = df['time'][0]
+        end_time = df['time'][-1]
+        step_size = df['time'][1]-start_time # will error out if we only have one time point
+        times = (start_time, end_time, step_size)
 
         # drop unnecessary columns
         df = df.drop(['dataid'], axis=1)
@@ -154,11 +150,11 @@ class PecanStreetDatasetAdapter():
 
         return df, times
 
-    def check_sample_rate(self,schema,sampling_rate):
+def check_sample_rate(schema,sampling_rate):
         ##get from the data directly not like this
         accepted_rates = {'curated':'15T' ,'raw':'15' ,'shared':'1T' }
 
-    def get_month_traces_per_dataid(self,schema,table,dataid):
+def get_month_traces_per_dataid(schema,table,dataid):
         # TODO change this name
         if schema not in ['curated','raw','shared']:
             raise SchemaError(schema)
@@ -173,20 +169,20 @@ class PecanStreetDatasetAdapter():
         for col in df.columns:
             if not col in self.invalid_columns[schema]:
                 meta={'source':self.source,'schema':schema,'table':table ,'dataid':dataid, 'start_time': times[0],'end_time':times[1], 'step_size':times[2] }
-                traces.append(appliance.ApplianceTrace(df[col],meta))
+                traces.append(ApplianceTrace(df[col],meta))
         return traces
 
-    def get_single_app_trace_need_house_id(self,house_df, app):
+def get_single_app_trace_need_house_id(house_df, app):
         '''by house is fastest also have get all apps below'''
         pass
 
-    def get_app_traces_all(self,schema,table,app):
+def get_app_traces_all(schema,table,app):
         schema_name = self.schema_names[schema]
         query= 'select {2} from "{0}".{1}'.format(schema_name,table,app)
         df=self.get_dataframe(query)
         # TODO - does this need to be cleaned differently?
 
-    def get_dataframe(self,query):
+def get_dataframe(query):
         '''
         Returns a Pandas dataframe with the query results
         '''
@@ -201,7 +197,7 @@ class SchemaError(Exception):
         Attributes:
             schema  -- nonexistent schema
     '''
-    def __init__(self,schema):
+    def __init__(schema):
         self.schema = schema
 
     def __str__(self):
