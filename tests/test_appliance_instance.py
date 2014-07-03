@@ -19,5 +19,20 @@ class ApplianceInstanceTestCase(unittest.TestCase):
         self.assertIsNotNone(self.normal_instance.get_traces(),
                       'instance should have traces')
 
+    def test_traces_in_order(self):
+        traces = self.normal_instance.get_traces()
+        self.assertLess(traces[0].series.index[0],
+                        traces[1].series.index[0],
+                        'traces should be in order')
+
+    def test_traces_should_not_overlap(self):
+        traces = self.normal_instance.get_traces()
+        times = set()
+        for trace in traces:
+            for time in trace.series.index:
+                self.assertNotIn(time, times,
+                                 'traces should not overlap')
+                times.add(time)
+
 if __name__ == "__main__":
     unittest.main()
