@@ -19,3 +19,17 @@ def concatenate_traces(traces, metadata=None, how="strict"):
         return ApplianceTrace(concat([t.series for t in traces],metadata))
     else:
         raise NotImplementedError
+
+def aggregate_traces(traces, metadata, how="strict"):
+    '''
+    Given an array of temporally aligned traces, aggregate them into a single
+    signal.
+    '''
+    if how == "strict":
+        # require that traces are exactly aligned
+        summed_series = traces[0].series
+        for trace in traces[1:]:
+            summed_series += trace.series
+        return ApplianceTrace(summed_series,metadata)
+    else:
+        return NotImplementedError
