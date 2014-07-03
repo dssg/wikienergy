@@ -34,7 +34,5 @@ class PecanStreetDatasetAdapterTestCase(unittest.TestCase):
         # trace = p.get_month_traces_wo_time_align('shared',str(tables[0]),i[0])
         pass
 
-fast = TestSuite()
-
 if __name__ == '__main__':
     unittest.main()
