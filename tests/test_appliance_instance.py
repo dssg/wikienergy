@@ -13,20 +13,20 @@ class ApplianceInstanceTestCase(unittest.TestCase):
         data = [np.zeros(96),np.zeros(96)]
         series = [pd.Series(d, index=i) for d,i in zip(data,indices)]
         self.traces = [da.ApplianceTrace(s,{}) for s in series]
-        self.normal_instance = da.ApplianceInstance(self.traces)
+        self.normal_instance = da.ApplianceInstance(self.traces,{})
 
     def test_get_traces(self):
-        self.assertIsNotNone(self.normal_instance.get_traces(),
+        self.assertIsNotNone(self.normal_instance.traces,
                       'instance should have traces')
 
     def test_traces_in_order(self):
-        traces = self.normal_instance.get_traces()
+        traces = self.normal_instance.traces
         self.assertLess(traces[0].series.index[0],
                         traces[1].series.index[0],
                         'traces should be in order')
 
     def test_traces_should_not_overlap(self):
-        traces = self.normal_instance.get_traces()
+        traces = self.normal_instance.traces
         times = set()
         for trace in traces:
             for time in trace.series.index:
