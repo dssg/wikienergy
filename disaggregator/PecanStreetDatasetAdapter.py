@@ -1,7 +1,4 @@
-from ApplianceTrace import ApplianceTrace
-from ApplianceInstance import ApplianceInstance
-from ApplianceSet import ApplianceSet
-
+import appliance
 import sqlalchemy
 import pandas as pd
 
@@ -110,7 +107,7 @@ class PecanStreetDatasetAdapter():
         # make traces for each column
         traces = []
         for column, series in df.iteritems():
-            traces.append(ApplianceTrace(series,self.source))
+            traces.append(appliance.ApplianceTrace(series,self.source))
         return traces
 
     def time_align():
@@ -162,7 +159,7 @@ class PecanStreetDatasetAdapter():
         for col in df.columns:
             if not col in self.invalid_columns[schema]:
                 meta={'source':self.source,'schema':schema,'table':table ,'dataid':dataid, 'start_time': times[0],'end_time':times[1], 'step_size':times[2] }
-                traces.append(ApplianceTrace(df[col],meta))
+                traces.append(appliance.ApplianceTrace(df[col],meta))
         return traces
 
     def get_single_app_trace_need_house_id(self,house_df, app):
