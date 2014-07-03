@@ -89,6 +89,7 @@ class ApplianceSet(object):
         if the appliance instances have traces that don't align.
         '''
         # TODO concatenate all traces into a single trace
+        # TODO change this to ordered dict
         series_dict = {instance.traces[0].series.name:instance.traces[0].series for instance in self.instances}
         self.df = pd.DataFrame.from_dict(series_dict)
 
@@ -104,10 +105,12 @@ class ApplianceSet(object):
         '''
         Get top k energy-consuming appliances
         '''
+        # TODO compare speeds of individual instance summing vs dataframe building and summing
         total_usages = self.df.sum(axis=0)
-
-        print total_usages.index
-        return
+        usage_order = np.argsort(total_usages)[::-1] # assumes correctly ordered columns
+        top_5_instances = [self.instances[i] for i in usage_order[:k]]
+        return ApplianceSet(top_5_instances,
+                            {"name":"top_{}".format(k)})
 
 class ApplianceType(object):
 
