@@ -1,8 +1,5 @@
-from ApplianceTrace import ApplianceTrace
-from ApplianceInstance import ApplianceInstance
-from ApplianceType import ApplianceType
-from ApplianceSet import ApplianceSet
-from pandas import concat
+import appliance
+import pandas
 
 def concatenate_traces(traces, metadata=None, how="strict"):
     '''
@@ -48,12 +45,12 @@ def aggregate_instances(instances,how="strict"):
     else:
         return NotImplementedError
 
-    def order_traces(self,traces):
-        '''
-        Given a set of traces, orders them chronologically and catches
-        overlapping traces.
-        '''
-        order = np.argsort([t.series[0] for t in traces])
-        new_traces = [traces[i] for i in order]
-        return new_traces
+def order_traces(self,traces):
+    '''
+    Given a set of traces, orders them chronologically and catches
+    overlapping traces.
+    '''
+    order = np.argsort([t.series[0] for t in traces])
+    new_traces = [traces[i] for i in order]
+    return new_traces
 
