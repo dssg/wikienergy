@@ -17,27 +17,11 @@ class ApplianceTrace(object):
         '''
         return self.series.index.freq
 
-    def get_series(self):
-        '''Returns the pandas series object representing this trace.'''
-        return self.series
-
-    def get_metadata(self):
-        '''Returns the user-supplied trace metadata dictionary.'''
-        return self.metadata
-
     def get_total_usage(self):
         '''
         Returns the total usage of this trace
         '''
         return self.series.sum()
-
-    def set_series(self,series):
-        '''Updates the series (such as after a resampling)'''
-        self.series = series
-
-    def set_metadata(self,metadata):
-        '''Updates the user-supplied metadata dict.'''
-        self.metadata = metadata
 
     def print_trace(self):
         '''
