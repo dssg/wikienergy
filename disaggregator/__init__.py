@@ -1,7 +1,4 @@
-from ApplianceTrace import ApplianceTrace
-from ApplianceInstance import ApplianceInstance
-from ApplianceType import ApplianceType
-from ApplianceSet import ApplianceSet
+from appliance import *
 from utils import *
 import evaluation_metrics
 from PecanStreetDatasetAdapter import PecanStreetDatasetAdapter
