@@ -1,10 +1,12 @@
 import numpy as np
+from pandas import concat
+from utils import order_traces
 
 class ApplianceInstance(object):
 
     def __init__(self,traces,metadata):
         '''Initialize an appliance trace with a list of traces'''
-        self.traces = self.order_traces(traces)
+        self.traces = order_traces(traces)
         self.metadata=metadata
 
     def add_traces(self,traces):
@@ -14,11 +16,12 @@ class ApplianceInstance(object):
         '''
         pass # make sure that the trace doesn't overlap with other traces
 
-    def order_traces(self,traces):
+    def concatenate_traces(self, how="strict"):
         '''
-        Given a set of traces, orders them chronologically and catches
-        overlapping traces.
+        Takes its own list of traces and attempts to concatenate them.
         '''
-        order = np.argsort([t.series[0] for t in traces])
-        new_traces = [traces[i] for i in order]
-        return new_traces
+        if how == "strict":
+            self.traces = [concat(traces)]
+        else:
+            raise NotImplementedError
+
