@@ -62,11 +62,12 @@ class ApplianceInstance(object):
 
 class ApplianceSet(object):
 
-    def __init__(self,instances):
+    def __init__(self,instances,metadata):
         '''
         Initializes an appliance set given a list of instances.
         '''
         self.instances = instances
+        self.metadata = metadata
         self.make_dataframe()
 
     def add_instances(self,instances):
@@ -88,9 +89,8 @@ class ApplianceSet(object):
         if the appliance instances have traces that don't align.
         '''
         # TODO concatenate all traces into a single trace
-        # TODO use real column_name
-        series_dict = {"column_name":instance.traces[0].series for instance in instances}
-        self.df = pd.Dataframe.from_dict(series_dict)
+        series_dict = {instance.traces[0].series.name:instance.traces[0].series for instance in self.instances}
+        self.df = pd.DataFrame.from_dict(series_dict)
 
     def set_instances(self,instances):
         '''
@@ -100,11 +100,14 @@ class ApplianceSet(object):
         self.instances = instances
         self.make_dataframe()
 
-    def top_k(self):
+    def top_k_set(self,k):
         '''
         Get top k energy-consuming appliances
         '''
-        pass
+        total_usages = self.df.sum(axis=0)
+
+        print total_usages.index
+        return
 
 class ApplianceType(object):
 
