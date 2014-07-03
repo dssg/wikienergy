@@ -108,9 +108,17 @@ class ApplianceSet(object):
         # TODO compare speeds of individual instance summing vs dataframe building and summing
         total_usages = self.df.sum(axis=0)
         usage_order = np.argsort(total_usages)[::-1] # assumes correctly ordered columns
-        top_5_instances = [self.instances[i] for i in usage_order[:k]]
-        return ApplianceSet(top_5_instances,
+        top_k_instances = [self.instances[i] for i in usage_order[:k]]
+        return ApplianceSet(top_k_instances,
                             {"name":"top_{}".format(k)})
+
+    def non_zero_set(self):
+        # TODO compare speeds of individual instance summing vs dataframe building and summing
+        total_usages = self.df.sum(axis=0)
+        usage_order = np.argsort(total_usages)[::-1] # assumes correctly ordered columns
+        non_zero_instances = [self.instances[i] for i in usage_order if total_usages[i] > 0 ]
+        return ApplianceSet(non_zero_instances,
+                            {"name":"non_zero"})
 
 class ApplianceType(object):
 
