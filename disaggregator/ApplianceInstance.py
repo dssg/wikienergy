@@ -2,9 +2,10 @@ import numpy as np
 
 class ApplianceInstance(object):
 
-    def __init__(self,traces):
+    def __init__(self,traces,metadata):
         '''Initialize an appliance trace with a list of traces'''
         self.traces = self.order_traces(traces)
+        self.metadata=metadata
 
     def add_traces(self,traces):
         '''
@@ -12,18 +13,6 @@ class ApplianceInstance(object):
         list of traces.
         '''
         pass # make sure that the trace doesn't overlap with other traces
-
-    def get_traces(self):
-        '''
-        Returns a reference to the list of traces owned by the appliance.
-        '''
-        return self.traces
-
-    def set_traces(self):
-        '''
-        Sets the list of traces owned by the appliance
-        '''
-        self.traces = self.order_traces(traces)
 
     def order_traces(self,traces):
         '''
