@@ -1,25 +1,35 @@
 import sys
 sys.path.append('../')
-#print sys.path
-import numpy as np
-
-
 from disaggregator import evaluation_metrics as evm
 
-def unit_rss(t,p):
-    residuals = np.array([x-y for (x,y) in zip(t,p)])
-    squares = np.array([x**2 for x in residuals])
-    return squares.sum()
+import unittest
+import numpy as np
 
-if __name__=='__main__':
-    truth = np.ones(7)
-    prediction = np.zeros(7)
-    print evm.sum_error(truth,prediction)
-    print 'The sum of the squared residuals(evm) is {} '.format(evm.rss(truth,prediction))
-    print 'The sum of the squared residuals(unit) is {}'.format(unit_rss(truth,prediction))
+class EvaluationMetricsTestCase(unittest.TestCase):
 
-    print evm.guess_truth_from_power(np.array([2,3,4,51,2]),3)
-    stats =  evm.get_positive_negative_stats([1],[1])
-    print stats[0]
-    print stats[1]
-    print evm.get_specificity(stats[0],stats[1])
+    def setUp(self):
+        n = 7
+        self.truth = np.ones(n)
+        self.prediction = np.zeros(n)
+
+    def test_sum_squared_residuals(self):
+        self.assertEqual(evm.rss(self.truth,self.prediction), 7,
+                         'incorrect sum of squared residuals')
+
+    def test_sum_error(self):
+        self.assertEqual(evm.sum_error(self.truth,self.prediction), 7,
+                         'incorrect sum of error')
+
+    def test_get_specificity(self):
+        #stats =  evm.get_positive_negative_stats([1],[1])
+        #print stats[0]
+        #print stats[1]
+        #print evm.get_specificity(stats[0],stats[1])
+        pass
+
+    def test_truth_from_power(self):
+        #print evm.guess_truth_from_power(np.array([2,3,4,51,2]),3)
+        pass
+
+if __name__ == '__main__':
+    unittest.main()
