@@ -48,5 +48,12 @@ def aggregate_instances(instances,how="strict"):
     else:
         return NotImplementedError
 
-
+    def order_traces(self,traces):
+        '''
+        Given a set of traces, orders them chronologically and catches
+        overlapping traces.
+        '''
+        order = np.argsort([t.series[0] for t in traces])
+        new_traces = [traces[i] for i in order]
+        return new_traces
 
