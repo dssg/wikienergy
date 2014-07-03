@@ -1,3 +1,5 @@
+import pandas as pd
+
 class ApplianceSet(object):
 
     def __init__(self,instances):
@@ -31,7 +33,10 @@ class ApplianceSet(object):
         Makes a new dataframe of the appliance instances. Throws an exception if
         if the appliance instances have traces that don't align.
         '''
-        pass
+        # TODO concatenate all traces into a single trace
+        # TODO use real column_name
+        series_dict = {"column_name":instance.traces[0].series for instance in instances}
+        self.df = pd.Dataframe.from_dict(series_dict)
 
     def set_instances(self,instances):
         '''
