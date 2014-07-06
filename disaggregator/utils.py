@@ -1,6 +1,8 @@
 import appliance
 import pandas as pd
 import numpy as np
+import os
+import pickle
 
 def concatenate_traces(traces, metadata=None, how="strict"):
     '''
@@ -68,4 +70,11 @@ def order_traces(traces):
     order = np.argsort([t.series[0] for t in traces])
     new_traces = [traces[i] for i in order]
     return new_traces
+
+def pickle_object(object,title):
+    '''
+    Given an object and a filename saves the object in pickled format to the data directory.
+    '''
+    with open(os.path.join(os.pardir,'data/{}.p'.format(title)),'wb') as f:
+        pickle.dump(object, f)
 
