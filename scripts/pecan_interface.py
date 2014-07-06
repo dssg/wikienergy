@@ -35,9 +35,10 @@ Would you like to recieve data from the shared or curated set?'''
 
 # get tables from schema
 dataset = input('Please enter either "shared" or "curated"(no quotes):\n')
-schema = schema_names[dataset]
+##this is wrong it depends which version is running
+schema = dataset
 schema_e = schema[1:-1]
-tables = p.get_table_names(schema_e)
+tables = p.get_table_names(schema)
 print 'You can now view data for any of these months\n'
 for i in tables:
     print i + '\n'
