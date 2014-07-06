@@ -23,17 +23,18 @@ def guess_truth_from_power(signals,threshold):
 
 def get_positive_negative_stats(true_states, predicted_states):
     '''
-    Returns a list of series where the first series is the true positives,
-    the second series is the false negatives, the third series is the true
-    negatives and the fourth series is the false positives. I would like
+    Returns a dictionary of numpy arrays containing the true positives a 'tp',
+    the false negatives as 'fn', the true negatives as 'tn', and
+    the false positives as 'fp'. I would like
     to make this a truth table instead of putting the logic directly in the
     list comprehension.
     '''
-    true_positives = np.array([a and b for (a,b) in zip(true_states,predicted_states)])
-    false_negatives = np.array([1 if a==1 and b==0 else 0 for (a,b) in zip(true_states,predicted_states)])
-    true_negatives = np.array([1 if a==0 and b==0 else 0 for (a,b) in zip(true_states,predicted_states)])
-    false_positives = np.array([1 if a==0 and b==1 else 0 for (a,b) in zip(true_states,predicted_states)])
-    return [true_positives,false_negatives,true_negatives,false_positives]
+    pos_neg_stats={}
+    pos_neg_stats['tp'] = np.array([a and b for (a,b) in zip(true_states,predicted_states)])
+    pos_neg_stats['fn'] = np.array([1 if a==1 and b==0 else 0 for (a,b) in zip(true_states,predicted_states)])
+    pos_neg_stats['tn'] = np.array([1 if a==0 and b==0 else 0 for (a,b) in zip(true_states,predicted_states)])
+    pos_neg_stats['fp'] = np.array([1 if a==0 and b==1 else 0 for (a,b) in zip(true_states,predicted_states)])
+    return pos_neg_stats
 
 def get_sensitivity(true_positives,false_negatives):
     '''
@@ -43,7 +44,7 @@ def get_sensitivity(true_positives,false_negatives):
     classified as positive and 0 otherwise and FN is false negative, such that
     FN = 1 if a value was falsely predicted to be negative and 0 otherwise.
     '''
-    return true_positives.sum()/(np.sum(true_positives.sum(),false_negatives.sum()))
+    return float(true_positives.sum())/(true_positives.sum()+false_negatives.sum())
 
 def get_specificity(true_negatives, false_positives):
     '''
@@ -54,7 +55,7 @@ def get_specificity(true_negatives, false_positives):
     positive, such that FP = 1 if a value was falsely predicted to be positive
     and 0 otherwise.
     '''
-    return true_negatives.sum()/(np.sum(true_negatives.sum(),false_positives.sum()))
+    return float(true_negatives.sum())/(true_negatives.sum()+false_positives.sum())
 
 def get_precision(true_positives,false_positives):
     '''Given a numpy array of true positives, and false positives returns a
@@ -64,14 +65,14 @@ def get_precision(true_positives,false_positives):
     that FP = 1 if a value was falsely predicted to be positive and 0
     otherwise.
     '''
-    return true_positives.sum()/(np.sum(true_positives.sum(),false_positives.sum()))
+    return float(true_positives.sum())/(true_positives.sum()+false_positives.sum())
 
 
 def get_accuracy(stats):
     '''
-        Takes an array of true positives, false negatives, true negatives, and falso positives. Returns the Accuracy measure where accuracy is tp+tn/(tn+fn+tp+fp)
-        '''
-    return (stats[0]+stats[2])/sum(stats)
+        Takes an array of true positives, false negatives, true negatives, and false positives. Returns the Accuracy measure where accuracy is tp+tn/(tn+fn+tp+fp)
+    '''
+    return (stats['tp']+stats['tn'])/sum(stats)
 
 
 
