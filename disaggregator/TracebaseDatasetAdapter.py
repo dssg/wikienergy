@@ -87,7 +87,7 @@ class TracebaseDatasetAdapter(object):
         instance_ids=self.generate_unique_instance_ids(device)
         for instance_id in instance_ids:
 	         device_type.append(self.generate_instance(device,instance_id))
-        return ApplianceType(device_type)
+        return ApplianceType(device_type,{'source':self.source,'device_name':device})
 
     def generate_unique_instance_ids(self,device):
         '''
