@@ -74,36 +74,46 @@ Credentials are required for access to the database.
 
 #### Example Usage
 
-Importing:
-
     from disaggregator import PecanStreetDatasetAdapter as psda
 
+    # set the db_url before using any of the other functions.
     db_url="postgresql://user_name:password@host.url:port/db"
-
     psda.set_url(db_url)
+
+    # get a list of table names for a schema
+    table_names = psda.get_table_names('curated')
 
 #### Methods
 - `set_url(db_url)`: Initialize an adapter using a database url string.
 - `get_table_names(schema)`: Returns a list of tables in the schema.
 - `get_table_dataids_and_column_names(schema,table)`: Returns a tuple where the
-   first element is a list of data ids for this schema.table and the second
-   element is a list of the appliances included in this schema.table
+first element is a list of data ids for this schema.table and the second
+element is a list of the appliances included in this schema.table
 - `get_unique_dataids(schema,year,month,group=None)`: Returns a list of dataids
-   for a specifc schema ("curated","shared", or "raw"), month (int), year 
-   (int), and [group (int) - only if "curated"].
+for a specifc schema ("curated","shared", or "raw"), month (int), year
+(int), and [group (int) - only if "curated"].
 - `clean_dataframe(df,schema,drop_cols)`:
-    Cleans a dataframe queried directly from the database by renaming the db 
-    time column (ex. UTC_15MIN) to a column name 'time'. It then converts the
-    time column to datetime objects and reindexes the dataframe to the time
-    column before dropping that column from the dataframe. It also drops any
-    columns included in the list drop_cols. The columns 'id' and 'dataid' are 
-    also dropped.
+Cleans a dataframe queried directly from the database by renaming the db
+time column (ex. 'utc\_15min') to a column name 'time'. It then converts the
+time column to datetime objects and reindexes the dataframe to the time
+column before dropping that column from the dataframe. It also drops any
+columns included in the list `drop_cols`. The columns 'id' and 'dataid' are
+also dropped.
+- `generate_month_traces_from_table_name(schema,table,dataid)`:
+Returns a list of traces for one house and one month
 - `generate_set_by_house_and_month(schema,table,dataid)`:
-    Returns an ApplianceSet, for given month and house. 
-- `generate_type_by_house_and_month(schema,table,dataid)`:
-    Returns an ApplianceType, for given month and house. 
-- `get_table_name(schema,year,month,group=None, rate = None)`:    
-    Given the year, month, and group return the table name. 
+Returns an ApplianceSet for given month and house.
+- `get_table_name(schema,year,month,group=None, rate = None)`:
+Given the year, month, and group return the table name.
+- `generate_month_traces_from_attributes(schema,year,month,
+group=None,rate=None,dataid=None)`:
+Returns a list of traces from a given month. It first finds the table
+name associated with that month.
+- `generate_traces_for_appliance_by_dataids(schema,table,app,ids)`:
+Returns traces for a single appliance type across a set of dataids.
+- `generate_type_for_appliance_by_dataids(schema,table,appliance,ids)`:
+Given an appliance and a list of dataids, generate an ApplianceType
+- `get_dataframe(query)`: Returns a Pandas dataframe with the query results.
 
 ### TracebaseDatasetAdapter
 #### Overview
