@@ -91,31 +91,32 @@ Credentials are required for access to the database.
 - `get_table_dataids_and_column_names(schema,table)`:
   - Returns a list of dataids for this schema and table, and a list of the
     appliances for this schema and table
-- `get_unique_dataids(schema,year,month,group=None)`: Returns a list of dataids
-for a specifc schema ("curated","shared", or "raw"), month (int), year
-(int), and [group (int) - only if "curated"].
+- `get_unique_dataids(schema,year,month,group=None)`:
+  - Returns a list of dataids for a specifc schema ("curated","shared", or
+    "raw"), month (int), year (int), and [group (int) - only if "curated"].
 - `clean_dataframe(df,schema,drop_cols)`:
-Cleans a dataframe queried directly from the database by renaming the db
-time column (ex. 'utc\_15min') to a column name 'time'. It then converts the
-time column to datetime objects and reindexes the dataframe to the time
-column before dropping that column from the dataframe. It also drops any
-columns included in the list `drop_cols`. The columns 'id' and 'dataid' are
-also dropped.
+  - Cleans a dataframe queried directly from the database by renaming the db
+    time column (ex. 'utc\_15min') to a column name 'time'. It then converts
+    the time column to datetime objects and reindexes the dataframe to the time
+    column before dropping that column from the dataframe. It also drops any
+    columns included in the list `drop_cols`. The columns 'id' and 'dataid' are
+    also dropped.
 - `generate_month_traces_from_table_name(schema,table,dataid)`:
-Returns a list of traces for one house and one month
+  - Returns a list of traces for one house and one month
 - `generate_set_by_house_and_month(schema,table,dataid)`:
-Returns an ApplianceSet for given month and house.
+  - Returns an ApplianceSet for given month and house.
 - `get_table_name(schema,year,month,group=None, rate = None)`:
-Given the year, month, and group return the table name.
+  - Given the year, month, and group return the table name.
 - `generate_month_traces_from_attributes(schema,year,month,
 group=None,rate=None,dataid=None)`:
-Returns a list of traces from a given month. It first finds the table
-name associated with that month.
+  - Returns a list of traces from a given month. It first finds the table
+    name associated with that month.
 - `generate_traces_for_appliance_by_dataids(schema,table,app,ids)`:
-Returns traces for a single appliance type across a set of dataids.
+  - Returns traces for a single appliance type across a set of dataids.
 - `generate_type_for_appliance_by_dataids(schema,table,appliance,ids)`:
-Given an appliance and a list of dataids, generate an ApplianceType
-- `get_dataframe(query)`: Returns a Pandas dataframe with the query results.
+  - Given an appliance and a list of dataids, generate an ApplianceType
+- `get_dataframe(query)`:
+  - Returns a Pandas dataframe with the query results.
 
 ### TracebaseDatasetAdapter
 #### Overview
