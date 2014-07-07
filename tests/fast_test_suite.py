@@ -21,6 +21,7 @@ def suite():
     util_suite =\
         unittest.TestLoader().loadTestsFromTestCase(UtilsTestCase)
 
+    # These tests should take less than ten seconds
     psda_tests = [
         'test_get_table_names',
         'test_get_month_traces',
