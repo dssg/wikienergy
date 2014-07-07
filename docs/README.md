@@ -98,6 +98,13 @@ Importing:
     column before dropping that column from the dataframe. It also drops any
     columns included in the list drop_cols. The columns 'id' and 'dataid' are 
     also dropped.
+- `generate_set_by_house_and_month(schema,table,dataid)`:
+    Returns an ApplianceSet, for given month and house. 
+- `generate_type_by_house_and_month(schema,table,dataid)`:
+    Returns an ApplianceType, for given month and house. 
+- `get_table_name(schema,year,month,group=None, rate = None)`:    
+    Given the year, month, and group return the table name. 
+
 ### TracebaseDatasetAdapter
 #### Overview
 The Tracebase dataset contains many different types of individual appliance
