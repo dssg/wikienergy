@@ -98,13 +98,6 @@ def set_url(db_url):
     '''
     eng = sqlalchemy.create_engine(url)
 
-
-
-
-
-
-    
-
 def get_table_names(schema):
         '''
         Returns a list of tables in the schema.
@@ -147,7 +140,9 @@ def get_unique_dataids(schema,year,month,group=None):
         '''
         if schema == "curated":
             schema_name = self.schema_names[schema]
-            query = 'select distinct dataid from "{0}".group{1}_disaggregated_{2}_{3:02d}'.format(schema_name,group,year,month)
+            query = 'select distinct dataid from "{0}"\
+                .group{1}_disaggregated_{2}_{3:02d}'\
+                .format(schema_name,group,year,month)
             df = self.get_dataframe(query)
             return list(df["dataid"])
         elif schema == "shared":
