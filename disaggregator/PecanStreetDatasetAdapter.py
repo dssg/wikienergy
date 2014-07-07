@@ -9,16 +9,16 @@ url = ''
 source = "PecanStreet"
 eng = None
 schema_names =    {'curated': 'PecanStreet_CuratedSets',
-        'raw':     'PecanStreet_RawData',
-        'shared':  'PecanStreet_SharedData'}
+                    'raw':     'PecanStreet_RawData',
+                    'shared':  'PecanStreet_SharedData'}
 
 time_columns =    {'curated': 'utc_15min',
-        'raw':     'localminute15minute',
-        'shared':  'localminute'}
+                    'raw':     'localminute15minute',
+                    'shared':  'localminute'}
 
 invalid_columns = {'curated': ['id', 'utc_15min'],
-        'raw':     ['localminute15minute'],
-        'shared':  ['localminute']}
+                    'raw':     ['localminute15minute'],
+                    'shared':  ['localminute']}
 
 table_lookup = {'shared':
         {'2014':
@@ -108,8 +108,6 @@ def get_table_names(schema):
     df = get_dataframe('select * from information_schema.tables')
     df = df.groupby(['table_schema','table_name'])
     groups = [group for group in df.groups]
-    # print groups
-    #print self.schema_names[schema]
     table_names = [t for (s,t) in groups if s == '{}'\
         .format(schema_names[schema])]
     return table_names
@@ -168,19 +166,19 @@ def clean_dataframe(df,schema,drop_cols):
     # TODO update this to use "curated" "shared" or "raw"
     #   instead of full frame name
     '''
-    Cleans a dataframe queried directly from the database.
+    Cleans a dataframe queried directly from the database by renaming the db 
+    time column (ex. UTC_15MIN) to a column name 'time'. It then converts the
+    time column to datetime objects and reindexes the dataframe to the time
+    column before dropping that column from the dataframe. It also drops any
+    columns included in the list drop_cols. The columns 'id' and 'dataid' are 
+    also dropped.
     '''
     # change the time column name
     global time_columns
     df = df.rename(columns={time_columns[schema]: 'time'})
 
     # use a DatetimeIndex
-    df['time'] = pd.to_datetime(df['time'], format='%d/%m/%Y %H:%M:%S')
-    # get some info about times
-    start_time = df['time'][0]
-    end_time = df['time'][len(df['time'])-1]
-    step_size = df['time'][1]-start_time # will error out if we only have one time point
-    times = (start_time, end_time, step_size)
+    df['time'] = pd.to_datetime(df['time'])
     df.set_index('time', inplace=True)
 
     # drop unnecessary columns
@@ -190,7 +188,7 @@ def clean_dataframe(df,schema,drop_cols):
     if len(drop_cols)!=0:
         df= df.drop(drop_cols,axis=1)
 
-    return (df, times)
+    return df
 
 
 def check_sample_rate(schema,sampling_rate):
@@ -199,6 +197,9 @@ def check_sample_rate(schema,sampling_rate):
 
 def get_month_traces(schema,table,dataid):
     # TODO change this name
+    '''
+    Returns a list of traces for one house and one month
+    '''
     global schema_names,invalid_columns,source
     if schema not in ['curated','raw','shared']:
         raise SchemaError(schema)
@@ -209,7 +210,7 @@ def get_month_traces(schema,table,dataid):
     # TODO error checking that query worked
     df = get_dataframe(query).fillna(0)
 
-    df,times = clean_dataframe(df, schema,[])
+    df= clean_dataframe(df, schema,[])
     traces = []
     for col in df.columns:
         if not col in invalid_columns[schema]:
@@ -218,12 +219,28 @@ def get_month_traces(schema,table,dataid):
                 'schema':schema,
                 'table':table ,
                 'dataid':dataid,
-                'start_time': times[0],
-                'end_time':times[1],
-                'step_size':times[2]
+                'device_name':s.name
                 }
             traces.append(ApplianceTrace(s,meta))
     return traces
+
+def generate_set_by_house_and_month(schema,table,dataid):
+    '''
+    Returns an ApplianceSet, for given month and house. 
+    '''
+    traces = get_month_traces(schema,table,dataid)
+    instances = [ApplianceInstance(t.series,t.metadata) for t in traces]
+    metadata = instance[0].metadata.pop("device_name")
+    return ApplianceSet(instances,metadata)
+    
+def generate_type_by_house_and_month(schema,table,dataid):
+    '''
+    Returns an ApplianceType, for given month and house. 
+    '''
+    traces = get_month_traces(schema,table,dataid)
+    instances = [ApplianceInstance(t.series,t.metadata) for t in traces]
+    metadata = instance[0].metadata.pop("device_name")
+    return ApplianceType(instances,metadata)
 
 def get_table(schema,year,month,group=None, rate = None):
     if schema=='curated':
