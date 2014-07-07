@@ -95,7 +95,7 @@ class TracebaseDatasetAdapter(object):
         in a single device folder
         '''
         device_type=[]
-        instance_ids=self.generate_unique_instance_ids(device)
+        instance_ids=self.get_unique_instance_ids(device)
         for instance_id in instance_ids:
 	    device_type.append(self.generate_instance(device,instance_id))
         meta= {
@@ -103,7 +103,7 @@ class TracebaseDatasetAdapter(object):
             'device_name':device}
         return ApplianceType(device_type,meta)
 
-    def generate_unique_instance_ids(self,device):
+    def get_unique_instance_ids(self,device):
         '''
         This function returns a unique set of instance ids from tracebase
         '''
