@@ -195,7 +195,7 @@ def check_sample_rate(schema,sampling_rate):
     # get from the data directly not like this
     accepted_rates = {'curated':'15T' ,'raw':'15' ,'shared':'1T' }
 
-def get_month_traces(schema,table,dataid):
+def generate_month_traces_from_table_name(schema,table,dataid):
     # TODO change this name
     '''
     Returns a list of traces for one house and one month
@@ -226,32 +226,22 @@ def get_month_traces(schema,table,dataid):
 
 def generate_set_by_house_and_month(schema,table,dataid):
     '''
-    Returns an ApplianceSet, for given month and house. 
+    Returns an ApplianceSet, for given month and house.
     '''
-    traces = get_month_traces(schema,table,dataid)
+    traces = get_month_traces_from_table_name(schema,table,dataid)
     instances = [ApplianceInstance(t.series,t.metadata) for t in traces]
     metadata = instance[0].metadata.pop("device_name")
     return ApplianceSet(instances,metadata)
-    
-def generate_type_by_house_and_month(schema,table,dataid):
-    '''
-    Returns an ApplianceType, for given month and house. 
-    '''
-    traces = get_month_traces(schema,table,dataid)
-    instances = [ApplianceInstance(t.series,t.metadata) for t in traces]
-    metadata = instance[0].metadata.pop("device_name")
-    return ApplianceType(instances,metadata)
 
 def get_table_name(schema,year,month,group=None, rate = None):
     '''
-    Given the year, month, and group return the table name. 
+    Given the year, month, and group return the table name.
     '''
     if schema=='curated':
         if group in table_lookup[schema]:
             if year in table_lookup[schema][group]:
                 if month in table_lookup[schema][group][year]:
                     return table_lookup[schema][group][year][month]
-
         else:
             return
     elif schema=='shared':
@@ -270,46 +260,53 @@ def get_table_name(schema,year,month,group=None, rate = None):
         raise SchemaError(schema)
 
 
-def get_set_house_month(schema,year,month,group=None, rate = None, dataid=None):
+def generate_month_traces_from_attributes(schema,year,month,group=None, rate = None, dataid=None):
     '''
-    Returns a list of traces.
+    Returns a list of traces from a given month. It first finds the table
+    name associated with that month.
     '''
-    table = get_table(schema, year, month,group,rate)
-    return get_month_traces(schema,table,dataid)
+    table = get_table_name(schema, year, month,group,rate)
+    return get_month_traces_from_table_name(schema,table,dataid)
 
 
 def get_single_app_trace_need_house_id(house_df, app):
+    # TODO what is this function
     '''by house is fastest also have get all apps below'''
     pass
 
-def get_app_traces_all(schema,table,app,ids):
+def generate_traces_for_appliance_by_dataids(schema,table,appliance,ids):
+    '''
+    Returns traces for a single appliance type across a set of dataids.
+    '''
+    # TODO Should this really return a type?
     global schema_names, source
     schema_name = schema_names[schema]
     traces = []
     for i in ids:
-        query= 'select {2}, {4} from "{0}".{1} where dataid={3}'\
-            .format(schema_name,table,app,i,time_columns[schema])
+        query= 'select {0}, {1} from "{2}".{3} where dataid={4}'\
+            .format(appliance,time_columns[schema],schema_name,table,i)
         df=get_dataframe(query)
-        #df = df.groupby('dataid')
-
         df = df.rename(columns={time_columns[schema]: 'time'})
-        # print df.columns
-        # print df.head(2)
         df['time'] = pd.to_datetime(df['time'])
         df.set_index('time', inplace=True)
-        meta = {'source':source,'schema':schema,'table':table ,'dataid':i}
-        s = pd.Series(df[app],name = app)
-        traces.append(ApplianceTrace(s,meta))
-    # well it's really a type right?
-    # TODO - does this need to be cleaned differently?
+        series = pd.Series(df[appliance],name = appliance)
+        metadata = {'source':source,
+                'schema':schema,
+                'table':table ,
+                'dataid':i,
+                'device_name':series.name,
+                }
+        traces.append(ApplianceTrace(series,metadata))
     return traces
 
-
-
-def get_type(schema,table,app):
-    pass
-    # df = get_app_traces_all(schema,table,app)
-
+def generate_type_for_appliance_by_dataids(schema,table,appliance,ids)
+    '''
+    Given an appliance and a list of dataids, generate an ApplianceType
+    '''
+    traces = generate_traces_for_appliance_by_dataids(schema,table,appliance,
+            ids)
+    metadata = traces[0].metadata.pop('dataid')
+    return ApplianceType(traces,metadata)
 
 def get_dataframe(query):
     '''
