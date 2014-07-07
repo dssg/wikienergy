@@ -20,8 +20,7 @@ invalid_columns = {'curated': ['id', 'utc_15min'],
         'raw':     ['localminute15minute'],
         'shared':  ['localminute']}
 
-table_lookup =
-    {'shared':
+table_lookup = {'shared':
         {'2014':
             {'01':'validated_01_2014',
              '02':'validated_02_2014',
@@ -45,7 +44,7 @@ table_lookup =
                  '08': 'group1_disaggregated_2013_08',
                  '09': 'group1_disaggregated_2013_09',
                  '10': 'group1_disaggregated_2013_10',
-                 '11': 'group1_disaggregated_2013_11'}}
+                 '11': 'group1_disaggregated_2013_11'}},
         '2':
             {'2012':
                 {},
@@ -116,7 +115,7 @@ def get_table_names(schema):
         groups = [group for group in df.groups]
         # print groups
         #print self.schema_names[schema]
-        table_names = [t for (s,t) in groups if s == '"{}"'.format(schema_names[schema])]
+        table_names = [t for (s,t) in groups if s == '{}'.format(schema_names[schema])]
         return table_names
 
 def verify_same_range(pair,pairs):
@@ -217,7 +216,7 @@ def get_month_traces(schema,table,dataid):
                 traces.append(ApplianceTrace(s,meta))
         return traces
 
-def get_month_traces_helper(schema,year,month,group=None, rate = None):
+def get_table(schema,year,month,group=None, rate = None):
     if schema=='curated':
         if group in table_lookup[schema]:
             if year in table_lookup[schema][group]:
@@ -228,17 +227,23 @@ def get_month_traces_helper(schema,year,month,group=None, rate = None):
             return
     elif schema=='shared':
         if year in table_lookup[schema]:
-            if month in table_lookup[schema][year]
+            if month in table_lookup[schema][year]:
                 return table_lookup[schema][year][month]
         else:
             return
     elif schema=='raw':
         if year in table_lookup[schema]:
             if rate in table_lookup[schema][year]:
-                return table_lookup[schema][year]
+                return table_lookup[schema][year][rate]
         else:
             return
-        
+    else:
+        raise SchemaError(schema)
+
+
+def get_set_house_month(schema,year,month,group=None, rate = None, dataid=None):
+    table = get_table(schema, year, month,group,rate)
+    return get_month_traces(schema,table,dataid)
 
 
 def get_single_app_trace_need_house_id(house_df, app):
