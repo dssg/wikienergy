@@ -124,10 +124,15 @@ be consecutive or temporally aligned with traces from other appliances. Traces
 are grouped by filetype and their filenames indicate the appliance instance
 and time period.
 
+#### Example Usage
+
+    from disaggregator import TracebaseDatasetAdapter as tbda
+
+
 #### Methods
 - None
 
-### GreenButtonDatasetAdapter [Future]
+### GreenButtonDatasetAdapter _[Future]_
 #### Overview
 The Green Button xml format is a standard which is used by commercial energy
 suppliers to provide end-users with historical energy usages
