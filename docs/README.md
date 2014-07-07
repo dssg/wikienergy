@@ -119,6 +119,7 @@ group=None,rate=None,dataid=None)`:
   - Returns a Pandas dataframe with the query results.
 
 ### TracebaseDatasetAdapter
+
 #### Overview
 The Tracebase dataset contains many different types of individual appliance
 twenty-four hour traces sampled at one-second intervals and grouped by
@@ -133,7 +134,24 @@ and time period.
 
 
 #### Methods
-- None
+- `get_trace_dates_from_instance(device,instance)`:
+  - This function returns a unique set of dates (corresponding to
+    individual files) for a single device instance id
+- `generate_traces(device,instance_id,date)`:
+  - Returns trace: series: indexed by time with column name 'time',
+    series is series of average power value
+- `split_on_NANs(series)`:
+  - This function splits a trace into several traces,
+    divided by the NAN values. Only outputs traces that have at
+    least 6 hours of real values
+- `generate_instance(device,instance_id)`:
+  - This function imports the CSV files from a single device
+    instance in a device folder
+- `generate_type(device)`:
+  - This function imports the CSV files from ALL device
+    instances in a single device folder
+- `generate_unique_instance_ids(self,device)`:
+  - This function returns a unique set of instance ids from tracebase
 
 ### GreenButtonDatasetAdapter _[Future]_
 #### Overview
