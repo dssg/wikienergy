@@ -84,8 +84,10 @@ Credentials are required for access to the database.
     table_names = psda.get_table_names('curated')
 
 #### Methods
-- `set_url(db_url)`: Initialize an adapter using a database url string.
-- `get_table_names(schema)`: Returns a list of tables in the schema.
+- `set_url(db_url)`:
+  - Initialize an adapter using a database url string.
+- `get_table_names(schema)`:
+  - Returns a list of tables in the schema.
 - `get_table_dataids_and_column_names(schema,table)`: Returns a tuple where the
 first element is a list of data ids for this schema.table and the second
 element is a list of the appliances included in this schema.table
