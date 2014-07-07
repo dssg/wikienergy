@@ -133,7 +133,7 @@ and time period.
     import disaggregator as da
     folder_path='/home/steve/DSSG/wikienergy/data/Tracebase/'
     tbda=da.TracebaseDatasetAdapter(folder_path,'D','15T')
-    cookingstove_type=tbda.generate_type('Cookingstove')
+    cookingstove_type = tbda.generate_type('Cookingstove')
 
 #### Methods
 - `get_trace_dates_from_instance(device,instance)`:
