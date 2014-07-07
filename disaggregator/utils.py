@@ -3,6 +3,8 @@ import pandas as pd
 import numpy as np
 import os
 import pickle
+import sys
+
 
 def concatenate_traces(traces, metadata=None, how="strict"):
     '''
@@ -75,6 +77,8 @@ def pickle_object(object,title):
     '''
     Given an object and a filename saves the object in pickled format to the data directory.
     '''
-    with open(os.path.join(os.pardir,'data/{}.p'.format(title)),'wb') as f:
+    #sys.path.append('../../')
+    silly_path = os.path.abspath(os.path.join(os.path.dirname( '' ), '../..','data/'))
+    with open(os.path.join(silly_path,'{}.p'.format(title)),'wb') as f:
         pickle.dump(object, f)
 
