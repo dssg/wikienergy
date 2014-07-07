@@ -71,10 +71,10 @@ def order_traces(traces):
     new_traces = [traces[i] for i in order]
     return new_traces
 
-def pickle_object(object,title):
+def pickle_object(obj,title):
     '''
     Given an object and a filename saves the object in pickled format to the data directory.
     '''
     with open(os.path.join(os.pardir,'data/{}.p'.format(title)),'wb') as f:
-        pickle.dump(object, f)
+        pickle.dump(obj, f)
 
