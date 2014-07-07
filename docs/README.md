@@ -88,9 +88,9 @@ Credentials are required for access to the database.
   - Initialize an adapter using a database url string.
 - `get_table_names(schema)`:
   - Returns a list of tables in the schema.
-- `get_table_dataids_and_column_names(schema,table)`: Returns a tuple where the
-first element is a list of data ids for this schema.table and the second
-element is a list of the appliances included in this schema.table
+- `get_table_dataids_and_column_names(schema,table)`:
+  - Returns a list of dataids for this schema and table, and a list of the
+    appliances for this schema and table
 - `get_unique_dataids(schema,year,month,group=None)`: Returns a list of dataids
 for a specifc schema ("curated","shared", or "raw"), month (int), year
 (int), and [group (int) - only if "curated"].
