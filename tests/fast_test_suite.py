@@ -5,15 +5,15 @@ from test_appliance_instance import ApplianceInstanceTestCase
 from test_appliance_set import ApplianceSetTestCase
 from test_appliance_type import ApplianceTypeTestCase
 from test_utils import UtilsTestCase
-# import test_pecanstreet_dataset_adapter as test_psda
+from test_pecanstreet_dataset_adapter import PecanStreetDatasetAdapterTestCase
 
-def all_tests():
+def suite():
     ev_m_suite =\
         unittest.TestLoader().loadTestsFromTestCase(EvaluationMetricsTestCase)
     a_tr_suite =\
         unittest.TestLoader().loadTestsFromTestCase(ApplianceTraceTestCase)
     a_in_suite =\
-        unittest.TestLoader().loadTestsFromTestCase(ApplianceIstanceTestCase)
+        unittest.TestLoader().loadTestsFromTestCase(ApplianceInstanceTestCase)
     a_st_suite =\
         unittest.TestLoader().loadTestsFromTestCase(ApplianceSetTestCase)
     a_ty_suite =\
@@ -26,7 +26,7 @@ def all_tests():
         'test_get_month_traces',
     ]
     psda_suite =\
-        unittest.TestSuite(map(test_psda.PecanStreetDatasetAdapterTestCase, psda_tests))
+        unittest.TestSuite(map(PecanStreetDatasetAdapterTestCase, psda_tests))
 
     all_tests = unittest.TestSuite([
         ev_m_suite,
@@ -41,6 +41,4 @@ def all_tests():
     return all_tests
 
 if __name__ == "__main__":
-    print 'running fast tests'
-    #suite = all_tests()
-    #unittest.TextTestRunner().run(suite)
+    unittest.TextTestRunner(verbosity=2).run(suite())
