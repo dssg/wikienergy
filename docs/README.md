@@ -72,9 +72,32 @@ The Pecan Street dataset includes a large repository of disaggregated traces
 from submetered homes sampled at one-minute or fifteen-minute intervals.
 Credentials are required for access to the database.
 
-#### Methods
-- None
+#### Example Usage
 
+Importing:
+
+    from disaggregator import PecanStreetDatasetAdapter as psda
+
+    db_url="postgresql://user_name:password@host.url:port/db"
+
+    psda.set_url(db_url)
+
+#### Methods
+- `set_url(db_url)`: Initialize an adapter using a database url string.
+- `get_table_names(schema)`: Returns a list of tables in the schema.
+- `get_table_dataids_and_column_names(schema,table)`: Returns a tuple where the
+   first element is a list of data ids for this schema.table and the second
+   element is a list of the appliances included in this schema.table
+- `get_unique_dataids(schema,year,month,group=None)`: Returns a list of dataids
+   for a specifc schema ("curated","shared", or "raw"), month (int), year 
+   (int), and [group (int) - only if "curated"].
+- `clean_dataframe(df,schema,drop_cols)`:
+    Cleans a dataframe queried directly from the database by renaming the db 
+    time column (ex. UTC_15MIN) to a column name 'time'. It then converts the
+    time column to datetime objects and reindexes the dataframe to the time
+    column before dropping that column from the dataframe. It also drops any
+    columns included in the list drop_cols. The columns 'id' and 'dataid' are 
+    also dropped.
 ### TracebaseDatasetAdapter
 #### Overview
 The Tracebase dataset contains many different types of individual appliance
