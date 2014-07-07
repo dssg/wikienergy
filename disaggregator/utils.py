@@ -77,16 +77,13 @@ def pickle_object(obj,title):
     '''
     Given an object and a filename saves the object in pickled format to the data directory.
     '''
-<<<<<<< HEAD
+
     #sys.path.append('../../')
     silly_path = os.path.abspath(os.path.join(os.path.dirname( '' ), '../..','data/'))
     with open(os.path.join(silly_path,'{}.p'.format(title)),'wb') as f:
         pickle.dump(object, f)
-=======
-    with open(os.path.join(os.pardir,'data/{}.p'.format(title)),'wb') as f:
-        pickle.dump(obj, f)
 
 def shuffle_appliance_sets(sets,other_params):
     pass
->>>>>>> 5b757ba1622f20256710eb7bc47f77ebd26446a3
+
 
