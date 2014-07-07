@@ -299,7 +299,7 @@ def generate_traces_for_appliance_by_dataids(schema,table,appliance,ids):
         traces.append(ApplianceTrace(series,metadata))
     return traces
 
-def generate_type_for_appliance_by_dataids(schema,table,appliance,ids)
+def generate_type_for_appliance_by_dataids(schema,table,appliance,ids):
     '''
     Given an appliance and a list of dataids, generate an ApplianceType
     '''
