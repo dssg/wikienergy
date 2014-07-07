@@ -242,6 +242,9 @@ def get_table(schema,year,month,group=None, rate = None):
 
 
 def get_set_house_month(schema,year,month,group=None, rate = None, dataid=None):
+    '''
+        Returns a list of traces.
+        '''
     table = get_table(schema, year, month,group,rate)
     return get_month_traces(schema,table,dataid)
 
@@ -295,3 +298,5 @@ class SchemaError(Exception):
 
     def __str__(self):
         return "Schema {} not supported or nonexistent.".format(self.schema)
+
+
