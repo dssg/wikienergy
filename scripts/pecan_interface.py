@@ -71,7 +71,7 @@ house = raw_input('Enter a home id\n')
 appliance = raw_input('Enter an appliance name (this is not actually necessary at\
 this point):')
 
-query = 'select * from {0}.{1} where dataid={2}'.format(schema, month,house)
+query = 'select * from {0}.{1} where dataid={2}'.format(schema_names[schema], month,house)
 df = p.get_dataframe(query).fillna(0)
 temp = p.clean_dataframe(df,schema,[])
 test = p.get_month_traces_per_dataid(schema,month,house)
@@ -79,7 +79,7 @@ test = p.get_month_traces_per_dataid(schema,month,house)
 print 'you now have a bunch of appliance traces, one trace for each appliance in a house'
 print 'here is some information about the first trace '
 
-print test[0].source
+print test[0].metadata
 
 print 'do you want to pickle?\n coming soon!'
 

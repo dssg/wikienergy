@@ -217,8 +217,28 @@ def get_month_traces(schema,table,dataid):
                 traces.append(ApplianceTrace(s,meta))
         return traces
 
-def get_month_traces_helper(schema,year,month,group=None):
-    pass
+def get_month_traces_helper(schema,year,month,group=None, rate = None):
+    if schema=='curated':
+        if group in table_lookup[schema]:
+            if year in table_lookup[schema][group]:
+                if month in table_lookup[schema][group][year]:
+                    return table_lookup[schema][group][year][month]
+
+        else:
+            return
+    elif schema=='shared':
+        if year in table_lookup[schema]:
+            if month in table_lookup[schema][year]
+                return table_lookup[schema][year][month]
+        else:
+            return
+    elif schema=='raw':
+        if year in table_lookup[schema]:
+            if rate in table_lookup[schema][year]:
+                return table_lookup[schema][year]
+        else:
+            return
+        
 
 
 def get_single_app_trace_need_house_id(house_df, app):
