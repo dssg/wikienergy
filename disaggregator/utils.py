@@ -6,6 +6,33 @@ import pickle
 import sys
 
 
+def aggregate_instances(instances, metadata, how="strict"):
+    '''
+    Given a list of temporally aligned instances, aggregate them into a single
+    signal.
+    '''
+    if how == "strict":
+        traces = [instance.traces for instance in instances]
+        traces = [list(t) for t in zip(*traces)] # transpose
+        traces = [ aggregate_traces(t,{}) for t in traces]
+        return appliance.ApplianceInstance(traces, metadata)
+    else:
+        return NotImplementedError
+
+def aggregate_traces(traces, metadata, how="strict"):
+    '''
+    Given a list of temporally aligned traces, aggregate them into a single
+    signal.
+    '''
+    if how == "strict":
+        # require that traces are exactly aligned
+        summed_series = traces[0].series
+        for trace in traces[1:]:
+            summed_series += trace.series
+        return appliance.ApplianceTrace(summed_series, metadata)
+    else:
+        return NotImplementedError
+
 def concatenate_traces(traces, metadata=None, how="strict"):
     '''
     Given a list of appliance traces, returns a single concatenated
@@ -37,33 +64,6 @@ def concatenate_traces_lists(traces, metadata=None, how="strict"):
     else:
         raise NotImplementedError
 
-def aggregate_traces(traces, metadata, how="strict"):
-    '''
-    Given a list of temporally aligned traces, aggregate them into a single
-    signal.
-    '''
-    if how == "strict":
-        # require that traces are exactly aligned
-        summed_series = traces[0].series
-        for trace in traces[1:]:
-            summed_series += trace.series
-        return appliance.ApplianceTrace(summed_series, metadata)
-    else:
-        return NotImplementedError
-
-def aggregate_instances(instances, metadata, how="strict"):
-    '''
-    Given a list of temporally aligned instances, aggregate them into a single
-    signal.
-    '''
-    if how == "strict":
-        traces = [instance.traces for instance in instances]
-        traces = [list(t) for t in zip(*traces)] # transpose
-        traces = [ aggregate_traces(t,{}) for t in traces]
-        return appliance.ApplianceInstance(traces, metadata)
-    else:
-        return NotImplementedError
-
 def order_traces(traces):
     '''
     Given a set of traces, orders them chronologically and catches
@@ -73,12 +73,20 @@ def order_traces(traces):
     new_traces = [traces[i] for i in order]
     return new_traces
 
-def pickle_object(object,title):
+def pickle_object(obj,title):
     '''
     Given an object and a filename saves the object in pickled format to the data directory.
     '''
+<<<<<<< HEAD
     #sys.path.append('../../')
     silly_path = os.path.abspath(os.path.join(os.path.dirname( '' ), '../..','data/'))
     with open(os.path.join(silly_path,'{}.p'.format(title)),'wb') as f:
         pickle.dump(object, f)
+=======
+    with open(os.path.join(os.pardir,'data/{}.p'.format(title)),'wb') as f:
+        pickle.dump(obj, f)
+
+def shuffle_appliance_sets(sets,other_params):
+    pass
+>>>>>>> 5b757ba1622f20256710eb7bc47f77ebd26446a3
 

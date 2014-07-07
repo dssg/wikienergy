@@ -8,10 +8,9 @@ The entire test suit can be run using the following command:
 
     python -m unittest discover
 
-If you wish to test an individual set of cases, as running all tests can be
-fairly time consuming, use the following:
+If you wish to run only the fast tests, use the following:
 
-    python -m unittest filename
+    python fast_test_suite.py
 
 If you wish to execute or write tests with greater specificity, see the full
 documentation (linked below).
