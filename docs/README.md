@@ -130,16 +130,17 @@ and time period.
 
 #### Example Usage
 
-    from disaggregator import TracebaseDatasetAdapter as tbda
-
+    import disaggregator as da
+    folder_path='/home/steve/DSSG/wikienergy/data/Tracebase/'
+    tbda=da.TracebaseDatasetAdapter(folder_path,'D','15T')
+    cookingstove_type=tbda.generate_type('Cookingstove')
 
 #### Methods
 - `get_trace_dates_from_instance(device,instance)`:
   - This function returns a unique set of dates (corresponding to
     individual files) for a single device instance id
 - `generate_traces(device,instance_id,date)`:
-  - Returns trace: series: indexed by time with column name 'time',
-    series is series of average power value
+  - Returns traces split across NAN values from a single file
 - `split_on_NANs(series)`:
   - This function splits a trace into several traces,
     divided by the NAN values. Only outputs traces that have at
@@ -150,7 +151,7 @@ and time period.
 - `generate_type(device)`:
   - This function imports the CSV files from ALL device
     instances in a single device folder
-- `generate_unique_instance_ids(self,device)`:
+- `get_unique_instance_ids(self,device)`:
   - This function returns a unique set of instance ids from tracebase
 
 ### GreenButtonDatasetAdapter _[Future]_
