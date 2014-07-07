@@ -120,9 +120,8 @@ def verify_same_range(pair,pairs):
 
 def get_table_dataids_and_column_names(schema,table):
     '''
-    Returns a tuple where the first element is a list of data ids for this
-    schema.table and the second element is a list of the appliances
-    included in this schema.table
+    Returns a list of dataids for this schema and table, and a list of the
+    appliances for this schema and table
     '''
     q = 'select distinct dataid from "{}".{}'\
         .format(schema_names[schema],table)
