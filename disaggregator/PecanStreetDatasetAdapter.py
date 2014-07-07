@@ -242,7 +242,10 @@ def generate_type_by_house_and_month(schema,table,dataid):
     metadata = instance[0].metadata.pop("device_name")
     return ApplianceType(instances,metadata)
 
-def get_table(schema,year,month,group=None, rate = None):
+def get_table_name(schema,year,month,group=None, rate = None):
+    '''
+    Given the year, month, and group return the table name. 
+    '''
     if schema=='curated':
         if group in table_lookup[schema]:
             if year in table_lookup[schema][group]:
