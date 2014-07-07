@@ -124,7 +124,7 @@ def verify_same_range(pair,pairs):
         '''
         pass
 
-def get_table_metadata(schema,table):
+def get_table_dataids_and_column_names(schema,table):
         '''
         Returns a tuple where the first element is a list of data ids for this
         schema.table and the second element is a list of the appliances
@@ -260,10 +260,12 @@ def get_app_traces_all(schema,table,app,ids):
         for i in ids:
             query= 'select {2}, {4} from "{0}".{1} where dataid={3}'.format(schema_name,table,app,i,time_columns[schema])
             df=get_dataframe(query)
-        #df = df.groupby('dataid')
+            #df = df.groupby('dataid')
        
             df = df.rename(columns={time_columns[schema]: 'time'})
-            df['time'] = pd.to_datetime(df['time'], format='%d/%m/%Y %H:%M:%S')
+           # print df.columns
+           # print df.head(2)
+            df['time'] = pd.to_datetime(df['time'])
             df.set_index('time', inplace=True)
             meta = {'source':source,'schema':schema,'table':table ,'dataid':i}
             s = pd.Series(df[app],name = app)
@@ -271,6 +273,8 @@ def get_app_traces_all(schema,table,app,ids):
         ##well it's really a type right?
         # TODO - does this need to be cleaned differently?
         return traces
+
+
 
 def get_type(schema,table,app):
     pass
