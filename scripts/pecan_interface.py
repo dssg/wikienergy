@@ -34,10 +34,10 @@ is recommended.
 Would you like to recieve data from the shared or curated set?'''
 
 # get tables from schema
-dataset = input('Please enter either "shared" or "curated"(no quotes):\n')
+dataset = raw_input('Please enter either "shared" or "curated"(no quotes):\n')
 ##this is wrong it depends which version is running
 schema = dataset
-schema_e = schema[1:-1]
+#schema_e = schema[1:-1]
 tables = p.get_table_names(schema)
 print 'You can now view data for any of these months\n'
 for i in tables:
@@ -67,8 +67,8 @@ trace of a particular appliance. However this is the point where you are
 informed that "seeing" is actually a step that comes after pickling. So long
 story short what house, what appliance do you want to check out?'''
 
-house = input('Enter a home id\n')
-appliance = input('Enter an appliance name (this is not actually necessary at\
+house = raw_input('Enter a home id\n')
+appliance = raw_input('Enter an appliance name (this is not actually necessary at\
 this point):')
 
 query = 'select * from {0}.{1} where dataid={2}'.format(schema, month,house)
