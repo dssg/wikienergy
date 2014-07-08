@@ -5,3 +5,4 @@ data/*
 *.json
 *.pyc
 *.pkl
+.ipynb_checkpoints
