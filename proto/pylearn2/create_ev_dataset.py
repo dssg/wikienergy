@@ -17,5 +17,6 @@ for table_name in table_names:
     ids,columns = psda.get_table_dataids_and_column_names(schema,table_name)
     all_ids.append(ids)
     all_columns.append(columns)
-print all_ids
-print all_columns
+
+common_ids = da.get_common_ids(all_ids)
+import pdb;pdb.set_trace()
