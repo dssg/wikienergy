@@ -118,10 +118,29 @@ def verify_same_range(pair,pairs):
     '''
     pass
 
+def get_table_dataids(schema,table):
+    '''
+    Returns a list of dataids for this schema and table
+    '''
+    id_query = 'select distinct dataid from "{}".{}'\
+        .format(schema_names[schema],table)
+    ids = [row[0] for row in eng.execute(id_query).fetchall()]
+    return ids
+
+def get_table_column_names(schema,table):
+    '''
+    Returns a list of column names for this schema and table
+    '''
+    col_query = "select column_name from information_schema.columns where\
+        table_schema='{}' and table_name = '{}'"\
+        .format(schema_names[schema],table)
+    cols = [row[0] for row in eng.execute(col_query).fetchall()]
+    return cols
+
 def get_table_dataids_and_column_names(schema,table):
     '''
     Returns a list of dataids for this schema and table, and a list of the
-    appliances for this schema and table
+    column names for this schema and table
     '''
     id_query = 'select distinct dataid from "{}".{}'\
         .format(schema_names[schema],table)
