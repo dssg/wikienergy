@@ -33,6 +33,16 @@ def aggregate_traces(traces, metadata, how="strict"):
     else:
         return NotImplementedError
 
+def get_common_ids(id_lists):
+    '''
+    Returns a list of ids common to the supplied lists. (id set intersection)
+    '''
+    id_sets = [set(id_list) for id_list in id_lists]
+    common_ids = id_sets[0]
+    for id_set in id_sets[1:]:
+        common_ids &= id_set
+    return list(common_ids)
+
 def concatenate_traces(traces, metadata=None, how="strict"):
     '''
     Given a list of appliance traces, returns a single concatenated
