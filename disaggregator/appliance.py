@@ -43,13 +43,6 @@ class ApplianceInstance(object):
         self.traces = order_traces(traces)
         self.metadata=metadata
 
-    def add_traces(self,traces):
-        '''
-        Updates the list of traces to include the traces in the newly supplied
-        list of traces.
-        '''
-        pass # make sure that the trace doesn't overlap with other traces
-
     def concatenate_traces(self, how="strict"):
         '''
         Takes its own list of traces and attempts to concatenate them.
@@ -90,6 +83,7 @@ class ApplianceSet(object):
         '''
         # TODO concatenate all traces into a single trace
         # TODO change this to ordered dict
+        # TODO actually throw an exception
         series_dict = {instance.traces[0].series.name:instance.traces[0].series for instance in self.instances}
         self.df = pd.DataFrame.from_dict(series_dict)
 
@@ -101,7 +95,7 @@ class ApplianceSet(object):
         self.instances = instances
         self.make_dataframe()
 
-    def top_k_set(self,k):
+    def generate_top_k_set(self,k):
         '''
         Get top k energy-consuming appliances
         '''
@@ -112,7 +106,7 @@ class ApplianceSet(object):
         return ApplianceSet(top_k_instances,
                             {"name":"top_{}".format(k)})
 
-    def non_zero_set(self):
+    def generate_non_zero_set(self):
         # TODO compare speeds of individual instance summing vs dataframe building and summing
         total_usages = self.df.sum(axis=0)
         usage_order = np.argsort(total_usages)[::-1] # assumes correctly ordered columns

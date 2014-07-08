@@ -21,7 +21,8 @@ Basic usage
 Basic usage of the disaggregator module during development is as follows:
 
     import sys
-    sys.path.append('../../') # or non-Unix equivalent (add wikienergy/ to path)
+    import os.path
+    sys.path.append(os.path.join(os.pardir,os.pardir))
 
     import disaggregator as da
 
@@ -206,9 +207,8 @@ overlap.**
   - a user-defined dictionary describing its origin
 
 #### Methods
-- `order_traces(traces)`:
-  - Given a set of traces, orders them chronologically and catches overlapping
-    traces.
+- `concatenate_traces(how="strict")`:
+  - Takes its own list of traces and attempts to concatenate them.
 
 #### Other properties
 Traces must have aligned (but not overlapping) time intervals sampled at the
@@ -243,16 +243,16 @@ Note: This will constitute a sort of way to standardize appliance names.
   - a pandas dataframe with all appliance instances?
 
 #### Methods
-- `add_to_dataframe(instances)`:
-  - Adds a new list of appliances to the dataframe.
 - `make_dataframe()`:
   - Makes a new dataframe of the appliance instances. Throws an exception if
     the appliance instances have traces that don't align.
 - `set_instances(instances)`:
   - Replaces the old instances with the new list. Makes a new dataframe using
     those instances.
-- `top_k()`:
-  - Get top k energy-consuming appliances
+- `generate_top_k_set(k)`:
+  - Returns an ApplianceSet of the top k energy-consuming appliances
+- `generate_non_zero_set(k)`:
+  - Returns an ApplianceSet of all non-zero energy-consuming appliances
 
 
 #### Other properties
