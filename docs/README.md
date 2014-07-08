@@ -251,7 +251,7 @@ Note: This will constitute a sort of way to standardize appliance names.
     those instances.
 - `generate_top_k_set(k)`:
   - Returns an ApplianceSet of the top k energy-consuming appliances
-- `generate_non_zero_set(k)`:
+- `generate_non_zero_set()`:
   - Returns an ApplianceSet of all non-zero energy-consuming appliances
 
 
