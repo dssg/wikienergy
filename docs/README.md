@@ -108,6 +108,8 @@ Credentials are required for access to the database.
     column before dropping that column from the dataframe. It also drops any
     columns included in the list `drop_cols`. The columns 'id' and 'dataid' are
     also dropped.
+- `get_dataids_with_real_values(schema,table,appliance,ids)`:
+  - Returns ids that contain non-'NoneType' values for a given appliance
 - `generate_month_traces_from_table_name(schema,table,dataid)`:
   - Returns a list of traces for one house and one month
 - `generate_set_by_house_and_month(schema,table,dataid)`:
