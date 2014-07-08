@@ -262,6 +262,8 @@ Note that an appliance set may have multiple instances of a particular type.
 - `aggregate_traces(traces, metadata, how="strict")`:
   - Given a list of temporally aligned traces, aggregate them into a single
     signal.
+- `get_common_ids(id_lists)`:
+  - Returns a list of ids common to the supplied lists. (id set intersection)
 - `concatenate_traces(traces, metadata=None, how="strict")`:
   - Given a list of appliance traces, returns a single concatenated
     trace. With how="strict" option, must be sampled at the same rate and
