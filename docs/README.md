@@ -173,22 +173,20 @@ suppliers to provide end-users with historical energy usages
 ### The ApplianceTrace class
 
 #### Attributes
-- `series`: a pandas Series with a single `DatetimeIndex`ed columns which are
-timeseries of disaggregated or aggregated appliance traces
-- `source`: a string ("pecan","oakpark","hmm",...) describing its origin
-- `dataid`: (pecan only) a string representing the dataid of the origin home
-- `schema`: (pecan only) a string representing the schema of origin
-- `hmm_params`: (hmm only) a list of parameters associated with the origin hmms
-- `instance_id`: (tracebase only) a string representing the id of the instance
+- `series`
+  - a pandas Series with a single `DatetimeIndex`ed columns which are
+    timeseries of disaggregated or aggregated appliance traces
+- `metadata`:
+  - a user-defined dictionary describing its origin
 
 #### Methods
-- `get_sampling_rate()`: Returns a string representing the rate at which the series was sampled.
-- `get_series()`: Returns the pandas series object representing this trace.
-- `get_metadata()`: Returns the user-supplied trace metadata dict.
-- `get_total_usage()`: Computes and returns the total usage of the trace.
-- `set_series(series)`: Updates the series (such as after a resampling).
-- `set_metadata(metadata)`: Updates the user-supplied metadata dict.
-- `print_trace()`: Prints a summary of the trace
+- `get_sampling_rate()`
+  - Returns a string representing the rate at which the
+    series was sampled.
+- `get_total_usage()`:
+  - Computes and returns the total usage of the trace.
+- `print_trace()`:
+  - Prints a summary of the trace
 
 #### Other properties
 Blank values are zero, values should be consecutive. Total use is considered
@@ -201,17 +199,16 @@ negative values.
 ### The ApplianceInstance class
 
 #### Attributes
-- `traces`: a temporally ordered list of traces with **enforced lack of time
+- `traces`:
+  - a temporally ordered list of traces with **enforced lack of time
 overlap.**
+- `metadata`:
+  - a user-defined dictionary describing its origin
 
 #### Methods
-- `add_traces(traces)`: Updates the list of traces to include the traces in the
-newly supplied list of traces.
-- `get_traces()`: Returns a reference to the list of traces owned by the
-appliance.
-- `set_traces()`: Sets the list of traces owned by the appliance
-- `order_traces(traces)`: Given a set of traces, orders them chronologically
-and catches overlapping traces.
+- `order_traces(traces)`:
+  - Given a set of traces, orders them chronologically and catches overlapping
+    traces.
 
 #### Other properties
 Traces must have aligned (but not overlapping) time intervals sampled at the
@@ -224,14 +221,11 @@ same rate with the same offset.
 belong to more than one type, which may arise for situations in which we have
 varying levels of functional generality for appliance types. Ex) Refrigerator
 vs. energy-star refrigerator).
+- `metadata`:
+  - a user-defined dictionary describing its origin
 
 #### Methods
-- `add_instances(instances)`: Add instances to the list of instances. (Check
-for uniqueness?)
-- `get_instances()`: Returns the list of appliance instances which are members
-of this type.
-- `set_instances(instances)`: Replaces the old list of instances with the new
-set of instances. (Check for uniqueness?)
+- None
 
 #### Other properties
 Note: This will constitute a sort of way to standardize appliance names.
@@ -239,21 +233,26 @@ Note: This will constitute a sort of way to standardize appliance names.
 ### The ApplianceSet class
 
 #### Attributes
-- `appliances`: a list of appliance instances with **enforced temporal
-alignment** (i.e. Misaligned data must be dealt with upon initialization to
-have a valid appliance set).
-- [`df`]: a pandas dataframe with all appliance instances?
+- `appliances`:
+  - a list of appliance instances with **enforced temporal alignment**
+    (i.e. Misaligned data must be dealt with upon initialization to
+    have a valid appliance set).
+- `metadata`:
+  - a user-defined dictionary describing its origin
+- [`df`]:
+  - a pandas dataframe with all appliance instances?
 
 #### Methods
-- `add_instances(instances)`: Adds the list of appliances to the appliance set.
-- `add_to_dataframe(instances)`: Adds a new list of appliances to the
-dataframe.
-- `get_dataframe()`: Returns the dataframe object representing the dataset.
-- `make_dataframe()`: Makes a new dataframe of the appliance instances. Throws
-an exception if the appliance instances have traces that don't align.
-- `set_instances(instances)`: Replaces the old instances with the new list.
-Makes a new dataframe using those instances.
-- `top_k`: Get top k energy-consuming appliances
+- `add_to_dataframe(instances)`:
+  - Adds a new list of appliances to the dataframe.
+- `make_dataframe()`:
+  - Makes a new dataframe of the appliance instances. Throws an exception if
+    the appliance instances have traces that don't align.
+- `set_instances(instances)`:
+  - Replaces the old instances with the new list. Makes a new dataframe using
+    those instances.
+- `top_k()`:
+  - Get top k energy-consuming appliances
 
 
 #### Other properties
