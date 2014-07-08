@@ -178,7 +178,7 @@ def clean_dataframe(df,schema,drop_cols):
     df = df.rename(columns={time_columns[schema]: 'time'})
 
     # use a DatetimeIndex
-    df['time'] = pd.to_datetime(df['time'])
+    df['time'] = pd.to_datetime(df['time'],utc=True)
     df.set_index('time', inplace=True)
 
     # drop unnecessary columns
@@ -287,7 +287,7 @@ def generate_traces_for_appliance_by_dataids(schema,table,appliance,ids):
             .format(appliance,time_columns[schema],schema_name,table,i)
         df=get_dataframe(query)
         df = df.rename(columns={time_columns[schema]: 'time'})
-        df['time'] = pd.to_datetime(df['time'])
+        df['time'] = pd.to_datetime(df['time'],utc=True)
         df.set_index('time', inplace=True)
         series = pd.Series(df[appliance],name = appliance)
         metadata = {'source':source,
@@ -305,8 +305,11 @@ def generate_type_for_appliance_by_dataids(schema,table,appliance,ids):
     '''
     traces = generate_traces_for_appliance_by_dataids(schema,table,appliance,
             ids)
+    instances=[]
     metadata = traces[0].metadata.pop('dataid')
-    return ApplianceType(traces,metadata)
+    for trace in traces:
+        instances.append(ApplianceInstance(trace,metadata))
+    return ApplianceType(instances,metadata)
 
 def get_dataframe(query):
     '''
@@ -329,5 +332,3 @@ class SchemaError(Exception):
 
     def __str__(self):
         return "Schema {} not supported or nonexistent.".format(self.schema)
-
-
