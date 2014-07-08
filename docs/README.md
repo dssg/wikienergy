@@ -53,7 +53,9 @@ Structural Elements
 -------------------
 [Dataset Adapters](#dataset-adapters) |
 [Appliance Classes](#appliance-classes) |
-[Algorithm Classes](#algorithm-classes) |
+[Utilities](#utils) |
+[Evaluation Metrics](#evaluation-metrics) |
+[Algorithm Classes](#algorithm-classes)
 ## Dataset Adapters
 
 Dataset Adapters are built for importing specific datasets into the format
