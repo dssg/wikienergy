@@ -254,6 +254,70 @@ Makes a new dataframe using those instances.
 Possibly combine traces into a single dataframe? Export particular datasets?
 Note that an appliance set may have multiple instances of a particular type.
 
+## Utils
+#### Methods
+- `aggregate_instances(instances, metadata, how="strict")`:
+  - Given a list of temporally aligned instances, aggregate them into a single
+    signal.
+- `aggregate_traces(traces, metadata, how="strict")`:
+  - Given a list of temporally aligned traces, aggregate them into a single
+    signal.
+- `concatenate_traces(traces, metadata=None, how="strict")`:
+  - Given a list of appliance traces, returns a single concatenated
+    trace. With how="strict" option, must be sampled at the same rate and
+    consecutive, without overlapping datapoints.
+- `concatenate_traces_lists(traces, metadata=None, how="strict")`:
+  - Takes a list of lists of n traces and concatenates them into a single
+    list of n traces.
+- `order_traces(traces)`:
+  - Given a set of traces, orders them chronologically and catches
+    overlapping traces.
+- `pickle_object(obj,title)`:
+  - Given an object and a filename saves the object in pickled format to the
+    data directory.
+
+## Evaluation Metrics
+
+#### Methods
+- `sum_error(truth,prediction)`:
+  - Given a numpy array of truth values and prediction values, returns the
+    absolute value of the difference between their sums.
+- `rss(truth,prediction)`:
+  - Sum of squared residuals
+- `guess_truth_from_power(signals,threshold)`:
+  - Helper function for ground truth signals without on/off information.
+    Given a series of power readings returns a numpy array where x[i]=0
+    if signals[i] < threshold and x[i]=1 if signals[i] >= threshold
+- `get_positive_negative_stats(true_states, predicted_states)`:
+  - Returns a dictionary of numpy arrays containing the true positives a 'tp',
+    the false negatives as 'fn', the true negatives as 'tn', and
+    the false positives as 'fp'. I would like to make this a truth table
+    instead of putting the logic directly in the list comprehension.
+- `get_sensitivity(true_positives,false_negatives)`:
+  - Given a numpy array of true positives, and false negatives returns a
+    sensitivty measure. Then the sensitivity is equal to TP/(TP+FN), where TP
+    is a true positive, such that TP=1 when the predicted value was correctly
+    classified as positive and 0 otherwise and FN is false negative, such that
+    FN = 1 if a value was falsely predicted to be negative and 0 otherwise.
+- `get_specificity(true_negatives, false_positives)`:
+  - Given a numpy array of true negatives, and false positives returns a
+    specificty measure. The specificity measure is equal to TN/(TN+FP), where
+    TN is a true negative, such that TN=1 when the predicted value was
+    correctly classified as negative and 0 otherwise and FP is a false
+    positive, such that FP = 1 if a value was falsely predicted to be positive
+    and 0 otherwise.
+- `get_precision(true_positives,false_positives)`:
+  - Given a numpy array of true positives, and false positives returns a
+    precision measure. The precision measure is equal to TP/(TP+FP), where TP
+    is a true positive, such that TP=1 when the predicted value was correctly
+    classified as positive and 0 otherwise and FP is a false positive, such
+    that FP = 1 if a value was falsely predicted to be positive and 0
+    otherwise.
+- `get_accuracy(stats)`:
+  - Takes an array of true positives, false negatives, true negatives,
+    and false positives. Returns the Accuracy measure where accuracy is
+    tp+tn/(tn+fn+tp+fp)
+
 ## Algorithm Classes
 
 [TODO]
