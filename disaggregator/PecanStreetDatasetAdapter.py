@@ -1,6 +1,7 @@
 from appliance import ApplianceTrace
 from appliance import ApplianceInstance
 from appliance import ApplianceSet
+from appliance import ApplianceType
 
 import sqlalchemy
 import pandas as pd
@@ -118,22 +119,38 @@ def verify_same_range(pair,pairs):
     '''
     pass
 
+def get_table_dataids(schema,table):
+    '''
+    Returns a list of dataids for this schema and table
+    '''
+    id_query = 'select distinct dataid from "{}".{}'\
+        .format(schema_names[schema],table)
+    ids = [row[0] for row in eng.execute(id_query).fetchall()]
+    return ids
+
+def get_table_column_names(schema,table):
+    '''
+    Returns a list of column names for this schema and table
+    '''
+    col_query = "select column_name from information_schema.columns where\
+        table_schema='{}' and table_name = '{}'"\
+        .format(schema_names[schema],table)
+    cols = [row[0] for row in eng.execute(col_query).fetchall()]
+    return cols
+
 def get_table_dataids_and_column_names(schema,table):
     '''
     Returns a list of dataids for this schema and table, and a list of the
-    appliances for this schema and table
+    column names for this schema and table
     '''
-    q = 'select distinct dataid from "{}".{}'\
+    id_query = 'select distinct dataid from "{}".{}'\
         .format(schema_names[schema],table)
-    result = eng.execute(q)
-    ids = result.fetchall()
-    q = 'select * from "{}".{} where dataid={}'\
-        .format(schema_names[schema],table,ids[0][0])
-    result = eng.execute(q)
-    apps = result.keys()
-    ids= [a[0] for a in ids]
-    apps = [str(a) for a in apps ]
-    return ids, apps
+    col_query = "select column_name from information_schema.columns where\
+        table_schema='{}' and table_name = '{}'"\
+        .format(schema_names[schema],table)
+    ids = [row[0] for row in eng.execute(id_query).fetchall()]
+    cols = [row[0] for row in eng.execute(col_query).fetchall()]
+    return ids, cols
 
 def get_unique_dataids(schema,year,month,group=None):
     '''
@@ -177,7 +194,7 @@ def clean_dataframe(df,schema,drop_cols):
     df = df.rename(columns={time_columns[schema]: 'time'})
 
     # use a DatetimeIndex
-    df['time'] = pd.to_datetime(df['time'])
+    df['time'] = pd.to_datetime(df['time'],utc=True)
     df.set_index('time', inplace=True)
 
     # drop unnecessary columns
@@ -286,7 +303,7 @@ def generate_traces_for_appliance_by_dataids(schema,table,appliance,ids):
             .format(appliance,time_columns[schema],schema_name,table,i)
         df=get_dataframe(query)
         df = df.rename(columns={time_columns[schema]: 'time'})
-        df['time'] = pd.to_datetime(df['time'])
+        df['time'] = pd.to_datetime(df['time'],utc=True)
         df.set_index('time', inplace=True)
         series = pd.Series(df[appliance],name = appliance)
         metadata = {'source':source,
@@ -298,14 +315,32 @@ def generate_traces_for_appliance_by_dataids(schema,table,appliance,ids):
         traces.append(ApplianceTrace(series,metadata))
     return traces
 
+def get_dataids_with_real_values(schema,table,appliance,ids):
+    '''
+    Returns ids that contain non-'NoneType' values for a given appliance
+    '''
+    global schema_names, source
+    schema_name = schema_names[schema]
+    real_ids=[]
+    for i in ids:
+        query= 'select {0}, {1} from "{2}".{3} where dataid={4} LIMIT 1'\
+            .format(appliance,time_columns[schema],schema_name,table,i)
+        df=get_dataframe(query)
+        if df[appliance][0] is not None:
+            real_ids.append(i)  
+    return real_ids
+
 def generate_type_for_appliance_by_dataids(schema,table,appliance,ids):
     '''
     Given an appliance and a list of dataids, generate an ApplianceType
     '''
     traces = generate_traces_for_appliance_by_dataids(schema,table,appliance,
             ids)
+    instances=[]
     metadata = traces[0].metadata.pop('dataid')
-    return ApplianceType(traces,metadata)
+    for trace in traces:
+        instances.append(ApplianceInstance([trace],metadata))
+    return ApplianceType(instances,metadata)
 
 def get_dataframe(query):
     '''
@@ -328,5 +363,3 @@ class SchemaError(Exception):
 
     def __str__(self):
         return "Schema {} not supported or nonexistent.".format(self.schema)
-
-
