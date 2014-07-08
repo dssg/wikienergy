@@ -337,10 +337,21 @@ def generate_type_for_appliance_by_dataids(schema,table,appliance,ids):
     traces = generate_traces_for_appliance_by_dataids(schema,table,appliance,
             ids)
     instances=[]
-    metadata = traces[0].metadata.pop('dataid')
+
+    metadata_type = {'source':source,
+                'schema':schema,
+                'table':table ,
+                'device_name':traces[0].series.name,
+                }
     for trace in traces:
-        instances.append(ApplianceInstance([trace],metadata))
-    return ApplianceType(instances,metadata)
+        metadata_instance = {'source':source,
+            'schema':schema,
+            'table':table ,
+            'device_name':traces[0].series.name,
+            'dataid':i,
+            }
+        instances.append(ApplianceInstance([trace],metadata_instance))
+    return ApplianceType(instances,metadata_type)
 
 def get_dataframe(query):
     '''
