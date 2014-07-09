@@ -6,7 +6,7 @@
 
 .. moduleauthor:: Phil Ngo <ngo.phil@gmail.com>
 .. moduleauthor:: Stephen Suffian <steve@invalid.com>
-.. moduleauthor:: Sabina Tomkins <sabina@invalid.com>
+.. moduleauthor:: Sabina Tomkins <sabina.tomkins@gmail.com>
 
 """
 
@@ -312,6 +312,7 @@ def generate_traces_for_appliance_by_dataids(schema,table,appliance,ids):
     for i in ids:
         query= 'select {0}, {1} from "{2}".{3} where dataid={4}'\
             .format(appliance,time_columns[schema],schema_name,table,i)
+        print query
         df=get_dataframe(query)
         df = df.rename(columns={time_columns[schema]: 'time'})
         df['time'] = pd.to_datetime(df['time'],utc=True)
