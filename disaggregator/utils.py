@@ -1,3 +1,16 @@
+"""
+.. module:: disaggregator.utils
+   :platform: Unix
+   :synopsis: Contains utility methods for modifying and converting between
+      appliance classes.
+
+.. moduleauthor:: Phil Ngo <ngo.phil@gmail.com>
+.. moduleauthor:: Stephen Suffian <steve@invalid.com>
+
+"""
+
+
+
 import appliance
 import pandas as pd
 import numpy as np
