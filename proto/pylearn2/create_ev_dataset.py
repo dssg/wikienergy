@@ -41,9 +41,14 @@ car_ids = [ 9729, 8197, 4641, 4135, 2638,
             4526, 5109, 8645, 1953, 8142,
             8669, 6910, 6139]
 
-ev_traces = psda.generate_traces_for_appliance_by_dataids(schema,tables[2],
+ev_traces = psda.generate_traces_for_appliance_by_dataids(schema,tables[3],
     'car1', car_ids)
-with open('data/ev_traces_shared_03.pkl','w') as f:
+with open('data/ev_traces_shared_04.pkl','w') as f:
+    pickle.dump(ev_traces,f)
+
+ev_traces = psda.generate_traces_for_appliance_by_dataids(schema,tables[4],
+    'car1', car_ids)
+with open('data/ev_traces_shared_05.pkl','w') as f:
     pickle.dump(ev_traces,f)
 
 quit()
