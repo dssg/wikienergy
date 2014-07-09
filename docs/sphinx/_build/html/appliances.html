@@ -1,0 +1,239 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Appliances &mdash; disaggregator 0.1.0 documentation</title>
+    
+    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '0.1.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="top" title="disaggregator 0.1.0 documentation" href="index.html" />
+    <link rel="next" title="Evaluation Metrics" href="evaluation_metrics.html" />
+    <link rel="prev" title="Dataset Adapters" href="dataset_adapters.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="evaluation_metrics.html" title="Evaluation Metrics"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="dataset_adapters.html" title="Dataset Adapters"
+             accesskey="P">previous</a> |</li>
+        <li><a href="index.html">disaggregator 0.1.0 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="appliances">
+<h1>Appliances<a class="headerlink" href="#appliances" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="appliance-trace">
+<h2>Appliance Trace<a class="headerlink" href="#appliance-trace" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="disaggregator.appliance.ApplianceTrace">
+<em class="property">class </em><tt class="descclassname">disaggregator.appliance.</tt><tt class="descname">ApplianceTrace</tt><big>(</big><em>series</em>, <em>metadata</em><big>)</big><a class="reference internal" href="_modules/disaggregator/appliance.html#ApplianceTrace"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#disaggregator.appliance.ApplianceTrace" title="Permalink to this definition">¶</a></dt>
+<dd><p>This class represents appliance traces.</p>
+<p>Traces are power used by a single (or single set of) appliances sampled
+at a consistent rate.</p>
+<dl class="method">
+<dt id="disaggregator.appliance.ApplianceTrace.get_sampling_rate">
+<tt class="descname">get_sampling_rate</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/disaggregator/appliance.html#ApplianceTrace.get_sampling_rate"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#disaggregator.appliance.ApplianceTrace.get_sampling_rate" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a string representing the rate at which the series was sampled.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="disaggregator.appliance.ApplianceTrace.get_total_usage">
+<tt class="descname">get_total_usage</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/disaggregator/appliance.html#ApplianceTrace.get_total_usage"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#disaggregator.appliance.ApplianceTrace.get_total_usage" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the total usage of this trace</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="disaggregator.appliance.ApplianceTrace.print_trace">
+<tt class="descname">print_trace</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/disaggregator/appliance.html#ApplianceTrace.print_trace"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#disaggregator.appliance.ApplianceTrace.print_trace" title="Permalink to this definition">¶</a></dt>
+<dd><p>Prints a summary of the trace</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="appliance-instance">
+<h2>Appliance Instance<a class="headerlink" href="#appliance-instance" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="disaggregator.appliance.ApplianceInstance">
+<em class="property">class </em><tt class="descclassname">disaggregator.appliance.</tt><tt class="descname">ApplianceInstance</tt><big>(</big><em>traces</em>, <em>metadata</em><big>)</big><a class="reference internal" href="_modules/disaggregator/appliance.html#ApplianceInstance"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#disaggregator.appliance.ApplianceInstance" title="Permalink to this definition">¶</a></dt>
+<dd><p>This class represents appliance instances, which may have multiple
+appliance traces.</p>
+<p>Instances hold traces from a single instance of an appliance sampled
+at a consistent rate. Traces may or may not be consecutive.</p>
+<dl class="method">
+<dt id="disaggregator.appliance.ApplianceInstance.concatenate_traces">
+<tt class="descname">concatenate_traces</tt><big>(</big><em>how='strict'</em><big>)</big><a class="reference internal" href="_modules/disaggregator/appliance.html#ApplianceInstance.concatenate_traces"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#disaggregator.appliance.ApplianceInstance.concatenate_traces" title="Permalink to this definition">¶</a></dt>
+<dd><p>Takes its own list of traces and attempts to concatenate them.</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="appliance-set">
+<h2>Appliance Set<a class="headerlink" href="#appliance-set" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="disaggregator.appliance.ApplianceSet">
+<em class="property">class </em><tt class="descclassname">disaggregator.appliance.</tt><tt class="descname">ApplianceSet</tt><big>(</big><em>instances</em>, <em>metadata</em><big>)</big><a class="reference internal" href="_modules/disaggregator/appliance.html#ApplianceSet"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#disaggregator.appliance.ApplianceSet" title="Permalink to this definition">¶</a></dt>
+<dd><p>This class represents appliance sets, which contain a set of temporally
+aligned appliance instances.</p>
+<p>Appliance sets are most frequently used as ground-truth for various
+algorithms, representing a particular home, building, or metered unit.</p>
+<dl class="method">
+<dt id="disaggregator.appliance.ApplianceSet.add_instances">
+<tt class="descname">add_instances</tt><big>(</big><em>instances</em><big>)</big><a class="reference internal" href="_modules/disaggregator/appliance.html#ApplianceSet.add_instances"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#disaggregator.appliance.ApplianceSet.add_instances" title="Permalink to this definition">¶</a></dt>
+<dd><p>Adds the list of appliances to the appliance set.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="disaggregator.appliance.ApplianceSet.add_to_dataframe">
+<tt class="descname">add_to_dataframe</tt><big>(</big><em>instances</em><big>)</big><a class="reference internal" href="_modules/disaggregator/appliance.html#ApplianceSet.add_to_dataframe"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#disaggregator.appliance.ApplianceSet.add_to_dataframe" title="Permalink to this definition">¶</a></dt>
+<dd><p>Adds a new list of appliances to the dataframe.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="disaggregator.appliance.ApplianceSet.generate_non_zero_set">
+<tt class="descname">generate_non_zero_set</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/disaggregator/appliance.html#ApplianceSet.generate_non_zero_set"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#disaggregator.appliance.ApplianceSet.generate_non_zero_set" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get all energy-consuming appliances (and drop instances with traces
+with all zeros)</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="disaggregator.appliance.ApplianceSet.generate_top_k_set">
+<tt class="descname">generate_top_k_set</tt><big>(</big><em>k</em><big>)</big><a class="reference internal" href="_modules/disaggregator/appliance.html#ApplianceSet.generate_top_k_set"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#disaggregator.appliance.ApplianceSet.generate_top_k_set" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get top k energy-consuming appliances</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="disaggregator.appliance.ApplianceSet.make_dataframe">
+<tt class="descname">make_dataframe</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/disaggregator/appliance.html#ApplianceSet.make_dataframe"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#disaggregator.appliance.ApplianceSet.make_dataframe" title="Permalink to this definition">¶</a></dt>
+<dd><p>Makes a new dataframe of the appliance instances. Throws an exception if
+if the appliance instances have traces that don&#8217;t align.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="disaggregator.appliance.ApplianceSet.set_instances">
+<tt class="descname">set_instances</tt><big>(</big><em>instances</em><big>)</big><a class="reference internal" href="_modules/disaggregator/appliance.html#ApplianceSet.set_instances"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#disaggregator.appliance.ApplianceSet.set_instances" title="Permalink to this definition">¶</a></dt>
+<dd><p>Replaces the old instances with the new list. Makes a new dataframe
+using those instances</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="appliance-type">
+<h2>Appliance Type<a class="headerlink" href="#appliance-type" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="disaggregator.appliance.ApplianceType">
+<em class="property">class </em><tt class="descclassname">disaggregator.appliance.</tt><tt class="descname">ApplianceType</tt><big>(</big><em>instances</em>, <em>metadata</em><big>)</big><a class="reference internal" href="_modules/disaggregator/appliance.html#ApplianceType"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#disaggregator.appliance.ApplianceType" title="Permalink to this definition">¶</a></dt>
+<dd><p>This class represents appliance types, which contain a set of
+ApplianceInstances which share particular attributes, but which are not
+necessarily temporally aligned.</p>
+<p>Appliance types are most frequently used to generate models of particular
+types of appliances.</p>
+</dd></dl>
+
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Appliances</a><ul>
+<li><a class="reference internal" href="#appliance-trace">Appliance Trace</a></li>
+<li><a class="reference internal" href="#appliance-instance">Appliance Instance</a></li>
+<li><a class="reference internal" href="#appliance-set">Appliance Set</a></li>
+<li><a class="reference internal" href="#appliance-type">Appliance Type</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="dataset_adapters.html"
+                        title="previous chapter">Dataset Adapters</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="evaluation_metrics.html"
+                        title="next chapter">Evaluation Metrics</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="_sources/appliances.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="evaluation_metrics.html" title="Evaluation Metrics"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="dataset_adapters.html" title="Dataset Adapters"
+             >previous</a> |</li>
+        <li><a href="index.html">disaggregator 0.1.0 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2014, Phil Ngo, Miguel Perez, Stephen Suffian, Sabina Tomkins.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.
+    </div>
+  </body>
+</html>

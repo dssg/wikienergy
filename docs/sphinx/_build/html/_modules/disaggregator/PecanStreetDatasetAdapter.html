@@ -1,0 +1,483 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>disaggregator.PecanStreetDatasetAdapter &mdash; disaggregator 0.1.0 documentation</title>
+    
+    <link rel="stylesheet" href="../../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '0.1.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="top" title="disaggregator 0.1.0 documentation" href="../../index.html" />
+    <link rel="up" title="disaggregator" href="../disaggregator.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../index.html">disaggregator 0.1.0 documentation</a> &raquo;</li>
+          <li><a href="../index.html" >Module code</a> &raquo;</li>
+          <li><a href="../disaggregator.html" accesskey="U">disaggregator</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <h1>Source code for disaggregator.PecanStreetDatasetAdapter</h1><div class="highlight"><pre>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">.. module:: PecanStreetDatasetAdapter</span>
+<span class="sd">   :platform: Unix</span>
+<span class="sd">   :synopsis: Contains methods for importing data from the pecan street</span>
+<span class="sd">     dataset.</span>
+
+<span class="sd">.. moduleauthor:: Phil Ngo &lt;ngo.phil@gmail.com&gt;</span>
+<span class="sd">.. moduleauthor:: Stephen Suffian &lt;steve@invalid.com&gt;</span>
+<span class="sd">.. moduleauthor:: Sabina Tomkins &lt;sabina@invalid.com&gt;</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">from</span> <span class="nn">appliance</span> <span class="kn">import</span> <span class="n">ApplianceTrace</span>
+<span class="kn">from</span> <span class="nn">appliance</span> <span class="kn">import</span> <span class="n">ApplianceInstance</span>
+<span class="kn">from</span> <span class="nn">appliance</span> <span class="kn">import</span> <span class="n">ApplianceSet</span>
+<span class="kn">from</span> <span class="nn">appliance</span> <span class="kn">import</span> <span class="n">ApplianceType</span>
+
+<span class="kn">import</span> <span class="nn">sqlalchemy</span>
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="kn">as</span> <span class="nn">pd</span>
+
+<span class="n">url</span> <span class="o">=</span> <span class="s">&#39;&#39;</span>
+<span class="n">source</span> <span class="o">=</span> <span class="s">&quot;PecanStreet&quot;</span>
+<span class="n">eng</span> <span class="o">=</span> <span class="bp">None</span>
+<span class="n">schema_names</span> <span class="o">=</span>    <span class="p">{</span><span class="s">&#39;curated&#39;</span><span class="p">:</span> <span class="s">&#39;PecanStreet_CuratedSets&#39;</span><span class="p">,</span>
+                    <span class="s">&#39;raw&#39;</span><span class="p">:</span>     <span class="s">&#39;PecanStreet_RawData&#39;</span><span class="p">,</span>
+                    <span class="s">&#39;shared&#39;</span><span class="p">:</span>  <span class="s">&#39;PecanStreet_SharedData&#39;</span><span class="p">}</span>
+
+<span class="n">time_columns</span> <span class="o">=</span>    <span class="p">{</span><span class="s">&#39;curated&#39;</span><span class="p">:</span> <span class="s">&#39;utc_15min&#39;</span><span class="p">,</span>
+                    <span class="s">&#39;raw&#39;</span><span class="p">:</span>     <span class="s">&#39;localminute15minute&#39;</span><span class="p">,</span>
+                    <span class="s">&#39;shared&#39;</span><span class="p">:</span>  <span class="s">&#39;localminute&#39;</span><span class="p">}</span>
+
+<span class="n">invalid_columns</span> <span class="o">=</span> <span class="p">{</span><span class="s">&#39;curated&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s">&#39;id&#39;</span><span class="p">,</span> <span class="s">&#39;utc_15min&#39;</span><span class="p">],</span>
+                    <span class="s">&#39;raw&#39;</span><span class="p">:</span>     <span class="p">[</span><span class="s">&#39;localminute15minute&#39;</span><span class="p">],</span>
+                    <span class="s">&#39;shared&#39;</span><span class="p">:</span>  <span class="p">[</span><span class="s">&#39;localminute&#39;</span><span class="p">]}</span>
+
+<span class="n">table_lookup</span> <span class="o">=</span> <span class="p">{</span><span class="s">&#39;shared&#39;</span><span class="p">:</span>
+        <span class="p">{</span><span class="s">&#39;2014&#39;</span><span class="p">:</span>
+            <span class="p">{</span><span class="s">&#39;01&#39;</span><span class="p">:</span><span class="s">&#39;validated_01_2014&#39;</span><span class="p">,</span>
+             <span class="s">&#39;02&#39;</span><span class="p">:</span><span class="s">&#39;validated_02_2014&#39;</span><span class="p">,</span>
+             <span class="s">&#39;03&#39;</span><span class="p">:</span><span class="s">&#39;validated_03_2014&#39;</span><span class="p">,</span>
+             <span class="s">&#39;04&#39;</span><span class="p">:</span><span class="s">&#39;validated_04_2014&#39;</span><span class="p">,</span>
+             <span class="s">&#39;05&#39;</span><span class="p">:</span><span class="s">&#39;validated_05_2014&#39;</span>
+             <span class="p">}</span>
+        <span class="p">},</span>
+    <span class="s">&#39;curated&#39;</span><span class="p">:</span>
+        <span class="p">{</span><span class="s">&#39;1&#39;</span><span class="p">:</span>
+            <span class="p">{</span><span class="s">&#39;2012&#39;</span><span class="p">:</span>
+                <span class="p">{</span><span class="s">&#39;12&#39;</span><span class="p">:</span> <span class="s">&#39;group1_disaggregated_2012_12&#39;</span><span class="p">},</span>
+             <span class="s">&#39;2013&#39;</span><span class="p">:</span>
+                <span class="p">{</span><span class="s">&#39;01&#39;</span><span class="p">:</span> <span class="s">&#39;group1_disaggregated_2013_01&#39;</span><span class="p">,</span>
+                 <span class="s">&#39;02&#39;</span><span class="p">:</span> <span class="s">&#39;group1_disaggregated_2013_02&#39;</span><span class="p">,</span>
+                 <span class="s">&#39;03&#39;</span><span class="p">:</span> <span class="s">&#39;group1_disaggregated_2013_03&#39;</span><span class="p">,</span>
+                 <span class="s">&#39;04&#39;</span><span class="p">:</span> <span class="s">&#39;group1_disaggregated_2013_04&#39;</span><span class="p">,</span>
+                 <span class="s">&#39;05&#39;</span><span class="p">:</span> <span class="s">&#39;group1_disaggregated_2013_05&#39;</span><span class="p">,</span>
+                 <span class="s">&#39;06&#39;</span><span class="p">:</span> <span class="s">&#39;group1_disaggregated_2013_06&#39;</span><span class="p">,</span>
+                 <span class="s">&#39;07&#39;</span><span class="p">:</span> <span class="s">&#39;group1_disaggregated_2013_07&#39;</span><span class="p">,</span>
+                 <span class="s">&#39;08&#39;</span><span class="p">:</span> <span class="s">&#39;group1_disaggregated_2013_08&#39;</span><span class="p">,</span>
+                 <span class="s">&#39;09&#39;</span><span class="p">:</span> <span class="s">&#39;group1_disaggregated_2013_09&#39;</span><span class="p">,</span>
+                 <span class="s">&#39;10&#39;</span><span class="p">:</span> <span class="s">&#39;group1_disaggregated_2013_10&#39;</span><span class="p">,</span>
+                 <span class="s">&#39;11&#39;</span><span class="p">:</span> <span class="s">&#39;group1_disaggregated_2013_11&#39;</span><span class="p">}},</span>
+        <span class="s">&#39;2&#39;</span><span class="p">:</span>
+            <span class="p">{</span><span class="s">&#39;2012&#39;</span><span class="p">:</span>
+                <span class="p">{},</span>
+            <span class="s">&#39;2013&#39;</span><span class="p">:</span>
+                <span class="p">{</span><span class="s">&#39;01&#39;</span><span class="p">:</span> <span class="s">&#39;group2_disaggregated_2013_01&#39;</span><span class="p">,</span>
+                <span class="s">&#39;02&#39;</span><span class="p">:</span> <span class="s">&#39;group2_disaggregated_2013_02&#39;</span><span class="p">,</span>
+                <span class="s">&#39;03&#39;</span><span class="p">:</span> <span class="s">&#39;group2_disaggregated_2013_03&#39;</span><span class="p">,</span>
+                <span class="s">&#39;04&#39;</span><span class="p">:</span> <span class="s">&#39;group2_disaggregated_2013_04&#39;</span><span class="p">,</span>
+                <span class="s">&#39;05&#39;</span><span class="p">:</span> <span class="s">&#39;group2_disaggregated_2013_05&#39;</span><span class="p">,</span>
+                <span class="s">&#39;06&#39;</span><span class="p">:</span> <span class="s">&#39;group2_disaggregated_2013_06&#39;</span><span class="p">,</span>
+                <span class="s">&#39;07&#39;</span><span class="p">:</span> <span class="s">&#39;group2_disaggregated_2013_07&#39;</span><span class="p">,</span>
+                <span class="s">&#39;08&#39;</span><span class="p">:</span> <span class="s">&#39;group2_disaggregated_2013_08&#39;</span><span class="p">,</span>
+                <span class="s">&#39;09&#39;</span><span class="p">:</span> <span class="s">&#39;group2_disaggregated_2013_09&#39;</span><span class="p">,</span>
+                <span class="s">&#39;10&#39;</span><span class="p">:</span> <span class="s">&#39;group2_disaggregated_2013_10&#39;</span><span class="p">,</span>
+                <span class="s">&#39;11&#39;</span><span class="p">:</span> <span class="s">&#39;group2_disaggregated_2013_11&#39;</span><span class="p">}},</span>
+        <span class="s">&#39;3&#39;</span><span class="p">:</span>
+            <span class="p">{</span><span class="s">&#39;2012&#39;</span><span class="p">:</span>
+                <span class="p">{},</span>
+            <span class="s">&#39;2013&#39;</span><span class="p">:</span>
+                <span class="p">{</span><span class="s">&#39;05&#39;</span><span class="p">:</span> <span class="s">&#39;group3_disaggregated_2013_05&#39;</span><span class="p">,</span>
+                <span class="s">&#39;06&#39;</span><span class="p">:</span> <span class="s">&#39;group3_disaggregated_2013_06&#39;</span><span class="p">,</span>
+                <span class="s">&#39;07&#39;</span><span class="p">:</span> <span class="s">&#39;group3_disaggregated_2013_07&#39;</span><span class="p">,</span>
+                <span class="s">&#39;08&#39;</span><span class="p">:</span> <span class="s">&#39;group3_disaggregated_2013_08&#39;</span><span class="p">,</span>
+                <span class="s">&#39;09&#39;</span><span class="p">:</span> <span class="s">&#39;group3_disaggregated_2013_09&#39;</span><span class="p">,</span>
+                <span class="s">&#39;10&#39;</span><span class="p">:</span> <span class="s">&#39;group3_disaggregated_2013_10&#39;</span><span class="p">,</span>
+                <span class="s">&#39;11&#39;</span><span class="p">:</span> <span class="s">&#39;group3_disaggregated_2013_11&#39;</span><span class="p">}</span> <span class="p">},</span>
+        <span class="s">&#39;other&#39;</span><span class="p">:</span>
+            <span class="p">[</span><span class="s">&#39;west_pv_fall_2013&#39;</span><span class="p">,</span>
+            <span class="s">&#39;south_pv_fall_2013&#39;</span><span class="p">,</span>
+            <span class="s">&#39;pv_summer_2013&#39;</span><span class="p">,</span>
+            <span class="s">&#39;southwest_pv_fall_2013&#39;</span><span class="p">,</span>
+            <span class="s">&#39;ev_fall_2013&#39;</span><span class="p">]},</span>
+    <span class="s">&#39;raw&#39;</span><span class="p">:</span>
+        <span class="p">{</span><span class="s">&#39;2014&#39;</span><span class="p">:</span>
+            <span class="p">{</span><span class="s">&#39;1T&#39;</span><span class="p">:</span><span class="s">&#39;egauge_minutes_2014&#39;</span><span class="p">,</span>
+            <span class="s">&#39;15T&#39;</span><span class="p">:</span><span class="s">&#39;egauge_15min_2014&#39;</span><span class="p">},</span>
+        <span class="s">&#39;2013&#39;</span><span class="p">:</span>
+            <span class="p">{</span><span class="s">&#39;1T&#39;</span><span class="p">:</span><span class="s">&#39;egauge_minutes_2013&#39;</span><span class="p">,</span>
+            <span class="s">&#39;15T&#39;</span><span class="p">:</span><span class="s">&#39;egauge_15min_2013&#39;</span><span class="p">},</span>
+        <span class="s">&#39;2012&#39;</span><span class="p">:</span>
+            <span class="p">{</span><span class="s">&#39;1T&#39;</span><span class="p">:</span><span class="s">&#39;egauge_minutes_2012&#39;</span><span class="p">,</span>
+            <span class="s">&#39;15T&#39;</span><span class="p">:</span><span class="s">&#39;egauge_15min_2012&#39;</span><span class="p">}</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+
+<div class="viewcode-block" id="set_url"><a class="viewcode-back" href="../../dataset_adapters.html#disaggregator.PecanStreetDatasetAdapter.set_url">[docs]</a><span class="k">def</span> <span class="nf">set_url</span><span class="p">(</span><span class="n">db_url</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Initialize an adapter using a database url_string. Consider the following</span>
+<span class="sd">    example: db_url=&quot;postgresql://user_name:password@host.url:port/db&quot;</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="k">global</span> <span class="n">url</span>
+    <span class="k">global</span> <span class="n">eng</span>
+    <span class="n">url</span> <span class="o">=</span> <span class="n">db_url</span>
+    <span class="n">eng</span> <span class="o">=</span> <span class="n">sqlalchemy</span><span class="o">.</span><span class="n">create_engine</span><span class="p">(</span><span class="n">url</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="get_table_names"><a class="viewcode-back" href="../../dataset_adapters.html#disaggregator.PecanStreetDatasetAdapter.get_table_names">[docs]</a><span class="k">def</span> <span class="nf">get_table_names</span><span class="p">(</span><span class="n">schema</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Returns a list of tables in the schema.</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="k">global</span> <span class="n">schema_names</span>
+    <span class="n">df</span> <span class="o">=</span> <span class="n">get_dataframe</span><span class="p">(</span><span class="s">&#39;select * from information_schema.tables&#39;</span><span class="p">)</span>
+    <span class="n">df</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">groupby</span><span class="p">([</span><span class="s">&#39;table_schema&#39;</span><span class="p">,</span><span class="s">&#39;table_name&#39;</span><span class="p">])</span>
+    <span class="n">groups</span> <span class="o">=</span> <span class="p">[</span><span class="n">group</span> <span class="k">for</span> <span class="n">group</span> <span class="ow">in</span> <span class="n">df</span><span class="o">.</span><span class="n">groups</span><span class="p">]</span>
+    <span class="n">table_names</span> <span class="o">=</span> <span class="p">[</span><span class="n">t</span> <span class="k">for</span> <span class="p">(</span><span class="n">s</span><span class="p">,</span><span class="n">t</span><span class="p">)</span> <span class="ow">in</span> <span class="n">groups</span> <span class="k">if</span> <span class="n">s</span> <span class="o">==</span> <span class="s">&#39;{}&#39;</span>\
+        <span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">schema_names</span><span class="p">[</span><span class="n">schema</span><span class="p">])]</span>
+    <span class="k">return</span> <span class="n">table_names</span>
+</div>
+<div class="viewcode-block" id="verify_same_range"><a class="viewcode-back" href="../../dataset_adapters.html#disaggregator.PecanStreetDatasetAdapter.verify_same_range">[docs]</a><span class="k">def</span> <span class="nf">verify_same_range</span><span class="p">(</span><span class="n">pair</span><span class="p">,</span><span class="n">pairs</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Check that all data points have the same range</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="k">pass</span>
+</div>
+<div class="viewcode-block" id="get_table_dataids"><a class="viewcode-back" href="../../dataset_adapters.html#disaggregator.PecanStreetDatasetAdapter.get_table_dataids">[docs]</a><span class="k">def</span> <span class="nf">get_table_dataids</span><span class="p">(</span><span class="n">schema</span><span class="p">,</span><span class="n">table</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Returns a list of dataids for this schema and table</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="n">id_query</span> <span class="o">=</span> <span class="s">&#39;select distinct dataid from &quot;{}&quot;.{}&#39;</span>\
+        <span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">schema_names</span><span class="p">[</span><span class="n">schema</span><span class="p">],</span><span class="n">table</span><span class="p">)</span>
+    <span class="n">ids</span> <span class="o">=</span> <span class="p">[</span><span class="n">row</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">eng</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">id_query</span><span class="p">)</span><span class="o">.</span><span class="n">fetchall</span><span class="p">()]</span>
+    <span class="k">return</span> <span class="n">ids</span>
+</div>
+<div class="viewcode-block" id="get_table_column_names"><a class="viewcode-back" href="../../dataset_adapters.html#disaggregator.PecanStreetDatasetAdapter.get_table_column_names">[docs]</a><span class="k">def</span> <span class="nf">get_table_column_names</span><span class="p">(</span><span class="n">schema</span><span class="p">,</span><span class="n">table</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Returns a list of column names for this schema and table</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="n">col_query</span> <span class="o">=</span> <span class="s">&quot;select column_name from information_schema.columns where</span><span class="se">\</span>
+<span class="s">        table_schema=&#39;{}&#39; and table_name = &#39;{}&#39;&quot;</span>\
+        <span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">schema_names</span><span class="p">[</span><span class="n">schema</span><span class="p">],</span><span class="n">table</span><span class="p">)</span>
+    <span class="n">cols</span> <span class="o">=</span> <span class="p">[</span><span class="n">row</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">eng</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">col_query</span><span class="p">)</span><span class="o">.</span><span class="n">fetchall</span><span class="p">()]</span>
+    <span class="k">return</span> <span class="n">cols</span>
+</div>
+<div class="viewcode-block" id="get_table_dataids_and_column_names"><a class="viewcode-back" href="../../dataset_adapters.html#disaggregator.PecanStreetDatasetAdapter.get_table_dataids_and_column_names">[docs]</a><span class="k">def</span> <span class="nf">get_table_dataids_and_column_names</span><span class="p">(</span><span class="n">schema</span><span class="p">,</span><span class="n">table</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Returns a list of dataids for this schema and table, and a list of the</span>
+<span class="sd">    column names for this schema and table</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="n">id_query</span> <span class="o">=</span> <span class="s">&#39;select distinct dataid from &quot;{}&quot;.{}&#39;</span>\
+        <span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">schema_names</span><span class="p">[</span><span class="n">schema</span><span class="p">],</span><span class="n">table</span><span class="p">)</span>
+    <span class="n">col_query</span> <span class="o">=</span> <span class="s">&quot;select column_name from information_schema.columns where</span><span class="se">\</span>
+<span class="s">        table_schema=&#39;{}&#39; and table_name = &#39;{}&#39;&quot;</span>\
+        <span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">schema_names</span><span class="p">[</span><span class="n">schema</span><span class="p">],</span><span class="n">table</span><span class="p">)</span>
+    <span class="n">ids</span> <span class="o">=</span> <span class="p">[</span><span class="n">row</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">eng</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">id_query</span><span class="p">)</span><span class="o">.</span><span class="n">fetchall</span><span class="p">()]</span>
+    <span class="n">cols</span> <span class="o">=</span> <span class="p">[</span><span class="n">row</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">eng</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">col_query</span><span class="p">)</span><span class="o">.</span><span class="n">fetchall</span><span class="p">()]</span>
+    <span class="k">return</span> <span class="n">ids</span><span class="p">,</span> <span class="n">cols</span>
+</div>
+<div class="viewcode-block" id="get_unique_dataids"><a class="viewcode-back" href="../../dataset_adapters.html#disaggregator.PecanStreetDatasetAdapter.get_unique_dataids">[docs]</a><span class="k">def</span> <span class="nf">get_unique_dataids</span><span class="p">(</span><span class="n">schema</span><span class="p">,</span><span class="n">year</span><span class="p">,</span><span class="n">month</span><span class="p">,</span><span class="n">group</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Returns a list of dataids for a specifc schema (&quot;curated&quot;,&quot;shared&quot;, or</span>
+<span class="sd">    &quot;raw&quot;), month (int), year (int), and [group (int) - only if &quot;curated&quot;].</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="k">if</span> <span class="n">schema</span> <span class="o">==</span> <span class="s">&quot;curated&quot;</span><span class="p">:</span>
+        <span class="n">schema_name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">schema_names</span><span class="p">[</span><span class="n">schema</span><span class="p">]</span>
+        <span class="n">query</span> <span class="o">=</span> <span class="s">&#39;select distinct dataid from &quot;{0}&quot;</span><span class="se">\</span>
+<span class="s">            .group{1}_disaggregated_{2}_{3:02d}&#39;</span>\
+            <span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">schema_name</span><span class="p">,</span><span class="n">group</span><span class="p">,</span><span class="n">year</span><span class="p">,</span><span class="n">month</span><span class="p">)</span>
+        <span class="n">df</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_dataframe</span><span class="p">(</span><span class="n">query</span><span class="p">)</span>
+        <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="s">&quot;dataid&quot;</span><span class="p">])</span>
+    <span class="k">elif</span> <span class="n">schema</span> <span class="o">==</span> <span class="s">&quot;shared&quot;</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span>
+    <span class="k">elif</span> <span class="n">schema</span> <span class="o">==</span> <span class="s">&quot;raw&quot;</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="n">SchemaError</span><span class="p">(</span><span class="n">schema</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="time_align"><a class="viewcode-back" href="../../dataset_adapters.html#disaggregator.PecanStreetDatasetAdapter.time_align">[docs]</a><span class="k">def</span> <span class="nf">time_align</span><span class="p">():</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Checks that for all traces in a home the total time lengths are the</span>
+<span class="sd">    same</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="k">pass</span>
+</div>
+<div class="viewcode-block" id="clean_dataframe"><a class="viewcode-back" href="../../dataset_adapters.html#disaggregator.PecanStreetDatasetAdapter.clean_dataframe">[docs]</a><span class="k">def</span> <span class="nf">clean_dataframe</span><span class="p">(</span><span class="n">df</span><span class="p">,</span><span class="n">schema</span><span class="p">,</span><span class="n">drop_cols</span><span class="p">):</span>
+    <span class="c"># TODO update this to use &quot;curated&quot; &quot;shared&quot; or &quot;raw&quot;</span>
+    <span class="c">#   instead of full frame name</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Cleans a dataframe queried directly from the database by renaming the db </span>
+<span class="sd">    time column (ex. UTC_15MIN) to a column name &#39;time&#39;. It then converts the</span>
+<span class="sd">    time column to datetime objects and reindexes the dataframe to the time</span>
+<span class="sd">    column before dropping that column from the dataframe. It also drops any</span>
+<span class="sd">    columns included in the list drop_cols. The columns &#39;id&#39; and &#39;dataid&#39; are </span>
+<span class="sd">    also dropped.</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="c"># change the time column name</span>
+    <span class="k">global</span> <span class="n">time_columns</span>
+    <span class="n">df</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">rename</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="p">{</span><span class="n">time_columns</span><span class="p">[</span><span class="n">schema</span><span class="p">]:</span> <span class="s">&#39;time&#39;</span><span class="p">})</span>
+
+    <span class="c"># use a DatetimeIndex</span>
+    <span class="n">df</span><span class="p">[</span><span class="s">&#39;time&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">to_datetime</span><span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="s">&#39;time&#39;</span><span class="p">],</span><span class="n">utc</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+    <span class="n">df</span><span class="o">.</span><span class="n">set_index</span><span class="p">(</span><span class="s">&#39;time&#39;</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+
+    <span class="c"># drop unnecessary columns</span>
+    <span class="n">df</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">drop</span><span class="p">([</span><span class="s">&#39;dataid&#39;</span><span class="p">],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">schema</span> <span class="o">==</span> <span class="s">&#39;curated&#39;</span><span class="p">:</span>
+        <span class="n">df</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">drop</span><span class="p">([</span><span class="s">&#39;id&#39;</span><span class="p">],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">drop_cols</span><span class="p">)</span><span class="o">!=</span><span class="mi">0</span><span class="p">:</span>
+        <span class="n">df</span><span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">drop</span><span class="p">(</span><span class="n">drop_cols</span><span class="p">,</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">df</span>
+
+</div>
+<span class="k">def</span> <span class="nf">check_sample_rate</span><span class="p">(</span><span class="n">schema</span><span class="p">,</span><span class="n">sampling_rate</span><span class="p">):</span>
+    <span class="c"># get from the data directly not like this</span>
+    <span class="n">accepted_rates</span> <span class="o">=</span> <span class="p">{</span><span class="s">&#39;curated&#39;</span><span class="p">:</span><span class="s">&#39;15T&#39;</span> <span class="p">,</span><span class="s">&#39;raw&#39;</span><span class="p">:</span><span class="s">&#39;15&#39;</span> <span class="p">,</span><span class="s">&#39;shared&#39;</span><span class="p">:</span><span class="s">&#39;1T&#39;</span> <span class="p">}</span>
+
+<div class="viewcode-block" id="generate_month_traces_from_table_name"><a class="viewcode-back" href="../../dataset_adapters.html#disaggregator.PecanStreetDatasetAdapter.generate_month_traces_from_table_name">[docs]</a><span class="k">def</span> <span class="nf">generate_month_traces_from_table_name</span><span class="p">(</span><span class="n">schema</span><span class="p">,</span><span class="n">table</span><span class="p">,</span><span class="n">dataid</span><span class="p">):</span>
+    <span class="c"># TODO change this name</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Returns a list of traces for one house and one month</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="k">global</span> <span class="n">schema_names</span><span class="p">,</span><span class="n">invalid_columns</span><span class="p">,</span><span class="n">source</span>
+    <span class="k">if</span> <span class="n">schema</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="s">&#39;curated&#39;</span><span class="p">,</span><span class="s">&#39;raw&#39;</span><span class="p">,</span><span class="s">&#39;shared&#39;</span><span class="p">]:</span>
+        <span class="k">raise</span> <span class="n">SchemaError</span><span class="p">(</span><span class="n">schema</span><span class="p">)</span>
+    <span class="n">schema_name</span> <span class="o">=</span> <span class="n">schema_names</span><span class="p">[</span><span class="n">schema</span><span class="p">]</span>
+    <span class="n">query</span> <span class="o">=</span> <span class="s">&#39;select * from &quot;{0}&quot;.{1} where dataid={2}&#39;</span>\
+        <span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">schema_name</span><span class="p">,</span> <span class="n">table</span><span class="p">,</span> <span class="n">dataid</span><span class="p">)</span>
+    <span class="c"># TODO NEED TO CHANGE IDS</span>
+    <span class="c"># TODO error checking that query worked</span>
+    <span class="n">df</span> <span class="o">=</span> <span class="n">get_dataframe</span><span class="p">(</span><span class="n">query</span><span class="p">)</span><span class="o">.</span><span class="n">fillna</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+
+    <span class="n">df</span><span class="o">=</span> <span class="n">clean_dataframe</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">schema</span><span class="p">,[])</span>
+    <span class="n">traces</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">col</span> <span class="ow">in</span> <span class="n">df</span><span class="o">.</span><span class="n">columns</span><span class="p">:</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">col</span> <span class="ow">in</span> <span class="n">invalid_columns</span><span class="p">[</span><span class="n">schema</span><span class="p">]:</span>
+            <span class="n">s</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="n">col</span><span class="p">],</span><span class="n">name</span> <span class="o">=</span> <span class="n">col</span><span class="p">)</span>
+            <span class="n">meta</span><span class="o">=</span><span class="p">{</span><span class="s">&#39;source&#39;</span><span class="p">:</span><span class="n">source</span><span class="p">,</span>
+                <span class="s">&#39;schema&#39;</span><span class="p">:</span><span class="n">schema</span><span class="p">,</span>
+                <span class="s">&#39;table&#39;</span><span class="p">:</span><span class="n">table</span> <span class="p">,</span>
+                <span class="s">&#39;dataid&#39;</span><span class="p">:</span><span class="n">dataid</span><span class="p">,</span>
+                <span class="s">&#39;device_name&#39;</span><span class="p">:</span><span class="n">s</span><span class="o">.</span><span class="n">name</span>
+                <span class="p">}</span>
+            <span class="n">traces</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ApplianceTrace</span><span class="p">(</span><span class="n">s</span><span class="p">,</span><span class="n">meta</span><span class="p">))</span>
+    <span class="k">return</span> <span class="n">traces</span>
+</div>
+<div class="viewcode-block" id="generate_set_by_house_and_month"><a class="viewcode-back" href="../../dataset_adapters.html#disaggregator.PecanStreetDatasetAdapter.generate_set_by_house_and_month">[docs]</a><span class="k">def</span> <span class="nf">generate_set_by_house_and_month</span><span class="p">(</span><span class="n">schema</span><span class="p">,</span><span class="n">table</span><span class="p">,</span><span class="n">dataid</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Returns an ApplianceSet, for given month and house.</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="n">traces</span> <span class="o">=</span> <span class="n">get_month_traces_from_table_name</span><span class="p">(</span><span class="n">schema</span><span class="p">,</span><span class="n">table</span><span class="p">,</span><span class="n">dataid</span><span class="p">)</span>
+    <span class="n">instances</span> <span class="o">=</span> <span class="p">[</span><span class="n">ApplianceInstance</span><span class="p">(</span><span class="n">t</span><span class="o">.</span><span class="n">series</span><span class="p">,</span><span class="n">t</span><span class="o">.</span><span class="n">metadata</span><span class="p">)</span> <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">traces</span><span class="p">]</span>
+    <span class="n">metadata</span> <span class="o">=</span> <span class="n">instance</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">metadata</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s">&quot;device_name&quot;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">ApplianceSet</span><span class="p">(</span><span class="n">instances</span><span class="p">,</span><span class="n">metadata</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="get_table_name"><a class="viewcode-back" href="../../dataset_adapters.html#disaggregator.PecanStreetDatasetAdapter.get_table_name">[docs]</a><span class="k">def</span> <span class="nf">get_table_name</span><span class="p">(</span><span class="n">schema</span><span class="p">,</span><span class="n">year</span><span class="p">,</span><span class="n">month</span><span class="p">,</span><span class="n">group</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">rate</span> <span class="o">=</span> <span class="bp">None</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Given the year, month, and group return the table name.</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="k">if</span> <span class="n">schema</span><span class="o">==</span><span class="s">&#39;curated&#39;</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">group</span> <span class="ow">in</span> <span class="n">table_lookup</span><span class="p">[</span><span class="n">schema</span><span class="p">]:</span>
+            <span class="k">if</span> <span class="n">year</span> <span class="ow">in</span> <span class="n">table_lookup</span><span class="p">[</span><span class="n">schema</span><span class="p">][</span><span class="n">group</span><span class="p">]:</span>
+                <span class="k">if</span> <span class="n">month</span> <span class="ow">in</span> <span class="n">table_lookup</span><span class="p">[</span><span class="n">schema</span><span class="p">][</span><span class="n">group</span><span class="p">][</span><span class="n">year</span><span class="p">]:</span>
+                    <span class="k">return</span> <span class="n">table_lookup</span><span class="p">[</span><span class="n">schema</span><span class="p">][</span><span class="n">group</span><span class="p">][</span><span class="n">year</span><span class="p">][</span><span class="n">month</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span>
+    <span class="k">elif</span> <span class="n">schema</span><span class="o">==</span><span class="s">&#39;shared&#39;</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">year</span> <span class="ow">in</span> <span class="n">table_lookup</span><span class="p">[</span><span class="n">schema</span><span class="p">]:</span>
+            <span class="k">if</span> <span class="n">month</span> <span class="ow">in</span> <span class="n">table_lookup</span><span class="p">[</span><span class="n">schema</span><span class="p">][</span><span class="n">year</span><span class="p">]:</span>
+                <span class="k">return</span> <span class="n">table_lookup</span><span class="p">[</span><span class="n">schema</span><span class="p">][</span><span class="n">year</span><span class="p">][</span><span class="n">month</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span>
+    <span class="k">elif</span> <span class="n">schema</span><span class="o">==</span><span class="s">&#39;raw&#39;</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">year</span> <span class="ow">in</span> <span class="n">table_lookup</span><span class="p">[</span><span class="n">schema</span><span class="p">]:</span>
+            <span class="k">if</span> <span class="n">rate</span> <span class="ow">in</span> <span class="n">table_lookup</span><span class="p">[</span><span class="n">schema</span><span class="p">][</span><span class="n">year</span><span class="p">]:</span>
+                <span class="k">return</span> <span class="n">table_lookup</span><span class="p">[</span><span class="n">schema</span><span class="p">][</span><span class="n">year</span><span class="p">][</span><span class="n">rate</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="n">SchemaError</span><span class="p">(</span><span class="n">schema</span><span class="p">)</span>
+
+</div>
+<div class="viewcode-block" id="generate_month_traces_from_attributes"><a class="viewcode-back" href="../../dataset_adapters.html#disaggregator.PecanStreetDatasetAdapter.generate_month_traces_from_attributes">[docs]</a><span class="k">def</span> <span class="nf">generate_month_traces_from_attributes</span><span class="p">(</span><span class="n">schema</span><span class="p">,</span><span class="n">year</span><span class="p">,</span><span class="n">month</span><span class="p">,</span><span class="n">group</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">rate</span> <span class="o">=</span> <span class="bp">None</span><span class="p">,</span> <span class="n">dataid</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Returns a list of traces from a given month. It first finds the table</span>
+<span class="sd">    name associated with that month.</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="n">table</span> <span class="o">=</span> <span class="n">get_table_name</span><span class="p">(</span><span class="n">schema</span><span class="p">,</span> <span class="n">year</span><span class="p">,</span> <span class="n">month</span><span class="p">,</span><span class="n">group</span><span class="p">,</span><span class="n">rate</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">get_month_traces_from_table_name</span><span class="p">(</span><span class="n">schema</span><span class="p">,</span><span class="n">table</span><span class="p">,</span><span class="n">dataid</span><span class="p">)</span>
+
+</div>
+<div class="viewcode-block" id="get_single_app_trace_need_house_id"><a class="viewcode-back" href="../../dataset_adapters.html#disaggregator.PecanStreetDatasetAdapter.get_single_app_trace_need_house_id">[docs]</a><span class="k">def</span> <span class="nf">get_single_app_trace_need_house_id</span><span class="p">(</span><span class="n">house_df</span><span class="p">,</span> <span class="n">app</span><span class="p">):</span>
+    <span class="c"># TODO what is this function</span>
+    <span class="sd">&#39;&#39;&#39;by house is fastest also have get all apps below&#39;&#39;&#39;</span>
+    <span class="k">pass</span>
+</div>
+<div class="viewcode-block" id="generate_traces_for_appliance_by_dataids"><a class="viewcode-back" href="../../dataset_adapters.html#disaggregator.PecanStreetDatasetAdapter.generate_traces_for_appliance_by_dataids">[docs]</a><span class="k">def</span> <span class="nf">generate_traces_for_appliance_by_dataids</span><span class="p">(</span><span class="n">schema</span><span class="p">,</span><span class="n">table</span><span class="p">,</span><span class="n">appliance</span><span class="p">,</span><span class="n">ids</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Returns traces for a single appliance type across a set of dataids.</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="c"># TODO Should this really return a type?</span>
+    <span class="k">global</span> <span class="n">schema_names</span><span class="p">,</span> <span class="n">source</span>
+    <span class="n">schema_name</span> <span class="o">=</span> <span class="n">schema_names</span><span class="p">[</span><span class="n">schema</span><span class="p">]</span>
+    <span class="n">traces</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">ids</span><span class="p">:</span>
+        <span class="n">query</span><span class="o">=</span> <span class="s">&#39;select {0}, {1} from &quot;{2}&quot;.{3} where dataid={4}&#39;</span>\
+            <span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">appliance</span><span class="p">,</span><span class="n">time_columns</span><span class="p">[</span><span class="n">schema</span><span class="p">],</span><span class="n">schema_name</span><span class="p">,</span><span class="n">table</span><span class="p">,</span><span class="n">i</span><span class="p">)</span>
+        <span class="n">df</span><span class="o">=</span><span class="n">get_dataframe</span><span class="p">(</span><span class="n">query</span><span class="p">)</span>
+        <span class="n">df</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">rename</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="p">{</span><span class="n">time_columns</span><span class="p">[</span><span class="n">schema</span><span class="p">]:</span> <span class="s">&#39;time&#39;</span><span class="p">})</span>
+        <span class="n">df</span><span class="p">[</span><span class="s">&#39;time&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">to_datetime</span><span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="s">&#39;time&#39;</span><span class="p">],</span><span class="n">utc</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+        <span class="n">df</span><span class="o">.</span><span class="n">set_index</span><span class="p">(</span><span class="s">&#39;time&#39;</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+        <span class="n">series</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="n">appliance</span><span class="p">],</span><span class="n">name</span> <span class="o">=</span> <span class="n">appliance</span><span class="p">)</span>
+        <span class="n">metadata</span> <span class="o">=</span> <span class="p">{</span><span class="s">&#39;source&#39;</span><span class="p">:</span><span class="n">source</span><span class="p">,</span>
+                <span class="s">&#39;schema&#39;</span><span class="p">:</span><span class="n">schema</span><span class="p">,</span>
+                <span class="s">&#39;table&#39;</span><span class="p">:</span><span class="n">table</span> <span class="p">,</span>
+                <span class="s">&#39;dataid&#39;</span><span class="p">:</span><span class="n">i</span><span class="p">,</span>
+                <span class="s">&#39;device_name&#39;</span><span class="p">:</span><span class="n">series</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
+                <span class="p">}</span>
+        <span class="n">traces</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ApplianceTrace</span><span class="p">(</span><span class="n">series</span><span class="p">,</span><span class="n">metadata</span><span class="p">))</span>
+    <span class="k">return</span> <span class="n">traces</span>
+</div>
+<div class="viewcode-block" id="get_dataids_with_real_values"><a class="viewcode-back" href="../../dataset_adapters.html#disaggregator.PecanStreetDatasetAdapter.get_dataids_with_real_values">[docs]</a><span class="k">def</span> <span class="nf">get_dataids_with_real_values</span><span class="p">(</span><span class="n">schema</span><span class="p">,</span><span class="n">table</span><span class="p">,</span><span class="n">appliance</span><span class="p">,</span><span class="n">ids</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Returns ids that contain non-&#39;NoneType&#39; values for a given appliance</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="k">global</span> <span class="n">schema_names</span><span class="p">,</span> <span class="n">source</span>
+    <span class="n">schema_name</span> <span class="o">=</span> <span class="n">schema_names</span><span class="p">[</span><span class="n">schema</span><span class="p">]</span>
+    <span class="n">real_ids</span><span class="o">=</span><span class="p">[]</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">ids</span><span class="p">:</span>
+        <span class="n">query</span><span class="o">=</span> <span class="s">&#39;select {0}, {1} from &quot;{2}&quot;.{3} where dataid={4} LIMIT 1&#39;</span>\
+            <span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">appliance</span><span class="p">,</span><span class="n">time_columns</span><span class="p">[</span><span class="n">schema</span><span class="p">],</span><span class="n">schema_name</span><span class="p">,</span><span class="n">table</span><span class="p">,</span><span class="n">i</span><span class="p">)</span>
+        <span class="n">df</span><span class="o">=</span><span class="n">get_dataframe</span><span class="p">(</span><span class="n">query</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">df</span><span class="p">[</span><span class="n">appliance</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="n">real_ids</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>  
+    <span class="k">return</span> <span class="n">real_ids</span>
+</div>
+<div class="viewcode-block" id="generate_type_for_appliance_by_dataids"><a class="viewcode-back" href="../../dataset_adapters.html#disaggregator.PecanStreetDatasetAdapter.generate_type_for_appliance_by_dataids">[docs]</a><span class="k">def</span> <span class="nf">generate_type_for_appliance_by_dataids</span><span class="p">(</span><span class="n">schema</span><span class="p">,</span><span class="n">table</span><span class="p">,</span><span class="n">appliance</span><span class="p">,</span><span class="n">ids</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Given an appliance and a list of dataids, generate an ApplianceType</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="n">traces</span> <span class="o">=</span> <span class="n">generate_traces_for_appliance_by_dataids</span><span class="p">(</span><span class="n">schema</span><span class="p">,</span><span class="n">table</span><span class="p">,</span><span class="n">appliance</span><span class="p">,</span>
+            <span class="n">ids</span><span class="p">)</span>
+    <span class="n">instances</span><span class="o">=</span><span class="p">[]</span>
+
+    <span class="n">metadata_type</span> <span class="o">=</span> <span class="p">{</span><span class="s">&#39;source&#39;</span><span class="p">:</span><span class="n">source</span><span class="p">,</span>
+                <span class="s">&#39;schema&#39;</span><span class="p">:</span><span class="n">schema</span><span class="p">,</span>
+                <span class="s">&#39;table&#39;</span><span class="p">:</span><span class="n">table</span> <span class="p">,</span>
+                <span class="s">&#39;device_name&#39;</span><span class="p">:</span><span class="n">traces</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">series</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
+                <span class="p">}</span>
+    <span class="k">for</span> <span class="n">trace</span> <span class="ow">in</span> <span class="n">traces</span><span class="p">:</span>
+        <span class="n">metadata_instance</span> <span class="o">=</span> <span class="p">{</span><span class="s">&#39;source&#39;</span><span class="p">:</span><span class="n">source</span><span class="p">,</span>
+            <span class="s">&#39;schema&#39;</span><span class="p">:</span><span class="n">schema</span><span class="p">,</span>
+            <span class="s">&#39;table&#39;</span><span class="p">:</span><span class="n">table</span> <span class="p">,</span>
+            <span class="s">&#39;device_name&#39;</span><span class="p">:</span><span class="n">traces</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">series</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
+            <span class="s">&#39;dataid&#39;</span><span class="p">:</span><span class="n">i</span><span class="p">,</span>
+            <span class="p">}</span>
+        <span class="n">instances</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ApplianceInstance</span><span class="p">([</span><span class="n">trace</span><span class="p">],</span><span class="n">metadata_instance</span><span class="p">))</span>
+    <span class="k">return</span> <span class="n">ApplianceType</span><span class="p">(</span><span class="n">instances</span><span class="p">,</span><span class="n">metadata_type</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="get_dataframe"><a class="viewcode-back" href="../../dataset_adapters.html#disaggregator.PecanStreetDatasetAdapter.get_dataframe">[docs]</a><span class="k">def</span> <span class="nf">get_dataframe</span><span class="p">(</span><span class="n">query</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Returns a Pandas dataframe with the query results</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="k">global</span> <span class="n">eng</span>
+    <span class="n">eng_object</span> <span class="o">=</span> <span class="n">eng</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">query</span><span class="p">)</span>
+    <span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="o">.</span><span class="n">from_records</span><span class="p">(</span><span class="n">eng_object</span><span class="o">.</span><span class="n">fetchall</span><span class="p">())</span>
+    <span class="n">df</span><span class="o">.</span><span class="n">columns</span> <span class="o">=</span> <span class="n">eng_object</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span>
+    <span class="k">return</span> <span class="n">df</span>
+</div>
+<div class="viewcode-block" id="SchemaError"><a class="viewcode-back" href="../../dataset_adapters.html#disaggregator.PecanStreetDatasetAdapter.SchemaError">[docs]</a><span class="k">class</span> <span class="nc">SchemaError</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;Exception raised for errors in the schema.</span>
+
+<span class="sd">        Attributes:</span>
+<span class="sd">            schema  -- nonexistent schema</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="n">schema</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">schema</span> <span class="o">=</span> <span class="n">schema</span>
+
+    <span class="k">def</span> <span class="nf">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="s">&quot;Schema {} not supported or nonexistent.&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">schema</span><span class="p">)</span></div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../index.html">disaggregator 0.1.0 documentation</a> &raquo;</li>
+          <li><a href="../index.html" >Module code</a> &raquo;</li>
+          <li><a href="../disaggregator.html" >disaggregator</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2014, Phil Ngo, Miguel Perez, Stephen Suffian, Sabina Tomkins.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.
+    </div>
+  </body>
+</html>
