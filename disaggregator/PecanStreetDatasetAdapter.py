@@ -17,6 +17,7 @@ from appliance import ApplianceType
 
 import sqlalchemy
 import pandas as pd
+import decimal
 
 url = ''
 source = "PecanStreet"
