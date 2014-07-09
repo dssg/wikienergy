@@ -183,6 +183,7 @@
 <span class="sd">        Get top k energy-consuming appliances</span>
 <span class="sd">        &#39;&#39;&#39;</span>
         <span class="c"># TODO compare speeds of individual instance summing vs dataframe building and summing</span>
+        <span class="c"># TODO more intelligently create the metadata</span>
         <span class="n">total_usages</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
         <span class="n">usage_order</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">argsort</span><span class="p">(</span><span class="n">total_usages</span><span class="p">)[::</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="c"># assumes correctly ordered columns</span>
         <span class="n">top_k_instances</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">instances</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">usage_order</span><span class="p">[:</span><span class="n">k</span><span class="p">]]</span>
@@ -195,6 +196,7 @@
 <span class="sd">        with all zeros)</span>
 <span class="sd">        &#39;&#39;&#39;</span>
         <span class="c"># TODO compare speeds of individual instance summing vs dataframe building and summing</span>
+        <span class="c"># TODO moe intelligently create the metadata</span>
         <span class="n">total_usages</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
         <span class="n">usage_order</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">argsort</span><span class="p">(</span><span class="n">total_usages</span><span class="p">)[::</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="c"># assumes correctly ordered columns</span>
         <span class="n">non_zero_instances</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">instances</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">usage_order</span> <span class="k">if</span> <span class="n">total_usages</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="p">]</span>
