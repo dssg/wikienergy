@@ -1,0 +1,165 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Utilities &mdash; disaggregator 0.1.0 documentation</title>
+    
+    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '0.1.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="top" title="disaggregator 0.1.0 documentation" href="index.html" />
+    <link rel="next" title="Algorithms" href="algorithms.html" />
+    <link rel="prev" title="Evaluation Metrics" href="evaluation_metrics.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="algorithms.html" title="Algorithms"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="evaluation_metrics.html" title="Evaluation Metrics"
+             accesskey="P">previous</a> |</li>
+        <li><a href="index.html">disaggregator 0.1.0 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="module-disaggregator.utils">
+<span id="utilities"></span><h1>Utilities<a class="headerlink" href="#module-disaggregator.utils" title="Permalink to this headline">¶</a></h1>
+<dl class="function">
+<dt id="disaggregator.utils.aggregate_instances">
+<tt class="descclassname">disaggregator.utils.</tt><tt class="descname">aggregate_instances</tt><big>(</big><em>instances</em>, <em>metadata</em>, <em>how='strict'</em><big>)</big><a class="reference internal" href="_modules/disaggregator/utils.html#aggregate_instances"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#disaggregator.utils.aggregate_instances" title="Permalink to this definition">¶</a></dt>
+<dd><p>Given a list of temporally aligned instances, aggregate them into a single
+signal.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="disaggregator.utils.aggregate_traces">
+<tt class="descclassname">disaggregator.utils.</tt><tt class="descname">aggregate_traces</tt><big>(</big><em>traces</em>, <em>metadata</em>, <em>how='strict'</em><big>)</big><a class="reference internal" href="_modules/disaggregator/utils.html#aggregate_traces"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#disaggregator.utils.aggregate_traces" title="Permalink to this definition">¶</a></dt>
+<dd><p>Given a list of temporally aligned traces, aggregate them into a single
+signal.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="disaggregator.utils.concatenate_traces">
+<tt class="descclassname">disaggregator.utils.</tt><tt class="descname">concatenate_traces</tt><big>(</big><em>traces</em>, <em>metadata=None</em>, <em>how='strict'</em><big>)</big><a class="reference internal" href="_modules/disaggregator/utils.html#concatenate_traces"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#disaggregator.utils.concatenate_traces" title="Permalink to this definition">¶</a></dt>
+<dd><p>Given a list of appliance traces, returns a single concatenated
+trace. With how=&#8221;strict&#8221; option, must be sampled at the same rate and
+consecutive, without overlapping datapoints.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="disaggregator.utils.concatenate_traces_lists">
+<tt class="descclassname">disaggregator.utils.</tt><tt class="descname">concatenate_traces_lists</tt><big>(</big><em>traces</em>, <em>metadata=None</em>, <em>how='strict'</em><big>)</big><a class="reference internal" href="_modules/disaggregator/utils.html#concatenate_traces_lists"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#disaggregator.utils.concatenate_traces_lists" title="Permalink to this definition">¶</a></dt>
+<dd><p>Takes a list of lists of n traces and concatenates them into a single
+list of n traces.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="disaggregator.utils.get_common_ids">
+<tt class="descclassname">disaggregator.utils.</tt><tt class="descname">get_common_ids</tt><big>(</big><em>id_lists</em><big>)</big><a class="reference internal" href="_modules/disaggregator/utils.html#get_common_ids"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#disaggregator.utils.get_common_ids" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a list of ids common to the supplied lists. (id set intersection)</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="disaggregator.utils.order_traces">
+<tt class="descclassname">disaggregator.utils.</tt><tt class="descname">order_traces</tt><big>(</big><em>traces</em><big>)</big><a class="reference internal" href="_modules/disaggregator/utils.html#order_traces"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#disaggregator.utils.order_traces" title="Permalink to this definition">¶</a></dt>
+<dd><p>Given a set of traces, orders them chronologically and catches
+overlapping traces.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="disaggregator.utils.pickle_object">
+<tt class="descclassname">disaggregator.utils.</tt><tt class="descname">pickle_object</tt><big>(</big><em>obj</em>, <em>title</em><big>)</big><a class="reference internal" href="_modules/disaggregator/utils.html#pickle_object"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#disaggregator.utils.pickle_object" title="Permalink to this definition">¶</a></dt>
+<dd><p>Given an object and a filename saves the object in pickled format to the data directory.</p>
+</dd></dl>
+
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="evaluation_metrics.html"
+                        title="previous chapter">Evaluation Metrics</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="algorithms.html"
+                        title="next chapter">Algorithms</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="_sources/utils.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="algorithms.html" title="Algorithms"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="evaluation_metrics.html" title="Evaluation Metrics"
+             >previous</a> |</li>
+        <li><a href="index.html">disaggregator 0.1.0 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2014, Phil Ngo, Miguel Perez, Stephen Suffian, Sabina Tomkins.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.
+    </div>
+  </body>
+</html>
