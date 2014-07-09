@@ -14,7 +14,9 @@ Monitoring Toolkit), which is designed with the needs of researchers in mind.
 
 How to use this toolkit
 -----------------------
-Quick-start documentation and iPython notebook tutorials can be found in the
+***Please view documentation at /docs/sphinx/html/index.html***
+
+Additional documentation and iPython notebook tutorials can be found in the
 [docs](https://github.com/dssg/wikienergy/tree/master/docs) directory.
 
 Background

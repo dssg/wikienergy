@@ -1,6 +1,9 @@
 Disaggregator Package Overview
 ==============================
 
+
+***Please view more up-to-date documentation at /docs/sphinx/html/index.html***
+
 Datasets might be loaded from many external sources and combined or
 manipulated in a variety of ways toward the end of energy disaggregation;
 therefore, we organize a general hierarchical structure around appliance traces
