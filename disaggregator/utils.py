@@ -11,7 +11,7 @@
 
 
 
-import appliance 
+import appliance
 import pandas as pd
 import numpy as np
 import os
@@ -45,6 +45,14 @@ def aggregate_traces(traces, metadata, how="strict"):
         return appliance.ApplianceTrace(summed_series, metadata)
     else:
         return NotImplementedError
+
+def bootstrap_appliance_set(appliance_sets, k, n, how="strict"):
+    """
+    Returns a list of n bootstrapped appliance sets (each with k appliances).
+    Fails if how="strict" and appliance sets are not aligned.
+    """
+    # TODO write this function.
+    pass
 
 def get_common_ids(id_lists):
     '''
