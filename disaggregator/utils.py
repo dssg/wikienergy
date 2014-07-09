@@ -17,7 +17,7 @@ import numpy as np
 import os
 import pickle
 import sys
-
+import decimal
 
 def aggregate_instances(instances, metadata, how="strict"):
     '''
@@ -76,7 +76,7 @@ def split_instance_traces_into_daily(device_instance):
     from a unique date
     '''
     traces=[]
-    for trace in instance.traces:
+    for trace in device_instance.traces:
         traces.extend(split_trace_into_daily(trace))
     device_instance.traces=traces
     return device_instance
@@ -86,13 +86,9 @@ def split_type_traces_into_daily(device_type):
     Each trace in each instance of a type is split into multiple traces 
     that are each from a unique date
     '''
-    traces=[]
     instances=[]
     for instance in device_type.instances:
-        for trace in instance.traces:
-            traces.extend(split_trace_into_daily(trace))
-        instance.traces=traces
-        instances.append(instance)
+        instances.append(split_instance_traces_into_daily(instance))
     device_type.instances=instances    
     return device_type
 
@@ -126,6 +122,40 @@ def concatenate_traces_lists(traces, metadata=None, how="strict"):
         return traces
     else:
         raise NotImplementedError
+
+def resample_trace(trace,sample_rate):
+    '''
+    Takes a trace and resamples it to a given sample rate, defined by the
+    offset aliases described in panda time series.
+    http://pandas.pydata.org/pandas-docs/stable/timeseries.html#offset-aliases
+    '''
+    try:
+	new_series=float(trace.series)
+        new_series=new_series.resample(sample_rate,how='sum')/3600.0
+	new_series=new_series.map(decimal.Decimal)
+	new_series.name=trace.series.name
+        return ApplianceTrace(new_series,trace.metadata)
+    except ValueError:
+        raise SampleError(self.sample_rate)
+
+
+def resample_instance_traces(device_instance,sample_rate):
+    '''
+    Resamples all traces within a given instance.
+    '''
+    new_traces=[]
+    for trace in device_instance.traces:
+        new_traces.append(resample_trace(trace,sample_rate))
+    return ApplianceInstance(new_traces,device_instance.metadata)
+
+def resample_type_traces(device_type,sample_rate):
+    '''
+    Resamples all traces in each instance of a given type.
+    '''
+    new_instances=[]
+    for instance in device_type.instances:
+    	new_instances.append(resample_instance_traces(instance,sample_rate))
+    return ApplianceType(new_instances,device_type.metadata)
 
 def order_traces(traces):
     '''
