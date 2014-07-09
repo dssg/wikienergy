@@ -11,7 +11,7 @@
 
 
 
-import appliance
+import appliance 
 import pandas as pd
 import numpy as np
 import os
@@ -130,11 +130,11 @@ def resample_trace(trace,sample_rate):
     http://pandas.pydata.org/pandas-docs/stable/timeseries.html#offset-aliases
     '''
     try:
-	new_series=float(trace.series)
-        new_series=new_series.resample(sample_rate,how='sum')/3600.0
+	new_series=trace.series.astype(float)
+        new_series=new_series.resample(sample_rate,how='mean')
 	new_series=new_series.map(decimal.Decimal)
 	new_series.name=trace.series.name
-        return ApplianceTrace(new_series,trace.metadata)
+        return appliance.ApplianceTrace(new_series,trace.metadata)
     except ValueError:
         raise SampleError(self.sample_rate)
 
@@ -146,7 +146,7 @@ def resample_instance_traces(device_instance,sample_rate):
     new_traces=[]
     for trace in device_instance.traces:
         new_traces.append(resample_trace(trace,sample_rate))
-    return ApplianceInstance(new_traces,device_instance.metadata)
+    return appliance.ApplianceInstance(new_traces,device_instance.metadata)
 
 def resample_type_traces(device_type,sample_rate):
     '''
@@ -155,7 +155,7 @@ def resample_type_traces(device_type,sample_rate):
     new_instances=[]
     for instance in device_type.instances:
     	new_instances.append(resample_instance_traces(instance,sample_rate))
-    return ApplianceType(new_instances,device_type.metadata)
+    return appliance.ApplianceType(new_instances,device_type.metadata)
 
 def order_traces(traces):
     '''
