@@ -57,31 +57,41 @@ def get_common_ids(id_lists):
     return list(common_ids)
 
 
-def split_trace_into_daily(trace):
+def split_trace_into_rate(trace,rate):
     '''
     Given a single trace, a list of traces are returned that are each
     from a unique date.
     '''
     series_list=None;
     traces=[]
-    for i,group in enumerate(trace.series.groupby(trace.series.index.date)):
+    if rate == 'day':
+        for i,group in enumerate(trace.series.groupby(trace.series.index.date)):
             metadata=trace.metadata
             metadata['trace_num']=i
             traces.append(appliance.ApplianceTrace(group[1],metadata))
+    elif rate == 'week':
+        for i,group in enumerate(trace.series.groupby(trace.series.index.week)):
+            metadata=trace.metadata
+            metadata['trace_num']=i
+            traces.append(appliance.ApplianceTrace(group[1],metadata))
+
+    else:
+        print 'Looking for \'week\' or \'day\''
+
     return traces
 
-def split_instance_traces_into_daily(device_instance):
+def split_instance_traces_into_rate(device_instance,rate):
     '''
     Each trace in an instance is split into multiple traces that are each
     from a unique date
     '''
     traces=[]
-    for trace in instance.traces:
-        traces.extend(split_trace_into_daily(trace))
+    for trace in device_instance.traces:
+        traces.extend(split_trace_into_daily(trace,rate))
     device_instance.traces=traces
     return device_instance
 
-def split_type_traces_into_daily(device_type):
+def split_type_traces_into_rate(device_type, rate):
     '''
     Each trace in each instance of a type is split into multiple traces 
     that are each from a unique date
@@ -90,7 +100,7 @@ def split_type_traces_into_daily(device_type):
     instances=[]
     for instance in device_type.instances:
         for trace in instance.traces:
-            traces.extend(split_trace_into_daily(trace))
+            traces.extend(split_trace_into_daily(trace, rate))
         instance.traces=traces
         instances.append(instance)
     device_type.instances=instances    
@@ -143,8 +153,8 @@ def pickle_object(obj,title):
 
     #sys.path.append('../../')
     #silly_path = os.path.abspath(os.path.join(os.path.dirname( '' ), '../..','data/'))
-    rel_path = os.path.relpath(os.get_cwd(),'data')
-    with open(os.path.join(rel_path,'{}.p'.format(title)),'wb') as f:
+    rel_path = os.path.relpath(os.getcwd(),'data')
+    with open(os.path.join(rel_path,'data/{}.p'.format(title)),'wb') as f:
         pickle.dump(object, f)
 
 def shuffle_appliance_sets(sets,other_params):
