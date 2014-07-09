@@ -25,7 +25,7 @@
     <script type="text/javascript" src="../../_static/doctools.js"></script>
     <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
     <link rel="top" title="disaggregator 0.1.0 documentation" href="../../index.html" />
-    <link rel="up" title="Module code" href="../index.html" /> 
+    <link rel="up" title="disaggregator" href="../disaggregator.html" /> 
   </head>
   <body>
     <div class="related">
@@ -38,7 +38,8 @@
           <a href="../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
         <li><a href="../../index.html">disaggregator 0.1.0 documentation</a> &raquo;</li>
-          <li><a href="../index.html" accesskey="U">Module code</a> &raquo;</li> 
+          <li><a href="../index.html" >Module code</a> &raquo;</li>
+          <li><a href="../disaggregator.html" accesskey="U">disaggregator</a> &raquo;</li> 
       </ul>
     </div>  
 
@@ -48,12 +49,29 @@
           <div class="body">
             
   <h1>Source code for disaggregator.appliance</h1><div class="highlight"><pre>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">.. module:: appliance</span>
+<span class="sd">   :platform: Unix</span>
+<span class="sd">   :synopsis: Contains classes for representing appliances and appliance</span>
+<span class="sd">      traces.</span>
+
+<span class="sd">.. moduleauthor:: Phil Ngo &lt;ngo.phil@gmail.com&gt;</span>
+<span class="sd">.. moduleauthor:: Stephen Suffian &lt;steve@invalid.com&gt;</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
 <span class="kn">import</span> <span class="nn">pandas</span> <span class="kn">as</span> <span class="nn">pd</span>
 <span class="kn">import</span> <span class="nn">pprint</span>
 <span class="kn">from</span> <span class="nn">utils</span> <span class="kn">import</span> <span class="n">order_traces</span>
 
 <div class="viewcode-block" id="ApplianceTrace"><a class="viewcode-back" href="../../appliances.html#disaggregator.appliance.ApplianceTrace">[docs]</a><span class="k">class</span> <span class="nc">ApplianceTrace</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;This class represents appliance traces.</span>
+
+<span class="sd">    Traces are power used by a single (or single set of) appliances sampled</span>
+<span class="sd">    at a consistent rate.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">series</span><span class="p">,</span> <span class="n">metadata</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39;</span>
@@ -87,9 +105,17 @@
 
 </div></div>
 <div class="viewcode-block" id="ApplianceInstance"><a class="viewcode-back" href="../../appliances.html#disaggregator.appliance.ApplianceInstance">[docs]</a><span class="k">class</span> <span class="nc">ApplianceInstance</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;This class represents appliance instances, which may have multiple</span>
+<span class="sd">    appliance traces.</span>
+
+<span class="sd">    Instances hold traces from a single instance of an appliance sampled</span>
+<span class="sd">    at a consistent rate. Traces may or may not be consecutive.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
 
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">traces</span><span class="p">,</span><span class="n">metadata</span><span class="p">):</span>
-        <span class="sd">&#39;&#39;&#39;Initialize an appliance trace with a list of traces&#39;&#39;&#39;</span>
+        <span class="sd">&#39;&#39;&#39;Initialize an appliance trace with a list of ApplianceTraces&#39;&#39;&#39;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">traces</span> <span class="o">=</span> <span class="n">order_traces</span><span class="p">(</span><span class="n">traces</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">metadata</span><span class="o">=</span><span class="n">metadata</span>
 
@@ -104,6 +130,13 @@
 
 </div></div>
 <div class="viewcode-block" id="ApplianceSet"><a class="viewcode-back" href="../../appliances.html#disaggregator.appliance.ApplianceSet">[docs]</a><span class="k">class</span> <span class="nc">ApplianceSet</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;This class represents appliance sets, which contain a set of temporally</span>
+<span class="sd">    aligned appliance instances.</span>
+
+<span class="sd">    Appliance sets are most frequently used as ground-truth for various</span>
+<span class="sd">    algorithms, representing a particular home, building, or metered unit.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">instances</span><span class="p">,</span><span class="n">metadata</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39;</span>
@@ -156,15 +189,27 @@
         <span class="k">return</span> <span class="n">ApplianceSet</span><span class="p">(</span><span class="n">top_k_instances</span><span class="p">,</span>
                             <span class="p">{</span><span class="s">&quot;name&quot;</span><span class="p">:</span><span class="s">&quot;top_{}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">k</span><span class="p">)})</span>
 </div>
-    <span class="k">def</span> <span class="nf">generate_non_zero_set</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="ApplianceSet.generate_non_zero_set"><a class="viewcode-back" href="../../appliances.html#disaggregator.appliance.ApplianceSet.generate_non_zero_set">[docs]</a>    <span class="k">def</span> <span class="nf">generate_non_zero_set</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Get all energy-consuming appliances (and drop instances with traces</span>
+<span class="sd">        with all zeros)</span>
+<span class="sd">        &#39;&#39;&#39;</span>
         <span class="c"># TODO compare speeds of individual instance summing vs dataframe building and summing</span>
         <span class="n">total_usages</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
         <span class="n">usage_order</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">argsort</span><span class="p">(</span><span class="n">total_usages</span><span class="p">)[::</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="c"># assumes correctly ordered columns</span>
         <span class="n">non_zero_instances</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">instances</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">usage_order</span> <span class="k">if</span> <span class="n">total_usages</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="p">]</span>
         <span class="k">return</span> <span class="n">ApplianceSet</span><span class="p">(</span><span class="n">non_zero_instances</span><span class="p">,</span>
                             <span class="p">{</span><span class="s">&quot;name&quot;</span><span class="p">:</span><span class="s">&quot;non_zero&quot;</span><span class="p">})</span>
-</div>
+</div></div>
 <div class="viewcode-block" id="ApplianceType"><a class="viewcode-back" href="../../appliances.html#disaggregator.appliance.ApplianceType">[docs]</a><span class="k">class</span> <span class="nc">ApplianceType</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;This class represents appliance types, which contain a set of</span>
+<span class="sd">    ApplianceInstances which share particular attributes, but which are not</span>
+<span class="sd">    necessarily temporally aligned.</span>
+
+<span class="sd">    Appliance types are most frequently used to generate models of particular</span>
+<span class="sd">    types of appliances.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">instances</span><span class="p">,</span> <span class="n">metadata</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39;</span>
@@ -208,7 +253,8 @@
           <a href="../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
         <li><a href="../../index.html">disaggregator 0.1.0 documentation</a> &raquo;</li>
-          <li><a href="../index.html" >Module code</a> &raquo;</li> 
+          <li><a href="../index.html" >Module code</a> &raquo;</li>
+          <li><a href="../disaggregator.html" >disaggregator</a> &raquo;</li> 
       </ul>
     </div>
     <div class="footer">
