@@ -1,0 +1,225 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>disaggregator.TracebaseDatasetAdapter &mdash; disaggregator 0.1.0 documentation</title>
+    
+    <link rel="stylesheet" href="../../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '0.1.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="top" title="disaggregator 0.1.0 documentation" href="../../index.html" />
+    <link rel="up" title="Module code" href="../index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../index.html">disaggregator 0.1.0 documentation</a> &raquo;</li>
+          <li><a href="../index.html" accesskey="U">Module code</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <h1>Source code for disaggregator.TracebaseDatasetAdapter</h1><div class="highlight"><pre>
+<span class="kn">from</span> <span class="nn">appliance</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="kn">as</span> <span class="nn">pd</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">csv</span>
+<span class="kn">import</span> <span class="nn">glob</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">from</span> <span class="nn">datetime</span> <span class="kn">import</span> <span class="n">datetime</span>
+<span class="c">#####TO DO - incorporate TRACE_LENGTH</span>
+<span class="k">class</span> <span class="nc">TracebaseDatasetAdapter</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">path</span><span class="p">,</span><span class="n">trace_length</span><span class="o">=</span><span class="s">&#39;D&#39;</span><span class="p">,</span><span class="n">sample_rate</span><span class="o">=</span><span class="s">&#39;15T&#39;</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Consider the following path:</span>
+<span class="sd">        path = &#39;/home/steve/DSSG/tracebase/complete/&#39;</span>
+<span class="sd">        trace_length=&#39;D&#39;, using Offset Aliases Pandas object notation</span>
+<span class="sd">        sample_rate = &quot;15T&quot;, using Offset Aliases Pandas object notation</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">path</span><span class="o">=</span><span class="n">path</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sample_rate</span><span class="o">=</span><span class="n">sample_rate</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">source</span><span class="o">=</span><span class="s">&#39;Tracebase&#39;</span>
+
+    <span class="k">def</span> <span class="nf">get_trace_dates_from_instance</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">device</span><span class="p">,</span><span class="n">instance</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        This function returns a unique set of dates (corresponding to</span>
+<span class="sd">        individual files) for a single device instance id</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="n">trace_dates</span><span class="o">=</span><span class="nb">set</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">filename</span> <span class="ow">in</span> <span class="n">glob</span><span class="o">.</span><span class="n">glob</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">path</span><span class="o">+</span><span class="n">device</span><span class="o">+</span><span class="s">&#39;/dev_&#39;</span><span class="o">+</span><span class="n">instance</span><span class="o">+</span><span class="s">&#39;*&#39;</span><span class="p">):</span>
+            <span class="n">instance_name_trace_date</span><span class="o">=</span> <span class="n">filename</span><span class="p">[</span><span class="n">filename</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="s">&#39;dev_&#39;</span><span class="p">)</span><span class="o">+</span><span class="mi">4</span><span class="p">:]</span>
+            <span class="n">trace_date</span><span class="o">=</span><span class="n">instance_name_trace_date</span><span class="p">[</span><span class="n">instance_name_trace_date</span>\
+                <span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="s">&#39;_&#39;</span><span class="p">)</span><span class="o">+</span><span class="mi">1</span><span class="p">:]</span>
+            <span class="n">trace_dates</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">trace_date</span><span class="p">[:</span><span class="n">trace_date</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="s">&#39;.csv&#39;</span><span class="p">)])</span>
+        <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="n">trace_dates</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">generate_traces</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">device</span><span class="p">,</span><span class="n">instance_id</span><span class="p">,</span><span class="n">date</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Returns trace:</span>
+<span class="sd">	    series: indexed by time with column name &#39;time&#39;,</span>
+<span class="sd">            series is series of average power value</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="n">filename</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">path</span><span class="o">+</span><span class="n">device</span><span class="o">+</span><span class="s">&#39;/dev_&#39;</span><span class="o">+</span><span class="n">instance_id</span><span class="o">+</span><span class="s">&#39;_&#39;</span><span class="o">+</span><span class="n">date</span><span class="o">+</span><span class="s">&#39;.csv&#39;</span>
+        <span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span><span class="n">sep</span><span class="o">=</span><span class="s">&#39;;&#39;</span><span class="p">,</span>\
+            <span class="n">header</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span><span class="n">names</span><span class="o">=</span><span class="p">[</span><span class="s">&#39;time&#39;</span><span class="p">,</span><span class="s">&#39;1s_W&#39;</span><span class="p">,</span><span class="s">&#39;8s_W&#39;</span><span class="p">])</span>
+        <span class="n">df</span><span class="p">[</span><span class="s">&#39;time&#39;</span><span class="p">]</span><span class="o">=</span><span class="n">pd</span><span class="o">.</span><span class="n">to_datetime</span><span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="s">&#39;time&#39;</span><span class="p">],</span> <span class="n">format</span><span class="o">=</span><span class="s">&#39;</span><span class="si">%d</span><span class="s">/%m/%Y %H:%M:%S&#39;</span><span class="p">)</span>
+        <span class="n">df</span><span class="o">.</span><span class="n">set_index</span><span class="p">(</span><span class="s">&#39;time&#39;</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+        <span class="k">try</span><span class="p">:</span>
+	        <span class="n">series</span><span class="o">=</span><span class="n">df</span><span class="p">[</span><span class="s">&#39;1s_W&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">resample</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">sample_rate</span><span class="p">,</span><span class="n">how</span><span class="o">=</span><span class="s">&#39;sum&#39;</span><span class="p">)</span><span class="o">/</span><span class="mf">3600.0</span>
+        <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
+	        <span class="k">raise</span> <span class="n">SampleError</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">sample_rate</span><span class="p">)</span>
+        <span class="n">series_mult</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">split_on_NANs</span><span class="p">(</span><span class="n">series</span><span class="p">)</span>
+        <span class="k">return</span> <span class="p">[</span><span class="n">ApplianceTrace</span><span class="p">(</span><span class="n">single_series</span><span class="p">,{</span><span class="s">&#39;source&#39;</span><span class="p">:</span><span class="bp">self</span><span class="o">.</span><span class="n">source</span><span class="p">,</span>
+            <span class="s">&#39;device_name&#39;</span><span class="p">:</span><span class="n">device</span><span class="p">,</span><span class="s">&#39;instance_name&#39;</span><span class="p">:</span><span class="n">instance_id</span> <span class="p">,</span><span class="s">&#39;date&#39;</span><span class="p">:</span><span class="n">date</span><span class="p">,</span>
+            <span class="s">&#39;trace_num&#39;</span><span class="p">:</span><span class="n">i</span><span class="p">})</span> <span class="k">for</span> <span class="n">i</span><span class="p">,</span><span class="n">single_series</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">series_mult</span><span class="p">)]</span>
+
+    <span class="k">def</span> <span class="nf">split_on_NANs</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">series</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        This function splits a trace into several traces, </span>
+<span class="sd">        divided by the NAN values. Only outputs traces that have at </span>
+<span class="sd">        least 6 hours of real values</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="n">nan_indices</span><span class="o">=</span><span class="n">series</span><span class="p">[</span><span class="n">series</span><span class="o">.</span><span class="n">isnull</span><span class="p">()]</span><span class="o">.</span><span class="n">index</span>
+        <span class="n">series_mult</span><span class="o">=</span><span class="p">[]</span>
+        <span class="n">prev_index</span><span class="o">=</span><span class="mi">0</span>
+        <span class="k">if</span><span class="p">(</span><span class="n">nan_indices</span><span class="o">.</span><span class="n">size</span><span class="o">&gt;</span><span class="mi">0</span><span class="p">):</span>
+            <span class="k">for</span> <span class="n">nan_index</span> <span class="ow">in</span> <span class="n">nan_indices</span><span class="p">:</span>
+                <span class="n">series_sect</span><span class="o">=</span><span class="n">series</span><span class="p">[</span><span class="n">prev_index</span><span class="p">:</span><span class="n">nan_index</span><span class="p">]</span>
+                <span class="k">if</span><span class="p">(</span><span class="n">series_sect</span><span class="o">.</span><span class="n">size</span><span class="o">&gt;</span><span class="mi">26</span><span class="p">):</span>
+                    <span class="n">series_mult</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">series_sect</span><span class="p">[</span><span class="n">prev_index</span><span class="p">:</span><span class="n">nan_index</span><span class="p">]</span>\
+                        <span class="o">.</span><span class="n">dropna</span><span class="p">())</span>
+                <span class="n">prev_index</span><span class="o">=</span><span class="n">nan_index</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">series_mult</span><span class="o">=</span><span class="p">[</span><span class="n">series</span><span class="p">]</span>
+        <span class="k">return</span> <span class="n">series_mult</span>
+
+    <span class="k">def</span> <span class="nf">generate_instance</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">device</span><span class="p">,</span><span class="n">instance_id</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        This function imports the CSV files from a single device </span>
+<span class="sd">        instance in a device folder</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="n">instance</span><span class="o">=</span><span class="p">[]</span>
+        <span class="n">instance_dates</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">get_trace_dates_from_instance</span><span class="p">(</span><span class="n">device</span><span class="p">,</span><span class="n">instance_id</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">date</span> <span class="ow">in</span> <span class="n">instance_dates</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">trace</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">generate_traces</span><span class="p">(</span><span class="n">device</span><span class="p">,</span><span class="n">instance_id</span><span class="p">,</span><span class="n">date</span><span class="p">):</span>
+                <span class="n">instance</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">trace</span><span class="p">)</span>
+
+        <span class="n">meta</span><span class="o">=</span><span class="p">{</span>
+            <span class="s">&#39;source&#39;</span><span class="p">:</span><span class="bp">self</span><span class="o">.</span><span class="n">source</span><span class="p">,</span>
+            <span class="s">&#39;device_name&#39;</span><span class="p">:</span><span class="n">device</span><span class="p">,</span>
+            <span class="s">&#39;instance_name&#39;</span><span class="p">:</span><span class="n">instance_id</span><span class="p">}</span>
+        <span class="k">return</span> <span class="n">ApplianceInstance</span><span class="p">(</span><span class="n">instance</span><span class="p">,</span><span class="n">meta</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">generate_type</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">device</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        This function imports the CSV files from ALL device instances</span>
+<span class="sd">        in a single device folder</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="n">device_type</span><span class="o">=</span><span class="p">[]</span>
+        <span class="n">instance_ids</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">get_unique_instance_ids</span><span class="p">(</span><span class="n">device</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">instance_id</span> <span class="ow">in</span> <span class="n">instance_ids</span><span class="p">:</span>
+	    <span class="n">device_type</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">generate_instance</span><span class="p">(</span><span class="n">device</span><span class="p">,</span><span class="n">instance_id</span><span class="p">))</span>
+        <span class="n">meta</span><span class="o">=</span> <span class="p">{</span>
+            <span class="s">&#39;source&#39;</span><span class="p">:</span><span class="bp">self</span><span class="o">.</span><span class="n">source</span><span class="p">,</span>
+            <span class="s">&#39;device_name&#39;</span><span class="p">:</span><span class="n">device</span><span class="p">}</span>
+        <span class="k">return</span> <span class="n">ApplianceType</span><span class="p">(</span><span class="n">device_type</span><span class="p">,</span><span class="n">meta</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">get_unique_instance_ids</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">device</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        This function returns a unique set of instance ids from tracebase</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="n">instance_names</span><span class="o">=</span><span class="nb">set</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">filename</span> <span class="ow">in</span> <span class="n">glob</span><span class="o">.</span><span class="n">glob</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">path</span><span class="o">+</span><span class="n">device</span><span class="o">+</span><span class="s">&#39;/*&#39;</span><span class="p">):</span>
+            <span class="n">instance_name_trace_date</span><span class="o">=</span> <span class="n">filename</span><span class="p">[</span><span class="n">filename</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="s">&#39;dev_&#39;</span><span class="p">)</span><span class="o">+</span><span class="mi">4</span><span class="p">:]</span>
+            <span class="n">underscore_index</span><span class="o">=</span><span class="n">instance_name_trace_date</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="s">&#39;_&#39;</span><span class="p">)</span>
+            <span class="n">instance_names</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">instance_name_trace_date</span><span class="p">[:</span><span class="n">underscore_index</span><span class="p">])</span>
+        <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="n">instance_names</span><span class="p">)</span>
+
+
+
+<div class="viewcode-block" id="SampleError"><a class="viewcode-back" href="../../dataset_adapters.html#disaggregator.TracebaseDatasetAdapter.SampleError">[docs]</a><span class="k">class</span> <span class="nc">SampleError</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+
+<span class="sd">    Exception raised for errors in the re-sampling of the data.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">sample_rate</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">sample_rate</span> <span class="o">=</span> <span class="n">sample_rate</span>
+
+    <span class="k">def</span> <span class="nf">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+        <span class="k">return</span> <span class="s">&#39;&#39;&#39;Improperly formatted sampling rate.</span>
+<span class="s">            Check http://pandas.pydata.org/pandas-docs/stable/timeseries.html#offset-aliases</span>
+<span class="s">            for proper formats.  Ex) For 15 minute sampling, do 15T&#39;&#39;&#39;</span></div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../index.html">disaggregator 0.1.0 documentation</a> &raquo;</li>
+          <li><a href="../index.html" >Module code</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2014, Phil Ngo, Miguel Perez, Stephen Suffian, Sabina Tomkins.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.
+    </div>
+  </body>
+</html>

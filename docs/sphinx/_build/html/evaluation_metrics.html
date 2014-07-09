@@ -1,0 +1,186 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Evaluation Metrics &mdash; disaggregator 0.1.0 documentation</title>
+    
+    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '0.1.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="top" title="disaggregator 0.1.0 documentation" href="index.html" />
+    <link rel="next" title="Utilities" href="utils.html" />
+    <link rel="prev" title="Appliances" href="appliances.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="utils.html" title="Utilities"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="appliances.html" title="Appliances"
+             accesskey="P">previous</a> |</li>
+        <li><a href="index.html">disaggregator 0.1.0 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="module-disaggregator.evaluation_metrics">
+<span id="evaluation-metrics"></span><h1>Evaluation Metrics<a class="headerlink" href="#module-disaggregator.evaluation_metrics" title="Permalink to this headline">¶</a></h1>
+<dl class="function">
+<dt id="disaggregator.evaluation_metrics.get_accuracy">
+<tt class="descclassname">disaggregator.evaluation_metrics.</tt><tt class="descname">get_accuracy</tt><big>(</big><em>stats</em><big>)</big><a class="reference internal" href="_modules/disaggregator/evaluation_metrics.html#get_accuracy"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#disaggregator.evaluation_metrics.get_accuracy" title="Permalink to this definition">¶</a></dt>
+<dd><p>Takes an array of true positives, false negatives, true negatives, and false positives. Returns the Accuracy measure where accuracy is tp+tn/(tn+fn+tp+fp)</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="disaggregator.evaluation_metrics.get_positive_negative_stats">
+<tt class="descclassname">disaggregator.evaluation_metrics.</tt><tt class="descname">get_positive_negative_stats</tt><big>(</big><em>true_states</em>, <em>predicted_states</em><big>)</big><a class="reference internal" href="_modules/disaggregator/evaluation_metrics.html#get_positive_negative_stats"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#disaggregator.evaluation_metrics.get_positive_negative_stats" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a dictionary of numpy arrays containing the true positives a &#8216;tp&#8217;,
+the false negatives as &#8216;fn&#8217;, the true negatives as &#8216;tn&#8217;, and
+the false positives as &#8216;fp&#8217;. I would like
+to make this a truth table instead of putting the logic directly in the
+list comprehension.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="disaggregator.evaluation_metrics.get_precision">
+<tt class="descclassname">disaggregator.evaluation_metrics.</tt><tt class="descname">get_precision</tt><big>(</big><em>true_positives</em>, <em>false_positives</em><big>)</big><a class="reference internal" href="_modules/disaggregator/evaluation_metrics.html#get_precision"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#disaggregator.evaluation_metrics.get_precision" title="Permalink to this definition">¶</a></dt>
+<dd><p>Given a numpy array of true positives, and false positives returns a
+precision measure. The precision measure is equal to TP/(TP+FP), where TP
+is a true positive, such that TP=1 when the predicted value was correctly
+classified as positive and 0 otherwise and FP is a false positive, such
+that FP = 1 if a value was falsely predicted to be positive and 0
+otherwise.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="disaggregator.evaluation_metrics.get_sensitivity">
+<tt class="descclassname">disaggregator.evaluation_metrics.</tt><tt class="descname">get_sensitivity</tt><big>(</big><em>true_positives</em>, <em>false_negatives</em><big>)</big><a class="reference internal" href="_modules/disaggregator/evaluation_metrics.html#get_sensitivity"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#disaggregator.evaluation_metrics.get_sensitivity" title="Permalink to this definition">¶</a></dt>
+<dd><p>Given a numpy array of true positives, and false negatives returns a
+sensitivty measure. Then the sensitivity is equal to TP/(TP+FN), where TP
+is a true positive, such that TP=1 when the predicted value was correctly
+classified as positive and 0 otherwise and FN is false negative, such that
+FN = 1 if a value was falsely predicted to be negative and 0 otherwise.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="disaggregator.evaluation_metrics.get_specificity">
+<tt class="descclassname">disaggregator.evaluation_metrics.</tt><tt class="descname">get_specificity</tt><big>(</big><em>true_negatives</em>, <em>false_positives</em><big>)</big><a class="reference internal" href="_modules/disaggregator/evaluation_metrics.html#get_specificity"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#disaggregator.evaluation_metrics.get_specificity" title="Permalink to this definition">¶</a></dt>
+<dd><p>Given a numpy array of true negatives, and false positives returns a
+specificty measure. The specificity measure is equal to TN/(TN+FP), where
+TN is a true negative, such that TN=1 when the predicted value was
+correctly classified as negative and 0 otherwise and FP is a false
+positive, such that FP = 1 if a value was falsely predicted to be positive
+and 0 otherwise.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="disaggregator.evaluation_metrics.guess_truth_from_power">
+<tt class="descclassname">disaggregator.evaluation_metrics.</tt><tt class="descname">guess_truth_from_power</tt><big>(</big><em>signals</em>, <em>threshold</em><big>)</big><a class="reference internal" href="_modules/disaggregator/evaluation_metrics.html#guess_truth_from_power"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#disaggregator.evaluation_metrics.guess_truth_from_power" title="Permalink to this definition">¶</a></dt>
+<dd><p>Helper function for ground truth signals without on/off information.
+Given a series of power readings returns a numpy array where x[i]=0
+if signals[i] &lt; threshold and x[i]=1 if signals[i] &gt;= threshold</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="disaggregator.evaluation_metrics.rss">
+<tt class="descclassname">disaggregator.evaluation_metrics.</tt><tt class="descname">rss</tt><big>(</big><em>truth</em>, <em>prediction</em><big>)</big><a class="reference internal" href="_modules/disaggregator/evaluation_metrics.html#rss"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#disaggregator.evaluation_metrics.rss" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sum of squared residuals</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="disaggregator.evaluation_metrics.sum_error">
+<tt class="descclassname">disaggregator.evaluation_metrics.</tt><tt class="descname">sum_error</tt><big>(</big><em>truth</em>, <em>prediction</em><big>)</big><a class="reference internal" href="_modules/disaggregator/evaluation_metrics.html#sum_error"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#disaggregator.evaluation_metrics.sum_error" title="Permalink to this definition">¶</a></dt>
+<dd><p>Given a numpy array of truth values and prediction values, returns the
+absolute value of the difference between their sums.</p>
+</dd></dl>
+
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="appliances.html"
+                        title="previous chapter">Appliances</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="utils.html"
+                        title="next chapter">Utilities</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="_sources/evaluation_metrics.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="utils.html" title="Utilities"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="appliances.html" title="Appliances"
+             >previous</a> |</li>
+        <li><a href="index.html">disaggregator 0.1.0 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2014, Phil Ngo, Miguel Perez, Stephen Suffian, Sabina Tomkins.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.
+    </div>
+  </body>
+</html>
