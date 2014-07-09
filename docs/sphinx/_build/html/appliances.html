@@ -60,7 +60,10 @@
 <dl class="class">
 <dt id="disaggregator.appliance.ApplianceTrace">
 <em class="property">class </em><tt class="descclassname">disaggregator.appliance.</tt><tt class="descname">ApplianceTrace</tt><big>(</big><em>series</em>, <em>metadata</em><big>)</big><a class="reference internal" href="_modules/disaggregator/appliance.html#ApplianceTrace"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#disaggregator.appliance.ApplianceTrace" title="Permalink to this definition">¶</a></dt>
-<dd><dl class="method">
+<dd><p>This class represents appliance traces.</p>
+<p>Traces are power used by a single (or single set of) appliances sampled
+at a consistent rate.</p>
+<dl class="method">
 <dt id="disaggregator.appliance.ApplianceTrace.get_sampling_rate">
 <tt class="descname">get_sampling_rate</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/disaggregator/appliance.html#ApplianceTrace.get_sampling_rate"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#disaggregator.appliance.ApplianceTrace.get_sampling_rate" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns a string representing the rate at which the series was sampled.</p>
@@ -86,7 +89,11 @@
 <dl class="class">
 <dt id="disaggregator.appliance.ApplianceInstance">
 <em class="property">class </em><tt class="descclassname">disaggregator.appliance.</tt><tt class="descname">ApplianceInstance</tt><big>(</big><em>traces</em>, <em>metadata</em><big>)</big><a class="reference internal" href="_modules/disaggregator/appliance.html#ApplianceInstance"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#disaggregator.appliance.ApplianceInstance" title="Permalink to this definition">¶</a></dt>
-<dd><dl class="method">
+<dd><p>This class represents appliance instances, which may have multiple
+appliance traces.</p>
+<p>Instances hold traces from a single instance of an appliance sampled
+at a consistent rate. Traces may or may not be consecutive.</p>
+<dl class="method">
 <dt id="disaggregator.appliance.ApplianceInstance.concatenate_traces">
 <tt class="descname">concatenate_traces</tt><big>(</big><em>how='strict'</em><big>)</big><a class="reference internal" href="_modules/disaggregator/appliance.html#ApplianceInstance.concatenate_traces"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#disaggregator.appliance.ApplianceInstance.concatenate_traces" title="Permalink to this definition">¶</a></dt>
 <dd><p>Takes its own list of traces and attempts to concatenate them.</p>
@@ -100,7 +107,11 @@
 <dl class="class">
 <dt id="disaggregator.appliance.ApplianceSet">
 <em class="property">class </em><tt class="descclassname">disaggregator.appliance.</tt><tt class="descname">ApplianceSet</tt><big>(</big><em>instances</em>, <em>metadata</em><big>)</big><a class="reference internal" href="_modules/disaggregator/appliance.html#ApplianceSet"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#disaggregator.appliance.ApplianceSet" title="Permalink to this definition">¶</a></dt>
-<dd><dl class="method">
+<dd><p>This class represents appliance sets, which contain a set of temporally
+aligned appliance instances.</p>
+<p>Appliance sets are most frequently used as ground-truth for various
+algorithms, representing a particular home, building, or metered unit.</p>
+<dl class="method">
 <dt id="disaggregator.appliance.ApplianceSet.add_instances">
 <tt class="descname">add_instances</tt><big>(</big><em>instances</em><big>)</big><a class="reference internal" href="_modules/disaggregator/appliance.html#ApplianceSet.add_instances"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#disaggregator.appliance.ApplianceSet.add_instances" title="Permalink to this definition">¶</a></dt>
 <dd><p>Adds the list of appliances to the appliance set.</p>
@@ -110,6 +121,13 @@
 <dt id="disaggregator.appliance.ApplianceSet.add_to_dataframe">
 <tt class="descname">add_to_dataframe</tt><big>(</big><em>instances</em><big>)</big><a class="reference internal" href="_modules/disaggregator/appliance.html#ApplianceSet.add_to_dataframe"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#disaggregator.appliance.ApplianceSet.add_to_dataframe" title="Permalink to this definition">¶</a></dt>
 <dd><p>Adds a new list of appliances to the dataframe.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="disaggregator.appliance.ApplianceSet.generate_non_zero_set">
+<tt class="descname">generate_non_zero_set</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/disaggregator/appliance.html#ApplianceSet.generate_non_zero_set"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#disaggregator.appliance.ApplianceSet.generate_non_zero_set" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get all energy-consuming appliances (and drop instances with traces
+with all zeros)</p>
 </dd></dl>
 
 <dl class="method">
@@ -140,7 +158,12 @@ using those instances</p>
 <dl class="class">
 <dt id="disaggregator.appliance.ApplianceType">
 <em class="property">class </em><tt class="descclassname">disaggregator.appliance.</tt><tt class="descname">ApplianceType</tt><big>(</big><em>instances</em>, <em>metadata</em><big>)</big><a class="reference internal" href="_modules/disaggregator/appliance.html#ApplianceType"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#disaggregator.appliance.ApplianceType" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>This class represents appliance types, which contain a set of
+ApplianceInstances which share particular attributes, but which are not
+necessarily temporally aligned.</p>
+<p>Appliance types are most frequently used to generate models of particular
+types of appliances.</p>
+</dd></dl>
 
 </div>
 </div>

@@ -1,3 +1,13 @@
+"""
+.. module:: disaggregator.PecanStreetDatasetAdapter
+   :platform: Unix
+   :synopsis: Contains a class for importing data from the tracebase dataset.
+
+.. moduleauthor:: Stephen Suffian <steve@invalid.com>
+
+"""
+
+
 from appliance import *
 import pandas as pd
 import numpy as np
