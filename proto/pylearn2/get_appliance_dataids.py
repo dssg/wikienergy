@@ -20,6 +20,8 @@ tables = [u'validated_01_2014',
           u'validated_04_2014',
           u'validated_05_2014',]
 
-appliance_ids = psda.get_dataids_with_real_values(schema,tables[0],args.appliance)
+ids = []
+for table in tables:
+    ids.append(psda.get_dataids_with_real_values(schema,table,args.appliance))
 
-print appliance_ids
+print sorted(da.utils.get_common_ids(ids))
