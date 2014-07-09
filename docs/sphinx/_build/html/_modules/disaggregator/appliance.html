@@ -1,0 +1,219 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>disaggregator.appliance &mdash; disaggregator 0.1.0 documentation</title>
+    
+    <link rel="stylesheet" href="../../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '0.1.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="top" title="disaggregator 0.1.0 documentation" href="../../index.html" />
+    <link rel="up" title="Module code" href="../index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../index.html">disaggregator 0.1.0 documentation</a> &raquo;</li>
+          <li><a href="../index.html" accesskey="U">Module code</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <h1>Source code for disaggregator.appliance</h1><div class="highlight"><pre>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="kn">as</span> <span class="nn">pd</span>
+<span class="kn">import</span> <span class="nn">pprint</span>
+<span class="kn">from</span> <span class="nn">utils</span> <span class="kn">import</span> <span class="n">order_traces</span>
+
+<div class="viewcode-block" id="ApplianceTrace"><a class="viewcode-back" href="../../appliances.html#disaggregator.appliance.ApplianceTrace">[docs]</a><span class="k">class</span> <span class="nc">ApplianceTrace</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">series</span><span class="p">,</span> <span class="n">metadata</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Initializes a trace object from a series and a metadata dictionary.</span>
+<span class="sd">        Series must be sampled at a particular sample rate</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">series</span> <span class="o">=</span> <span class="n">series</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">metadata</span> <span class="o">=</span> <span class="n">metadata</span>
+
+<div class="viewcode-block" id="ApplianceTrace.get_sampling_rate"><a class="viewcode-back" href="../../appliances.html#disaggregator.appliance.ApplianceTrace.get_sampling_rate">[docs]</a>    <span class="k">def</span> <span class="nf">get_sampling_rate</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Returns a string representing the rate at which the series was sampled.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">series</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">freq</span>
+</div>
+<div class="viewcode-block" id="ApplianceTrace.get_total_usage"><a class="viewcode-back" href="../../appliances.html#disaggregator.appliance.ApplianceTrace.get_total_usage">[docs]</a>    <span class="k">def</span> <span class="nf">get_total_usage</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Returns the total usage of this trace</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">series</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
+</div>
+<div class="viewcode-block" id="ApplianceTrace.print_trace"><a class="viewcode-back" href="../../appliances.html#disaggregator.appliance.ApplianceTrace.print_trace">[docs]</a>    <span class="k">def</span> <span class="nf">print_trace</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Prints a summary of the trace</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="k">print</span> <span class="s">&#39;Series size: {}&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">series</span><span class="o">.</span><span class="n">size</span><span class="p">)</span>
+        <span class="k">print</span> <span class="s">&#39;Sampling rate: {}&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">get_sampling_rate</span><span class="p">)</span>
+        <span class="k">print</span> <span class="s">&#39;Metadata: &#39;</span>
+        <span class="n">pprint</span><span class="o">.</span><span class="n">pprint</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">metadata</span><span class="p">)</span>
+
+
+</div></div>
+<div class="viewcode-block" id="ApplianceInstance"><a class="viewcode-back" href="../../appliances.html#disaggregator.appliance.ApplianceInstance">[docs]</a><span class="k">class</span> <span class="nc">ApplianceInstance</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">traces</span><span class="p">,</span><span class="n">metadata</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;Initialize an appliance trace with a list of traces&#39;&#39;&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">traces</span> <span class="o">=</span> <span class="n">order_traces</span><span class="p">(</span><span class="n">traces</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">metadata</span><span class="o">=</span><span class="n">metadata</span>
+
+<div class="viewcode-block" id="ApplianceInstance.concatenate_traces"><a class="viewcode-back" href="../../appliances.html#disaggregator.appliance.ApplianceInstance.concatenate_traces">[docs]</a>    <span class="k">def</span> <span class="nf">concatenate_traces</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">how</span><span class="o">=</span><span class="s">&quot;strict&quot;</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Takes its own list of traces and attempts to concatenate them.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="k">if</span> <span class="n">how</span> <span class="o">==</span> <span class="s">&quot;strict&quot;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">traces</span> <span class="o">=</span> <span class="p">[</span><span class="n">pd</span><span class="o">.</span><span class="n">concat</span><span class="p">(</span><span class="n">traces</span><span class="p">)]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">NotImplementedError</span>
+
+</div></div>
+<div class="viewcode-block" id="ApplianceSet"><a class="viewcode-back" href="../../appliances.html#disaggregator.appliance.ApplianceSet">[docs]</a><span class="k">class</span> <span class="nc">ApplianceSet</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">instances</span><span class="p">,</span><span class="n">metadata</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Initializes an appliance set given a list of instances.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">instances</span> <span class="o">=</span> <span class="n">instances</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">metadata</span> <span class="o">=</span> <span class="n">metadata</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">make_dataframe</span><span class="p">()</span>
+
+<div class="viewcode-block" id="ApplianceSet.add_instances"><a class="viewcode-back" href="../../appliances.html#disaggregator.appliance.ApplianceSet.add_instances">[docs]</a>    <span class="k">def</span> <span class="nf">add_instances</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">instances</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Adds the list of appliances to the appliance set.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">instances</span> <span class="o">+=</span> <span class="n">instances</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">add_to_dataframe</span><span class="p">(</span><span class="n">instances</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="ApplianceSet.add_to_dataframe"><a class="viewcode-back" href="../../appliances.html#disaggregator.appliance.ApplianceSet.add_to_dataframe">[docs]</a>    <span class="k">def</span> <span class="nf">add_to_dataframe</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">instances</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Adds a new list of appliances to the dataframe.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="k">pass</span>
+</div>
+<div class="viewcode-block" id="ApplianceSet.make_dataframe"><a class="viewcode-back" href="../../appliances.html#disaggregator.appliance.ApplianceSet.make_dataframe">[docs]</a>    <span class="k">def</span> <span class="nf">make_dataframe</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Makes a new dataframe of the appliance instances. Throws an exception if</span>
+<span class="sd">        if the appliance instances have traces that don&#39;t align.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="c"># TODO concatenate all traces into a single trace</span>
+        <span class="c"># TODO change this to ordered dict</span>
+        <span class="c"># TODO actually throw an exception</span>
+        <span class="n">series_dict</span> <span class="o">=</span> <span class="p">{</span><span class="n">instance</span><span class="o">.</span><span class="n">traces</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">series</span><span class="o">.</span><span class="n">name</span><span class="p">:</span><span class="n">instance</span><span class="o">.</span><span class="n">traces</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">series</span> <span class="k">for</span> <span class="n">instance</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">instances</span><span class="p">}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="o">.</span><span class="n">from_dict</span><span class="p">(</span><span class="n">series_dict</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="ApplianceSet.set_instances"><a class="viewcode-back" href="../../appliances.html#disaggregator.appliance.ApplianceSet.set_instances">[docs]</a>    <span class="k">def</span> <span class="nf">set_instances</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">instances</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Replaces the old instances with the new list. Makes a new dataframe</span>
+<span class="sd">        using those instances</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">instances</span> <span class="o">=</span> <span class="n">instances</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">make_dataframe</span><span class="p">()</span>
+</div>
+<div class="viewcode-block" id="ApplianceSet.generate_top_k_set"><a class="viewcode-back" href="../../appliances.html#disaggregator.appliance.ApplianceSet.generate_top_k_set">[docs]</a>    <span class="k">def</span> <span class="nf">generate_top_k_set</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">k</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Get top k energy-consuming appliances</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="c"># TODO compare speeds of individual instance summing vs dataframe building and summing</span>
+        <span class="n">total_usages</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+        <span class="n">usage_order</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">argsort</span><span class="p">(</span><span class="n">total_usages</span><span class="p">)[::</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="c"># assumes correctly ordered columns</span>
+        <span class="n">top_k_instances</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">instances</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">usage_order</span><span class="p">[:</span><span class="n">k</span><span class="p">]]</span>
+        <span class="k">return</span> <span class="n">ApplianceSet</span><span class="p">(</span><span class="n">top_k_instances</span><span class="p">,</span>
+                            <span class="p">{</span><span class="s">&quot;name&quot;</span><span class="p">:</span><span class="s">&quot;top_{}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">k</span><span class="p">)})</span>
+</div>
+    <span class="k">def</span> <span class="nf">generate_non_zero_set</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c"># TODO compare speeds of individual instance summing vs dataframe building and summing</span>
+        <span class="n">total_usages</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">df</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+        <span class="n">usage_order</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">argsort</span><span class="p">(</span><span class="n">total_usages</span><span class="p">)[::</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="c"># assumes correctly ordered columns</span>
+        <span class="n">non_zero_instances</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">instances</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">usage_order</span> <span class="k">if</span> <span class="n">total_usages</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="p">]</span>
+        <span class="k">return</span> <span class="n">ApplianceSet</span><span class="p">(</span><span class="n">non_zero_instances</span><span class="p">,</span>
+                            <span class="p">{</span><span class="s">&quot;name&quot;</span><span class="p">:</span><span class="s">&quot;non_zero&quot;</span><span class="p">})</span>
+</div>
+<div class="viewcode-block" id="ApplianceType"><a class="viewcode-back" href="../../appliances.html#disaggregator.appliance.ApplianceType">[docs]</a><span class="k">class</span> <span class="nc">ApplianceType</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">instances</span><span class="p">,</span> <span class="n">metadata</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Initialize a type object with a list of instances. (Check for</span>
+<span class="sd">        uniqueness?)</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="c"># TODO Check for uniqueness?</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">instances</span> <span class="o">=</span> <span class="n">instances</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">metadata</span> <span class="o">=</span> <span class="n">metadata</span>
+</pre></div></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../index.html">disaggregator 0.1.0 documentation</a> &raquo;</li>
+          <li><a href="../index.html" >Module code</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2014, Phil Ngo, Miguel Perez, Stephen Suffian, Sabina Tomkins.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.
+    </div>
+  </body>
+</html>
