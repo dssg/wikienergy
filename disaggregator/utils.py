@@ -1,3 +1,16 @@
+"""
+.. module:: disaggregator.utils
+   :platform: Unix
+   :synopsis: Contains utility methods for modifying and converting between
+      appliance classes.
+
+.. moduleauthor:: Phil Ngo <ngo.phil@gmail.com>
+.. moduleauthor:: Stephen Suffian <steve@invalid.com>
+
+"""
+
+
+
 import appliance
 import pandas as pd
 import numpy as np
@@ -42,6 +55,46 @@ def get_common_ids(id_lists):
     for id_set in id_sets[1:]:
         common_ids &= id_set
     return list(common_ids)
+
+
+def split_trace_into_daily(trace):
+    '''
+    Given a single trace, a list of traces are returned that are each
+    from a unique date.
+    '''
+    series_list=None;
+    traces=[]
+    for i,group in enumerate(trace.series.groupby(trace.series.index.date)):
+            metadata=trace.metadata
+            metadata['trace_num']=i
+            traces.append(appliance.ApplianceTrace(group[1],metadata))
+    return traces
+
+def split_instance_traces_into_daily(device_instance):
+    '''
+    Each trace in an instance is split into multiple traces that are each
+    from a unique date
+    '''
+    traces=[]
+    for trace in instance.traces:
+        traces.extend(split_trace_into_daily(trace))
+    device_instance.traces=traces
+    return device_instance
+
+def split_type_traces_into_daily(device_type):
+    '''
+    Each trace in each instance of a type is split into multiple traces 
+    that are each from a unique date
+    '''
+    traces=[]
+    instances=[]
+    for instance in device_type.instances:
+        for trace in instance.traces:
+            traces.extend(split_trace_into_daily(trace))
+        instance.traces=traces
+        instances.append(instance)
+    device_type.instances=instances    
+    return device_type
 
 def concatenate_traces(traces, metadata=None, how="strict"):
     '''

@@ -1,3 +1,15 @@
+"""
+.. module:: disaggregator.PecanStreetDatasetAdapter
+   :platform: Unix
+   :synopsis: Contains methods for importing data from the pecan street
+     dataset.
+
+.. moduleauthor:: Phil Ngo <ngo.phil@gmail.com>
+.. moduleauthor:: Stephen Suffian <steve@invalid.com>
+.. moduleauthor:: Sabina Tomkins <sabina@invalid.com>
+
+"""
+
 from appliance import ApplianceTrace
 from appliance import ApplianceInstance
 from appliance import ApplianceSet
@@ -212,7 +224,6 @@ def check_sample_rate(schema,sampling_rate):
     accepted_rates = {'curated':'15T' ,'raw':'15' ,'shared':'1T' }
 
 def generate_month_traces_from_table_name(schema,table,dataid):
-    # TODO change this name
     '''
     Returns a list of traces for one house and one month
     '''
@@ -337,10 +348,21 @@ def generate_type_for_appliance_by_dataids(schema,table,appliance,ids):
     traces = generate_traces_for_appliance_by_dataids(schema,table,appliance,
             ids)
     instances=[]
-    metadata = traces[0].metadata.pop('dataid')
+
+    metadata_type = {'source':source,
+                'schema':schema,
+                'table':table ,
+                'device_name':traces[0].series.name,
+                }
     for trace in traces:
-        instances.append(ApplianceInstance([trace],metadata))
-    return ApplianceType(instances,metadata)
+        metadata_instance = {'source':source,
+            'schema':schema,
+            'table':table ,
+            'device_name':traces[0].series.name,
+            'dataid':traces[0].metadata['dataid'],
+            }
+        instances.append(ApplianceInstance([trace],metadata_instance))
+    return ApplianceType(instances,metadata_type)
 
 def get_dataframe(query):
     '''
