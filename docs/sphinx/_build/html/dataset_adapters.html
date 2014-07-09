@@ -1,0 +1,388 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Dataset Adapters &mdash; disaggregator 0.1.0 documentation</title>
+    
+    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '0.1.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="top" title="disaggregator 0.1.0 documentation" href="index.html" />
+    <link rel="next" title="Appliances" href="appliances.html" />
+    <link rel="prev" title="Disaggregator Package Overview" href="index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="appliances.html" title="Appliances"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="index.html" title="Disaggregator Package Overview"
+             accesskey="P">previous</a> |</li>
+        <li><a href="index.html">disaggregator 0.1.0 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="dataset-adapters">
+<h1>Dataset Adapters<a class="headerlink" href="#dataset-adapters" title="Permalink to this headline">¶</a></h1>
+<p>Dataset Adapters are built for importing specific datasets into the format
+used throughout the package which is described below. If you wish to use a
+different source of data with the disaggregator library, your main task will be
+to build a dataset adapter. A few examples have already been built by us.</p>
+<p>Dataset adapters may make use of the methods in the <cite>utils</cite> module, but their
+main purpose is to provide an interface for collecting appliance traces from
+various traces.</p>
+<div class="section" id="pecan-street-dataset-adapter">
+<h2>Pecan Street Dataset Adapter<a class="headerlink" href="#pecan-street-dataset-adapter" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="overview">
+<h3>Overview<a class="headerlink" href="#overview" title="Permalink to this headline">¶</a></h3>
+<p>The Pecan Street dataset includes a large repository of disaggregated traces
+from submetered homes sampled at one-minute or fifteen-minute intervals.
+Credentials are required for access to the database.</p>
+</div>
+<div class="section" id="example-usage">
+<h3>Example Usage<a class="headerlink" href="#example-usage" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">disaggregator</span> <span class="kn">import</span> <span class="n">PecanStreetDatasetAdapter</span> <span class="k">as</span> <span class="n">psda</span>
+
+<span class="c"># set the db_url before using any of the other functions.</span>
+<span class="n">db_url</span><span class="o">=</span><span class="s">&quot;postgresql://user_name:password@host.url:port/db&quot;</span>
+<span class="n">psda</span><span class="o">.</span><span class="n">set_url</span><span class="p">(</span><span class="n">db_url</span><span class="p">)</span>
+
+<span class="c"># get a list of table names for a schema</span>
+<span class="n">table_names</span> <span class="o">=</span> <span class="n">psda</span><span class="o">.</span><span class="n">get_table_names</span><span class="p">(</span><span class="s">&#39;curated&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="module-disaggregator.PecanStreetDatasetAdapter">
+<span id="methods"></span><h3>Methods<a class="headerlink" href="#module-disaggregator.PecanStreetDatasetAdapter" title="Permalink to this headline">¶</a></h3>
+<span class="target" id="module-PecanStreetDatasetAdapter"></span><dl class="exception">
+<dt id="disaggregator.PecanStreetDatasetAdapter.SchemaError">
+<em class="property">exception </em><tt class="descclassname">disaggregator.PecanStreetDatasetAdapter.</tt><tt class="descname">SchemaError</tt><big>(</big><em>schema</em><big>)</big><a class="reference internal" href="_modules/disaggregator/PecanStreetDatasetAdapter.html#SchemaError"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#disaggregator.PecanStreetDatasetAdapter.SchemaError" title="Permalink to this definition">¶</a></dt>
+<dd><p>Exception raised for errors in the schema.</p>
+<dl class="docutils">
+<dt>Attributes:</dt>
+<dd>schema  &#8211; nonexistent schema</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="disaggregator.PecanStreetDatasetAdapter.clean_dataframe">
+<tt class="descclassname">disaggregator.PecanStreetDatasetAdapter.</tt><tt class="descname">clean_dataframe</tt><big>(</big><em>df</em>, <em>schema</em>, <em>drop_cols</em><big>)</big><a class="reference internal" href="_modules/disaggregator/PecanStreetDatasetAdapter.html#clean_dataframe"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#disaggregator.PecanStreetDatasetAdapter.clean_dataframe" title="Permalink to this definition">¶</a></dt>
+<dd><p>Cleans a dataframe queried directly from the database by renaming the db 
+time column (ex. UTC_15MIN) to a column name &#8216;time&#8217;. It then converts the
+time column to datetime objects and reindexes the dataframe to the time
+column before dropping that column from the dataframe. It also drops any
+columns included in the list drop_cols. The columns &#8216;id&#8217; and &#8216;dataid&#8217; are 
+also dropped.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="disaggregator.PecanStreetDatasetAdapter.generate_month_traces_from_attributes">
+<tt class="descclassname">disaggregator.PecanStreetDatasetAdapter.</tt><tt class="descname">generate_month_traces_from_attributes</tt><big>(</big><em>schema</em>, <em>year</em>, <em>month</em>, <em>group=None</em>, <em>rate=None</em>, <em>dataid=None</em><big>)</big><a class="reference internal" href="_modules/disaggregator/PecanStreetDatasetAdapter.html#generate_month_traces_from_attributes"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#disaggregator.PecanStreetDatasetAdapter.generate_month_traces_from_attributes" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a list of traces from a given month. It first finds the table
+name associated with that month.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="disaggregator.PecanStreetDatasetAdapter.generate_month_traces_from_table_name">
+<tt class="descclassname">disaggregator.PecanStreetDatasetAdapter.</tt><tt class="descname">generate_month_traces_from_table_name</tt><big>(</big><em>schema</em>, <em>table</em>, <em>dataid</em><big>)</big><a class="reference internal" href="_modules/disaggregator/PecanStreetDatasetAdapter.html#generate_month_traces_from_table_name"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#disaggregator.PecanStreetDatasetAdapter.generate_month_traces_from_table_name" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a list of traces for one house and one month</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="disaggregator.PecanStreetDatasetAdapter.generate_set_by_house_and_month">
+<tt class="descclassname">disaggregator.PecanStreetDatasetAdapter.</tt><tt class="descname">generate_set_by_house_and_month</tt><big>(</big><em>schema</em>, <em>table</em>, <em>dataid</em><big>)</big><a class="reference internal" href="_modules/disaggregator/PecanStreetDatasetAdapter.html#generate_set_by_house_and_month"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#disaggregator.PecanStreetDatasetAdapter.generate_set_by_house_and_month" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns an ApplianceSet, for given month and house.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="disaggregator.PecanStreetDatasetAdapter.generate_traces_for_appliance_by_dataids">
+<tt class="descclassname">disaggregator.PecanStreetDatasetAdapter.</tt><tt class="descname">generate_traces_for_appliance_by_dataids</tt><big>(</big><em>schema</em>, <em>table</em>, <em>appliance</em>, <em>ids</em><big>)</big><a class="reference internal" href="_modules/disaggregator/PecanStreetDatasetAdapter.html#generate_traces_for_appliance_by_dataids"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#disaggregator.PecanStreetDatasetAdapter.generate_traces_for_appliance_by_dataids" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns traces for a single appliance type across a set of dataids.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="disaggregator.PecanStreetDatasetAdapter.generate_type_for_appliance_by_dataids">
+<tt class="descclassname">disaggregator.PecanStreetDatasetAdapter.</tt><tt class="descname">generate_type_for_appliance_by_dataids</tt><big>(</big><em>schema</em>, <em>table</em>, <em>appliance</em>, <em>ids</em><big>)</big><a class="reference internal" href="_modules/disaggregator/PecanStreetDatasetAdapter.html#generate_type_for_appliance_by_dataids"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#disaggregator.PecanStreetDatasetAdapter.generate_type_for_appliance_by_dataids" title="Permalink to this definition">¶</a></dt>
+<dd><p>Given an appliance and a list of dataids, generate an ApplianceType</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="disaggregator.PecanStreetDatasetAdapter.get_dataframe">
+<tt class="descclassname">disaggregator.PecanStreetDatasetAdapter.</tt><tt class="descname">get_dataframe</tt><big>(</big><em>query</em><big>)</big><a class="reference internal" href="_modules/disaggregator/PecanStreetDatasetAdapter.html#get_dataframe"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#disaggregator.PecanStreetDatasetAdapter.get_dataframe" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a Pandas dataframe with the query results</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="disaggregator.PecanStreetDatasetAdapter.get_dataids_with_real_values">
+<tt class="descclassname">disaggregator.PecanStreetDatasetAdapter.</tt><tt class="descname">get_dataids_with_real_values</tt><big>(</big><em>schema</em>, <em>table</em>, <em>appliance</em>, <em>ids</em><big>)</big><a class="reference internal" href="_modules/disaggregator/PecanStreetDatasetAdapter.html#get_dataids_with_real_values"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#disaggregator.PecanStreetDatasetAdapter.get_dataids_with_real_values" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns ids that contain non-&#8216;NoneType&#8217; values for a given appliance</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="disaggregator.PecanStreetDatasetAdapter.get_single_app_trace_need_house_id">
+<tt class="descclassname">disaggregator.PecanStreetDatasetAdapter.</tt><tt class="descname">get_single_app_trace_need_house_id</tt><big>(</big><em>house_df</em>, <em>app</em><big>)</big><a class="reference internal" href="_modules/disaggregator/PecanStreetDatasetAdapter.html#get_single_app_trace_need_house_id"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#disaggregator.PecanStreetDatasetAdapter.get_single_app_trace_need_house_id" title="Permalink to this definition">¶</a></dt>
+<dd><p>by house is fastest also have get all apps below</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="disaggregator.PecanStreetDatasetAdapter.get_table_column_names">
+<tt class="descclassname">disaggregator.PecanStreetDatasetAdapter.</tt><tt class="descname">get_table_column_names</tt><big>(</big><em>schema</em>, <em>table</em><big>)</big><a class="reference internal" href="_modules/disaggregator/PecanStreetDatasetAdapter.html#get_table_column_names"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#disaggregator.PecanStreetDatasetAdapter.get_table_column_names" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a list of column names for this schema and table</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="disaggregator.PecanStreetDatasetAdapter.get_table_dataids">
+<tt class="descclassname">disaggregator.PecanStreetDatasetAdapter.</tt><tt class="descname">get_table_dataids</tt><big>(</big><em>schema</em>, <em>table</em><big>)</big><a class="reference internal" href="_modules/disaggregator/PecanStreetDatasetAdapter.html#get_table_dataids"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#disaggregator.PecanStreetDatasetAdapter.get_table_dataids" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a list of dataids for this schema and table</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="disaggregator.PecanStreetDatasetAdapter.get_table_dataids_and_column_names">
+<tt class="descclassname">disaggregator.PecanStreetDatasetAdapter.</tt><tt class="descname">get_table_dataids_and_column_names</tt><big>(</big><em>schema</em>, <em>table</em><big>)</big><a class="reference internal" href="_modules/disaggregator/PecanStreetDatasetAdapter.html#get_table_dataids_and_column_names"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#disaggregator.PecanStreetDatasetAdapter.get_table_dataids_and_column_names" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a list of dataids for this schema and table, and a list of the
+column names for this schema and table</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="disaggregator.PecanStreetDatasetAdapter.get_table_name">
+<tt class="descclassname">disaggregator.PecanStreetDatasetAdapter.</tt><tt class="descname">get_table_name</tt><big>(</big><em>schema</em>, <em>year</em>, <em>month</em>, <em>group=None</em>, <em>rate=None</em><big>)</big><a class="reference internal" href="_modules/disaggregator/PecanStreetDatasetAdapter.html#get_table_name"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#disaggregator.PecanStreetDatasetAdapter.get_table_name" title="Permalink to this definition">¶</a></dt>
+<dd><p>Given the year, month, and group return the table name.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="disaggregator.PecanStreetDatasetAdapter.get_table_names">
+<tt class="descclassname">disaggregator.PecanStreetDatasetAdapter.</tt><tt class="descname">get_table_names</tt><big>(</big><em>schema</em><big>)</big><a class="reference internal" href="_modules/disaggregator/PecanStreetDatasetAdapter.html#get_table_names"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#disaggregator.PecanStreetDatasetAdapter.get_table_names" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a list of tables in the schema.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="disaggregator.PecanStreetDatasetAdapter.get_unique_dataids">
+<tt class="descclassname">disaggregator.PecanStreetDatasetAdapter.</tt><tt class="descname">get_unique_dataids</tt><big>(</big><em>schema</em>, <em>year</em>, <em>month</em>, <em>group=None</em><big>)</big><a class="reference internal" href="_modules/disaggregator/PecanStreetDatasetAdapter.html#get_unique_dataids"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#disaggregator.PecanStreetDatasetAdapter.get_unique_dataids" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a list of dataids for a specifc schema (&#8220;curated&#8221;,&#8221;shared&#8221;, or
+&#8220;raw&#8221;), month (int), year (int), and [group (int) - only if &#8220;curated&#8221;].</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="disaggregator.PecanStreetDatasetAdapter.set_url">
+<tt class="descclassname">disaggregator.PecanStreetDatasetAdapter.</tt><tt class="descname">set_url</tt><big>(</big><em>db_url</em><big>)</big><a class="reference internal" href="_modules/disaggregator/PecanStreetDatasetAdapter.html#set_url"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#disaggregator.PecanStreetDatasetAdapter.set_url" title="Permalink to this definition">¶</a></dt>
+<dd><p>Initialize an adapter using a database url_string. Consider the following
+example: db_url=&#8221;postgresql://user_name:password&#64;host.url:port/db&#8221;</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="disaggregator.PecanStreetDatasetAdapter.time_align">
+<tt class="descclassname">disaggregator.PecanStreetDatasetAdapter.</tt><tt class="descname">time_align</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/disaggregator/PecanStreetDatasetAdapter.html#time_align"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#disaggregator.PecanStreetDatasetAdapter.time_align" title="Permalink to this definition">¶</a></dt>
+<dd><p>Checks that for all traces in a home the total time lengths are the
+same</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="disaggregator.PecanStreetDatasetAdapter.verify_same_range">
+<tt class="descclassname">disaggregator.PecanStreetDatasetAdapter.</tt><tt class="descname">verify_same_range</tt><big>(</big><em>pair</em>, <em>pairs</em><big>)</big><a class="reference internal" href="_modules/disaggregator/PecanStreetDatasetAdapter.html#verify_same_range"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#disaggregator.PecanStreetDatasetAdapter.verify_same_range" title="Permalink to this definition">¶</a></dt>
+<dd><p>Check that all data points have the same range</p>
+</dd></dl>
+
+</div>
+</div>
+<div class="section" id="tracebase-dataset-adapter">
+<h2>Tracebase Dataset Adapter<a class="headerlink" href="#tracebase-dataset-adapter" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="id1">
+<h3>Overview<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h3>
+<p>The Tracebase dataset contains many different types of individual appliance
+twenty-four hour traces sampled at one-second intervals and grouped by
+appliance-type. The traces for an individual appliance instance may or may not
+be consecutive or temporally aligned with traces from other appliances. Traces
+are grouped by filetype and their filenames indicate the appliance instance
+and time period.</p>
+</div>
+<div class="section" id="id2">
+<h3>Example Usage<a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">disaggregator</span> <span class="kn">as</span> <span class="nn">da</span>
+<span class="n">folder_path</span><span class="o">=</span><span class="s">&#39;/home/steve/DSSG/wikienergy/data/Tracebase/&#39;</span>
+<span class="n">tbda</span><span class="o">=</span><span class="n">da</span><span class="o">.</span><span class="n">TracebaseDatasetAdapter</span><span class="p">(</span><span class="n">folder_path</span><span class="p">,</span><span class="s">&#39;D&#39;</span><span class="p">,</span><span class="s">&#39;15T&#39;</span><span class="p">)</span>
+<span class="n">cookingstove_type</span> <span class="o">=</span> <span class="n">tbda</span><span class="o">.</span><span class="n">generate_type</span><span class="p">(</span><span class="s">&#39;Cookingstove&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="id3">
+<h3>Methods<a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h3>
+<dl class="class">
+<dt id="disaggregator.TracebaseDatasetAdapter">
+<em class="property">class </em><tt class="descclassname">disaggregator.</tt><tt class="descname">TracebaseDatasetAdapter</tt><big>(</big><em>path</em>, <em>trace_length='D'</em>, <em>sample_rate='15T'</em><big>)</big><a class="headerlink" href="#disaggregator.TracebaseDatasetAdapter" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="method">
+<dt id="disaggregator.TracebaseDatasetAdapter.generate_instance">
+<tt class="descname">generate_instance</tt><big>(</big><em>device</em>, <em>instance_id</em><big>)</big><a class="headerlink" href="#disaggregator.TracebaseDatasetAdapter.generate_instance" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function imports the CSV files from a single device 
+instance in a device folder</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="disaggregator.TracebaseDatasetAdapter.generate_traces">
+<tt class="descname">generate_traces</tt><big>(</big><em>device</em>, <em>instance_id</em>, <em>date</em><big>)</big><a class="headerlink" href="#disaggregator.TracebaseDatasetAdapter.generate_traces" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="docutils">
+<dt>Returns trace:</dt>
+<dd>series: indexed by time with column name &#8216;time&#8217;,
+series is series of average power value</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="disaggregator.TracebaseDatasetAdapter.generate_type">
+<tt class="descname">generate_type</tt><big>(</big><em>device</em><big>)</big><a class="headerlink" href="#disaggregator.TracebaseDatasetAdapter.generate_type" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function imports the CSV files from ALL device instances
+in a single device folder</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="disaggregator.TracebaseDatasetAdapter.get_trace_dates_from_instance">
+<tt class="descname">get_trace_dates_from_instance</tt><big>(</big><em>device</em>, <em>instance</em><big>)</big><a class="headerlink" href="#disaggregator.TracebaseDatasetAdapter.get_trace_dates_from_instance" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function returns a unique set of dates (corresponding to
+individual files) for a single device instance id</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="disaggregator.TracebaseDatasetAdapter.get_unique_instance_ids">
+<tt class="descname">get_unique_instance_ids</tt><big>(</big><em>device</em><big>)</big><a class="headerlink" href="#disaggregator.TracebaseDatasetAdapter.get_unique_instance_ids" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function returns a unique set of instance ids from tracebase</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="disaggregator.TracebaseDatasetAdapter.split_on_NANs">
+<tt class="descname">split_on_NANs</tt><big>(</big><em>series</em><big>)</big><a class="headerlink" href="#disaggregator.TracebaseDatasetAdapter.split_on_NANs" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function splits a trace into several traces, 
+divided by the NAN values. Only outputs traces that have at 
+least 6 hours of real values</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+</div>
+<div class="section" id="greenbutton-dataset-adapter">
+<h2>GreenButton Dataset Adapter<a class="headerlink" href="#greenbutton-dataset-adapter" title="Permalink to this headline">¶</a></h2>
+<p><em>[Future]</em></p>
+<div class="section" id="id4">
+<h3>Overview<a class="headerlink" href="#id4" title="Permalink to this headline">¶</a></h3>
+<p>The Green Button xml format is a standard which is used by commercial energy
+suppliers to provide end-users with historical energy usages</p>
+</div>
+<div class="section" id="id5">
+<h3>Methods<a class="headerlink" href="#id5" title="Permalink to this headline">¶</a></h3>
+<p><em>[None]</em></p>
+</div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Dataset Adapters</a><ul>
+<li><a class="reference internal" href="#pecan-street-dataset-adapter">Pecan Street Dataset Adapter</a><ul>
+<li><a class="reference internal" href="#overview">Overview</a></li>
+<li><a class="reference internal" href="#example-usage">Example Usage</a></li>
+<li><a class="reference internal" href="#module-disaggregator.PecanStreetDatasetAdapter">Methods</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#tracebase-dataset-adapter">Tracebase Dataset Adapter</a><ul>
+<li><a class="reference internal" href="#id1">Overview</a></li>
+<li><a class="reference internal" href="#id2">Example Usage</a></li>
+<li><a class="reference internal" href="#id3">Methods</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#greenbutton-dataset-adapter">GreenButton Dataset Adapter</a><ul>
+<li><a class="reference internal" href="#id4">Overview</a></li>
+<li><a class="reference internal" href="#id5">Methods</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="index.html"
+                        title="previous chapter">Disaggregator Package Overview</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="appliances.html"
+                        title="next chapter">Appliances</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="_sources/dataset_adapters.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="appliances.html" title="Appliances"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="index.html" title="Disaggregator Package Overview"
+             >previous</a> |</li>
+        <li><a href="index.html">disaggregator 0.1.0 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2014, Phil Ngo, Miguel Perez, Stephen Suffian, Sabina Tomkins.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.
+    </div>
+  </body>
+</html>
