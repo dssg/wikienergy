@@ -1,5 +1,6 @@
 import sys
-sys.path.append('../')
+import os.path
+sys.path.append(os.path.abspath(os.pardir))
 from disaggregator import evaluation_metrics as evm
 
 import unittest
