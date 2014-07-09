@@ -327,19 +327,23 @@ def generate_traces_for_appliance_by_dataids(schema,table,appliance,ids):
         traces.append(ApplianceTrace(series,metadata))
     return traces
 
-def get_dataids_with_real_values(schema,table,appliance,ids):
+def get_dataids_with_real_values(schema,table,appliance):
     '''
     Returns ids that contain non-'NoneType' values for a given appliance
     '''
     global schema_names, source
     schema_name = schema_names[schema]
-    real_ids=[]
-    for i in ids:
-        query= 'select {0}, {1} from "{2}".{3} where dataid={4} LIMIT 1'\
-            .format(appliance,time_columns[schema],schema_name,table,i)
-        df=get_dataframe(query)
-        if df[appliance][0] is not None:
-            real_ids.append(i)  
+    query = """
+        WITH summary AS (
+            SELECT v.dataid,
+                   v.{0},
+                   ROW_NUMBER() OVER(PARTITION BY v.dataid) AS rk
+            FROM "{1}".{2} v)
+        SELECT s.dataid
+        FROM summary s
+        WHERE s.rk = 1 and s.{0} is not null
+        """.format(appliance,schema_name,table)
+    real_ids = [row[0] for row in eng.execute(query).fetchall()]
     return real_ids
 
 def generate_type_for_appliance_by_dataids(schema,table,appliance,ids):
