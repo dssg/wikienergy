@@ -1,5 +1,6 @@
 import sys
-sys.path.append('..')
+import os.path
+sys.path.append(os.path.abspath(os.pardir))
 import disaggregator as da
 import unittest
 
