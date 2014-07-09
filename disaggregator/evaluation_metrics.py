@@ -1,3 +1,13 @@
+"""
+.. module:: disaggregator.evaluation_metrics
+   :platform: Unix
+   :synopsis: Contains methods for evaluating the performance of various
+      machine learning algorithms used in disaggregation.
+
+.. moduleauthor:: Sabina Tomkins <sabina@invalid.com>
+
+"""
+
 import numpy as np
 import math
 import scipy
