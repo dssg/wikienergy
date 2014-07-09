@@ -1,0 +1,214 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Disaggregator Package Overview &mdash; disaggregator 0.1.0 documentation</title>
+    
+    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '0.1.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="top" title="disaggregator 0.1.0 documentation" href="#" />
+    <link rel="next" title="Dataset Adapters" href="dataset_adapters.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="dataset_adapters.html" title="Dataset Adapters"
+             accesskey="N">next</a> |</li>
+        <li><a href="#">disaggregator 0.1.0 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="disaggregator-package-overview">
+<h1>Disaggregator Package Overview<a class="headerlink" href="#disaggregator-package-overview" title="Permalink to this headline">¶</a></h1>
+<p>Datasets might be loaded from many external sources and combined or
+manipulated in a variety of ways toward the end of energy disaggregation;
+therefore, we organize a general hierarchical structure around appliance traces
+and other elements described below in order to serve as ground truth training
+sets for algorithmic models.</p>
+<p>The main tasks facilitated by this package are:</p>
+<ul class="simple">
+<li>Importing appliance traces</li>
+<li>Organizing appliance traces into appliance instances, types, and sets</li>
+<li>Algorithms for completing the following three tasks:<ul>
+<li>Determining appliance presence in new traces</li>
+<li>Given appliance presence, determine on-off states for each time point</li>
+<li>Given appliance states, reconstruct original signals</li>
+</ul>
+</li>
+<li>Evaluating algorithmic results with a standard set of metrics</li>
+</ul>
+<div class="section" id="basic-usage">
+<h2>Basic usage<a class="headerlink" href="#basic-usage" title="Permalink to this headline">¶</a></h2>
+<p>Basic usage of the disaggregator module during development is as follows:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">sys</span>
+<span class="kn">import</span> <span class="nn">os.path</span>
+<span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">pardir</span><span class="p">,</span><span class="n">os</span><span class="o">.</span><span class="n">pardir</span><span class="p">))</span>
+
+<span class="kn">import</span> <span class="nn">disaggregator</span> <span class="kn">as</span> <span class="nn">da</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="terms">
+<h2>Terms<a class="headerlink" href="#terms" title="Permalink to this headline">¶</a></h2>
+<p>We use the following terms throughout the documentation to refer to different
+aspects of appliance level energy usage. In general, items in the categories
+described below could be formed from sampled, generated, or disaggregated data.</p>
+<dl class="docutils">
+<dt>appliance trace</dt>
+<dd><p class="first">sequence of consecutive average power measurements (usually in 15 minute
+itervals) for a specific appliance instance for an arbitrary length of time.</p>
+<p class="last">Ex) Readings from Refrigerator 003 for the day of 01/01/2014</p>
+</dd>
+<dt>appliance instance</dt>
+<dd><p class="first">a specific device or example of an appliance model which may have any
+number of traces associated with it. Could additionally be a particular set
+of parameters for a generative model such as a HMM. Furthermore, an
+appliance instance might be an aggregated (i.e. not yet disaggregated) set
+of appliances. This is distinct from <em>appliance set</em> because its
+measured traces will not temporally overlap.</p>
+<p class="last">Ex) Refrigerator 006; <span class="math">\(\lambda = (\pi,A,\mu,\sigma)\)</span>.</p>
+</dd>
+<dt>appliance type</dt>
+<dd>a category of appliances which share a set of meaningful features which may
+be used to distinguish it from other appliance types.</dd>
+<dt>appliance set</dt>
+<dd>a set of appliance instances which form a metered unit. Appliance sets
+might also be fabricated to form ground-truth training, validation or
+testing sets for algorithmic disaggregation tasks.</dd>
+</dl>
+</div>
+<div class="section" id="documentation">
+<h2>Documentation<a class="headerlink" href="#documentation" title="Permalink to this headline">¶</a></h2>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="dataset_adapters.html">Dataset Adapters</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="dataset_adapters.html#pecan-street-dataset-adapter">Pecan Street Dataset Adapter</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dataset_adapters.html#tracebase-dataset-adapter">Tracebase Dataset Adapter</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dataset_adapters.html#greenbutton-dataset-adapter">GreenButton Dataset Adapter</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="appliances.html">Appliances</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="appliances.html#appliance-trace">Appliance Trace</a></li>
+<li class="toctree-l2"><a class="reference internal" href="appliances.html#appliance-instance">Appliance Instance</a></li>
+<li class="toctree-l2"><a class="reference internal" href="appliances.html#appliance-set">Appliance Set</a></li>
+<li class="toctree-l2"><a class="reference internal" href="appliances.html#appliance-type">Appliance Type</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="evaluation_metrics.html">Evaluation Metrics</a></li>
+<li class="toctree-l1"><a class="reference internal" href="utils.html">Utilities</a></li>
+<li class="toctree-l1"><a class="reference internal" href="algorithms.html">Algorithms</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="algorithms.html#fhmm">FHMM</a></li>
+<li class="toctree-l2"><a class="reference internal" href="algorithms.html#neural-networks">Neural Networks</a></li>
+<li class="toctree-l2"><a class="reference internal" href="algorithms.html#sparse-coding">Sparse Coding</a></li>
+<li class="toctree-l2"><a class="reference internal" href="algorithms.html#ensemble">Ensemble</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</div>
+</div>
+<div class="section" id="indices-and-tables">
+<h1>Indices and tables<a class="headerlink" href="#indices-and-tables" title="Permalink to this headline">¶</a></h1>
+<ul class="simple">
+<li><a class="reference internal" href="genindex.html"><em>Index</em></a></li>
+<li><a class="reference internal" href="py-modindex.html"><em>Module Index</em></a></li>
+<li><a class="reference internal" href="search.html"><em>Search Page</em></a></li>
+</ul>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="#">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Disaggregator Package Overview</a><ul>
+<li><a class="reference internal" href="#basic-usage">Basic usage</a></li>
+<li><a class="reference internal" href="#terms">Terms</a></li>
+<li><a class="reference internal" href="#documentation">Documentation</a><ul>
+</ul>
+</li>
+</ul>
+</li>
+<li><a class="reference internal" href="#indices-and-tables">Indices and tables</a></li>
+</ul>
+
+  <h4>Next topic</h4>
+  <p class="topless"><a href="dataset_adapters.html"
+                        title="next chapter">Dataset Adapters</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="_sources/index.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="dataset_adapters.html" title="Dataset Adapters"
+             >next</a> |</li>
+        <li><a href="#">disaggregator 0.1.0 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2014, Phil Ngo, Miguel Perez, Stephen Suffian, Sabina Tomkins.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.
+    </div>
+  </body>
+</html>
