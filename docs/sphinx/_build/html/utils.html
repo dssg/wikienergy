@@ -103,6 +103,47 @@ overlapping traces.</p>
 <dd><p>Given an object and a filename saves the object in pickled format to the data directory.</p>
 </dd></dl>
 
+<dl class="function">
+<dt id="disaggregator.utils.resample_instance_traces">
+<tt class="descclassname">disaggregator.utils.</tt><tt class="descname">resample_instance_traces</tt><big>(</big><em>device_instance</em>, <em>sample_rate</em><big>)</big><a class="reference internal" href="_modules/disaggregator/utils.html#resample_instance_traces"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#disaggregator.utils.resample_instance_traces" title="Permalink to this definition">¶</a></dt>
+<dd><p>Resamples all traces within a given instance.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="disaggregator.utils.resample_trace">
+<tt class="descclassname">disaggregator.utils.</tt><tt class="descname">resample_trace</tt><big>(</big><em>trace</em>, <em>sample_rate</em><big>)</big><a class="reference internal" href="_modules/disaggregator/utils.html#resample_trace"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#disaggregator.utils.resample_trace" title="Permalink to this definition">¶</a></dt>
+<dd><p>Takes a trace and resamples it to a given sample rate, defined by the
+offset aliases described in panda time series.
+<a class="reference external" href="http://pandas.pydata.org/pandas-docs/stable/timeseries.html#offset-aliases">http://pandas.pydata.org/pandas-docs/stable/timeseries.html#offset-aliases</a></p>
+</dd></dl>
+
+<dl class="function">
+<dt id="disaggregator.utils.resample_type_traces">
+<tt class="descclassname">disaggregator.utils.</tt><tt class="descname">resample_type_traces</tt><big>(</big><em>device_type</em>, <em>sample_rate</em><big>)</big><a class="reference internal" href="_modules/disaggregator/utils.html#resample_type_traces"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#disaggregator.utils.resample_type_traces" title="Permalink to this definition">¶</a></dt>
+<dd><p>Resamples all traces in each instance of a given type.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="disaggregator.utils.split_instance_traces_into_daily">
+<tt class="descclassname">disaggregator.utils.</tt><tt class="descname">split_instance_traces_into_daily</tt><big>(</big><em>device_instance</em><big>)</big><a class="reference internal" href="_modules/disaggregator/utils.html#split_instance_traces_into_daily"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#disaggregator.utils.split_instance_traces_into_daily" title="Permalink to this definition">¶</a></dt>
+<dd><p>Each trace in an instance is split into multiple traces that are each
+from a unique date</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="disaggregator.utils.split_trace_into_daily">
+<tt class="descclassname">disaggregator.utils.</tt><tt class="descname">split_trace_into_daily</tt><big>(</big><em>trace</em><big>)</big><a class="reference internal" href="_modules/disaggregator/utils.html#split_trace_into_daily"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#disaggregator.utils.split_trace_into_daily" title="Permalink to this definition">¶</a></dt>
+<dd><p>Given a single trace, a list of traces are returned that are each
+from a unique date.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="disaggregator.utils.split_type_traces_into_daily">
+<tt class="descclassname">disaggregator.utils.</tt><tt class="descname">split_type_traces_into_daily</tt><big>(</big><em>device_type</em><big>)</big><a class="reference internal" href="_modules/disaggregator/utils.html#split_type_traces_into_daily"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#disaggregator.utils.split_type_traces_into_daily" title="Permalink to this definition">¶</a></dt>
+<dd><p>Each trace in each instance of a type is split into multiple traces 
+that are each from a unique date</p>
+</dd></dl>
+
 </div>
 
 

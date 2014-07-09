@@ -1,4 +1,14 @@
-import appliance
+"""
+.. module:: TracebaseDatasetAdapter
+   :platform: Unix
+   :synopsis: Contains a class for importing data from the tracebase dataset.
+
+.. autoclass:: TracebaseDatasetAdapter
+
+.. moduleauthor:: Stephen Suffian <steve@invalid.com>
+
+"""
+import appliance as app
 import pandas as pd
 import numpy as np
 import csv
@@ -33,14 +43,6 @@ class TracebaseDatasetAdapter(object):
             trace_dates.add(trace_date[:trace_date.index('.csv')])
         return list(trace_dates)
 
-    def map_to_decimal(self,floatVal):
-        '''
-        This function casts a value as a decimal. It is used specifically
-        for the .map function when an entire series needs to be casted to 
-        a decimal.
-        '''
-        return decimal.Decimal(floatVal)
-
     def generate_traces(self,device,instance_id,date):
         '''
         Returns trace:
@@ -53,13 +55,13 @@ class TracebaseDatasetAdapter(object):
         df['time']=pd.to_datetime(df['time'], format='%d/%m/%Y %H:%M:%S')
         df.set_index('time', inplace=True)
         try:
-	    series=df['1s_W'].resample(self.sample_rate,how='sum')/3600.0
-            series=series.map(self.map_to_decimal)
+	    series=df['1s_W'].resample(self.sample_rate,how='mean')
+	    series=series.map(decimal.Decimal)
             series.name=device
         except ValueError:
 	    raise SampleError(self.sample_rate)
         series_mult=self.split_on_NANs(series)
-        return [ApplianceTrace(single_series,{'source':self.source,
+        return [app.ApplianceTrace(single_series,{'source':self.source,
             'device_name':device,'instance_name':instance_id ,'date':date,
             'trace_num':i}) for i,single_series in enumerate(series_mult)]
 
@@ -98,7 +100,7 @@ class TracebaseDatasetAdapter(object):
             'source':self.source,
             'device_name':device,
             'instance_name':instance_id}
-        return ApplianceInstance(instance,meta)
+        return app.ApplianceInstance(instance,meta)
 
     def generate_type(self,device):
         '''
@@ -112,7 +114,7 @@ class TracebaseDatasetAdapter(object):
         meta= {
             'source':self.source,
             'device_name':device}
-        return ApplianceType(device_type,meta)
+        return app.ApplianceType(device_type,meta)
 
     def get_unique_instance_ids(self,device):
         '''
@@ -125,13 +127,6 @@ class TracebaseDatasetAdapter(object):
             instance_names.add(instance_name_trace_date[:underscore_index])
         return list(instance_names)
 
-    def map_to_decimal(self,floatVal):
-        '''
-        This function casts a value as a decimal. It is used specifically
-        for the .map function when an entire series needs to be casted to 
-        a decimal.
-        '''
-        return decimal.Decimal(floatVal)
 
 class SampleError(Exception):
     """
