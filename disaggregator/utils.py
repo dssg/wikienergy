@@ -1,5 +1,5 @@
 """
-.. module:: disaggregator.utils
+.. module:: utils
    :platform: Unix
    :synopsis: Contains utility methods for modifying and converting between
       appliance classes.
