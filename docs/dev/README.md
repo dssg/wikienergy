@@ -7,7 +7,7 @@ Style Conventions
 -----------
 
 Please follow standard style described in
-(PEP-8)[http://legacy.python.org/dev/peps/pep-0008/]
+[PEP-8](http://legacy.python.org/dev/peps/pep-0008/)
 
 Testing
 -------
@@ -19,7 +19,8 @@ Autogenerating Documentiation
 -----------------------------
 
 Documentation is generated using the sphinx tool. Documentation can be
-cleaned and regenerated using the following commands:
+cleaned and regenerated using the following commands from within the
+`docs/sphinx` directory:
 
     make clean
     make html
@@ -67,4 +68,4 @@ A module docstring (on the first line of the file):
     """
 
 Additional examples may be found
-(here)[https://pythonhosted.org/an_example_pypi_project/sphinx.html#full-code-example].
+[here](https://pythonhosted.org/an_example_pypi_project/sphinx.html#full-code-example).
