@@ -11,10 +11,11 @@ sys.path.append('../')
 
 import disaggregator.PecanStreetDatasetAdapter as pecan
 import pickle
+import disaggregator.utils as utils
 
 # Open db connection
 db_url = "postgresql://USERNAME:PASSWORD@db.wiki-energy.org:5432/postgres"
-p = pecan(db_url)
+pecan.set_url(db_url)
 
 schema_names = {'curated':'\"PecanStreet_CuratedSets\"',
         'raw':'\"PecanStreet_RawData\"',
@@ -38,7 +39,7 @@ dataset = raw_input('Please enter either "shared" or "curated"(no quotes):\n')
 ##this is wrong it depends which version is running
 schema = dataset
 #schema_e = schema[1:-1]
-tables = p.get_table_names(schema)
+tables = pecan.get_table_names(schema)
 print 'You can now view data for any of these months\n'
 for i in tables:
     print i + '\n'
@@ -50,7 +51,7 @@ month = raw_input()
 print month
 print "This next step takes about a minute..."
 
-[i,a] = p.get_table_metadata(schema,str(tables[0]))
+i,a = pecan.get_table_dataids_and_column_names(schema,str(tables[0]))
 
 print '''You can now load data for a single home.
 Here are the homes you can choose from:\n'''
@@ -64,24 +65,34 @@ print a
 
 print '''You can now get trace information per house. You can also see the
 trace of a particular appliance. However this is the point where you are
-informed that "seeing" is actually a step that comes after pickling. So long
-story short what house, what appliance do you want to check out?'''
+informed that "seeing" is actually a step that comes after pickling. Do you want to pickle a house? If not you will be asked shortly to pickle a type? Enter yes or no'''
+boo = raw_input()
+if str(boo)=='yes':
+    
+    #house = raw_input('Enter a home id\n')
+    #appliance = raw_input('Enter an appliance name (this is not actually necessary at\this point):')
 
-house = raw_input('Enter a home id\n')
-appliance = raw_input('Enter an appliance name (this is not actually necessary at\
-this point):')
+    #query = 'select * from {0}.{1} where dataid={2}'.format(schema_names[schema], month,house)
+    #df = p.get_dataframe(query).fillna(0)
+    #   temp = p.clean_dataframe(df,schema,[])
+    #   test = p.get_month_traces_per_dataid(schema,month,house)
 
-query = 'select * from {0}.{1} where dataid={2}'.format(schema_names[schema], month,house)
-df = p.get_dataframe(query).fillna(0)
-temp = p.clean_dataframe(df,schema,[])
-test = p.get_month_traces_per_dataid(schema,month,house)
+    print 'you now have a bunch of appliance traces, one trace for each appliance in a house'
+    print 'here is some information about the first trace '
 
-print 'you now have a bunch of appliance traces, one trace for each appliance in a house'
-print 'here is some information about the first trace '
 
-print test[0].metadata
+elif str(boo)=='no':
+    print 'ok what appliance do you want?'
+    app = str(raw_input())
+    print 'this step takes quite a while'
+    pecan.set_url(db_url)
+    type = pecan.generate_traces_for_appliance_by_dataids(schema, month,app,i)
+    utils.pickle_object(type, '{}_{}'.format(app,month))
 
-print 'do you want to pickle?\n coming soon!'
+else:
+    print 'what was that?'
+
+
 
 
 

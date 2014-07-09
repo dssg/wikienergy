@@ -1,5 +1,5 @@
 """
-.. module:: disaggregator.PecanStreetDatasetAdapter
+.. module:: PecanStreetDatasetAdapter
    :platform: Unix
    :synopsis: Contains methods for importing data from the pecan street
      dataset.
