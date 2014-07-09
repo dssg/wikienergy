@@ -1,3 +1,15 @@
+"""
+.. module:: disaggregator.PecanStreetDatasetAdapter
+   :platform: Unix
+   :synopsis: Contains methods for importing data from the pecan street
+     dataset.
+
+.. moduleauthor:: Phil Ngo <ngo.phil@gmail.com>
+.. moduleauthor:: Stephen Suffian <steve@invalid.com>
+.. moduleauthor:: Sabina Tomkins <sabina@invalid.com>
+
+"""
+
 from appliance import ApplianceTrace
 from appliance import ApplianceInstance
 from appliance import ApplianceSet
