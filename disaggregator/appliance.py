@@ -1,5 +1,5 @@
 """
-.. module:: disaggregator.appliance
+.. module:: appliance
    :platform: Unix
    :synopsis: Contains classes for representing appliances and appliance
       traces.
