@@ -1,7 +1,9 @@
 """
-.. module:: disaggregator.PecanStreetDatasetAdapter
+.. module:: TracebaseDatasetAdapter
    :platform: Unix
    :synopsis: Contains a class for importing data from the tracebase dataset.
+
+.. autoclass:: TracebaseDatasetAdapter
 
 .. moduleauthor:: Stephen Suffian <steve@invalid.com>
 
