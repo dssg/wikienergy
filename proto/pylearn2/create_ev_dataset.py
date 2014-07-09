@@ -1,6 +1,6 @@
 import sys
 import os.path
-sys.path.append(os.path.join(os.pardir,os.pardir))
+sys.path.append(os.path.abspath(os.path.join(os.pardir,os.pardir)))
 import disaggregator as da
 import disaggregator.PecanStreetDatasetAdapter as psda
 import pickle
