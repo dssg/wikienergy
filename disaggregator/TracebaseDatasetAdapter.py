@@ -10,13 +10,14 @@
 """
 
 
-from appliance import *
+import appliance
 import pandas as pd
 import numpy as np
 import csv
 import glob
 import os
 from datetime import datetime
+import decimal
 #####TO DO - incorporate TRACE_LENGTH
 class TracebaseDatasetAdapter(object):
 
@@ -44,6 +45,14 @@ class TracebaseDatasetAdapter(object):
             trace_dates.add(trace_date[:trace_date.index('.csv')])
         return list(trace_dates)
 
+    def map_to_decimal(self,floatVal):
+        '''
+        This function casts a value as a decimal. It is used specifically
+        for the .map function when an entire series needs to be casted to 
+        a decimal.
+        '''
+        return decimal.Decimal(floatVal)
+
     def generate_traces(self,device,instance_id,date):
         '''
         Returns trace:
@@ -52,13 +61,15 @@ class TracebaseDatasetAdapter(object):
         '''
         filename=self.path+device+'/dev_'+instance_id+'_'+date+'.csv'
         df = pd.read_csv(filename,sep=';',\
-            header=None,names=['time','1s_W','8s_W'])
+                header=None,names=['time','1s_W','8s_W'])
         df['time']=pd.to_datetime(df['time'], format='%d/%m/%Y %H:%M:%S')
         df.set_index('time', inplace=True)
         try:
-	        series=df['1s_W'].resample(self.sample_rate,how='sum')/3600.0
+	    series=df['1s_W'].resample(self.sample_rate,how='sum')/3600.0
+            series=series.map(self.map_to_decimal)
+            series.name=device
         except ValueError:
-	        raise SampleError(self.sample_rate)
+	    raise SampleError(self.sample_rate)
         series_mult=self.split_on_NANs(series)
         return [ApplianceTrace(single_series,{'source':self.source,
             'device_name':device,'instance_name':instance_id ,'date':date,
@@ -126,7 +137,13 @@ class TracebaseDatasetAdapter(object):
             instance_names.add(instance_name_trace_date[:underscore_index])
         return list(instance_names)
 
-
+    def map_to_decimal(self,floatVal):
+        '''
+        This function casts a value as a decimal. It is used specifically
+        for the .map function when an entire series needs to be casted to 
+        a decimal.
+        '''
+        return decimal.Decimal(floatVal)
 
 class SampleError(Exception):
     """
