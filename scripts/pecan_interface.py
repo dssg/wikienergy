@@ -51,7 +51,7 @@ month = raw_input()
 print month
 print "This next step takes about a minute..."
 
-i,a = pecan.get_table_dataids_and_column_names(schema,str(tables[0]))
+i,a = pecan.get_table_dataids_and_column_names(schema,str(month))
 
 print '''You can now load data for a single home.
 Here are the homes you can choose from:\n'''
