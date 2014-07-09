@@ -1,3 +1,13 @@
+"""
+.. module:: TracebaseDatasetAdapter
+   :platform: Unix
+   :synopsis: Contains a class for importing data from the tracebase dataset.
+
+.. autoclass:: TracebaseDatasetAdapter
+
+.. moduleauthor:: Stephen Suffian <steve@invalid.com>
+
+"""
 import appliance as app
 import pandas as pd
 import numpy as np
