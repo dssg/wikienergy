@@ -1,9 +1,26 @@
+"""
+.. module:: disaggregator.appliance
+   :platform: Unix
+   :synopsis: Contains classes for representing appliances and appliance
+      traces.
+
+.. moduleauthor:: Phil Ngo <ngo.phil@gmail.com>
+.. moduleauthor:: Stephen Suffian <steve@invalid.com>
+
+"""
+
 import numpy as np
 import pandas as pd
 import pprint
 from utils import order_traces
 
 class ApplianceTrace(object):
+    """This class represents appliance traces.
+
+    Traces are power used by a single (or single set of) appliances sampled
+    at a consistent rate.
+
+    """
 
     def __init__(self, series, metadata):
         '''
@@ -37,9 +54,17 @@ class ApplianceTrace(object):
 
 
 class ApplianceInstance(object):
+    """This class represents appliance instances, which may have multiple
+    appliance traces.
+
+    Instances hold traces from a single instance of an appliance sampled
+    at a consistent rate. Traces may or may not be consecutive.
+
+    """
+
 
     def __init__(self,traces,metadata):
-        '''Initialize an appliance trace with a list of traces'''
+        '''Initialize an appliance trace with a list of ApplianceTraces'''
         self.traces = order_traces(traces)
         self.metadata=metadata
 
@@ -54,6 +79,13 @@ class ApplianceInstance(object):
 
 
 class ApplianceSet(object):
+    """This class represents appliance sets, which contain a set of temporally
+    aligned appliance instances.
+
+    Appliance sets are most frequently used as ground-truth for various
+    algorithms, representing a particular home, building, or metered unit.
+
+    """
 
     def __init__(self,instances,metadata):
         '''
@@ -107,6 +139,10 @@ class ApplianceSet(object):
                             {"name":"top_{}".format(k)})
 
     def generate_non_zero_set(self):
+        '''
+        Get all energy-consuming appliances (and drop instances with traces
+        with all zeros)
+        '''
         # TODO compare speeds of individual instance summing vs dataframe building and summing
         total_usages = self.df.sum(axis=0)
         usage_order = np.argsort(total_usages)[::-1] # assumes correctly ordered columns
@@ -115,6 +151,14 @@ class ApplianceSet(object):
                             {"name":"non_zero"})
 
 class ApplianceType(object):
+    """This class represents appliance types, which contain a set of
+    ApplianceInstances which share particular attributes, but which are not
+    necessarily temporally aligned.
+
+    Appliance types are most frequently used to generate models of particular
+    types of appliances.
+
+    """
 
     def __init__(self, instances, metadata):
         '''
