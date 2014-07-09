@@ -275,7 +275,6 @@
     <span class="n">accepted_rates</span> <span class="o">=</span> <span class="p">{</span><span class="s">&#39;curated&#39;</span><span class="p">:</span><span class="s">&#39;15T&#39;</span> <span class="p">,</span><span class="s">&#39;raw&#39;</span><span class="p">:</span><span class="s">&#39;15&#39;</span> <span class="p">,</span><span class="s">&#39;shared&#39;</span><span class="p">:</span><span class="s">&#39;1T&#39;</span> <span class="p">}</span>
 
 <div class="viewcode-block" id="generate_month_traces_from_table_name"><a class="viewcode-back" href="../../dataset_adapters.html#disaggregator.PecanStreetDatasetAdapter.generate_month_traces_from_table_name">[docs]</a><span class="k">def</span> <span class="nf">generate_month_traces_from_table_name</span><span class="p">(</span><span class="n">schema</span><span class="p">,</span><span class="n">table</span><span class="p">,</span><span class="n">dataid</span><span class="p">):</span>
-    <span class="c"># TODO change this name</span>
     <span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">    Returns a list of traces for one house and one month</span>
 <span class="sd">    &#39;&#39;&#39;</span>
@@ -356,8 +355,8 @@
 <div class="viewcode-block" id="generate_traces_for_appliance_by_dataids"><a class="viewcode-back" href="../../dataset_adapters.html#disaggregator.PecanStreetDatasetAdapter.generate_traces_for_appliance_by_dataids">[docs]</a><span class="k">def</span> <span class="nf">generate_traces_for_appliance_by_dataids</span><span class="p">(</span><span class="n">schema</span><span class="p">,</span><span class="n">table</span><span class="p">,</span><span class="n">appliance</span><span class="p">,</span><span class="n">ids</span><span class="p">):</span>
     <span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">    Returns traces for a single appliance type across a set of dataids.</span>
+<span class="sd">    The data is converted from average kW to Wh </span>
 <span class="sd">    &#39;&#39;&#39;</span>
-    <span class="c"># TODO Should this really return a type?</span>
     <span class="k">global</span> <span class="n">schema_names</span><span class="p">,</span> <span class="n">source</span>
     <span class="n">schema_name</span> <span class="o">=</span> <span class="n">schema_names</span><span class="p">[</span><span class="n">schema</span><span class="p">]</span>
     <span class="n">traces</span> <span class="o">=</span> <span class="p">[]</span>
@@ -369,6 +368,12 @@
         <span class="n">df</span><span class="p">[</span><span class="s">&#39;time&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">to_datetime</span><span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="s">&#39;time&#39;</span><span class="p">],</span><span class="n">utc</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
         <span class="n">df</span><span class="o">.</span><span class="n">set_index</span><span class="p">(</span><span class="s">&#39;time&#39;</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
         <span class="n">series</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="n">appliance</span><span class="p">],</span><span class="n">name</span> <span class="o">=</span> <span class="n">appliance</span><span class="p">)</span>
+	<span class="k">if</span><span class="p">(</span><span class="n">schema</span><span class="o">==</span><span class="s">&#39;shared&#39;</span><span class="p">):</span>
+		<span class="n">series</span><span class="o">=</span><span class="n">series</span><span class="o">/</span><span class="n">decimal</span><span class="o">.</span><span class="n">Decimal</span><span class="p">(</span><span class="mf">60.0</span><span class="p">)</span><span class="o">*</span><span class="mi">1000</span>
+	<span class="k">elif</span><span class="p">(</span><span class="n">schema</span><span class="o">==</span><span class="s">&#39;curated&#39;</span><span class="p">):</span>
+		<span class="n">series</span><span class="o">=</span><span class="n">series</span><span class="o">/</span><span class="n">decimal</span><span class="o">.</span><span class="n">Decimal</span><span class="p">(</span><span class="mf">4.0</span><span class="p">)</span><span class="o">*</span><span class="mi">1000</span>
+	<span class="k">elif</span><span class="p">(</span><span class="n">schema</span><span class="o">==</span><span class="s">&#39;raw&#39;</span><span class="p">):</span>
+        	<span class="k">raise</span> <span class="ne">NotImplementedError</span>
         <span class="n">metadata</span> <span class="o">=</span> <span class="p">{</span><span class="s">&#39;source&#39;</span><span class="p">:</span><span class="n">source</span><span class="p">,</span>
                 <span class="s">&#39;schema&#39;</span><span class="p">:</span><span class="n">schema</span><span class="p">,</span>
                 <span class="s">&#39;table&#39;</span><span class="p">:</span><span class="n">table</span> <span class="p">,</span>
@@ -378,19 +383,23 @@
         <span class="n">traces</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ApplianceTrace</span><span class="p">(</span><span class="n">series</span><span class="p">,</span><span class="n">metadata</span><span class="p">))</span>
     <span class="k">return</span> <span class="n">traces</span>
 </div>
-<div class="viewcode-block" id="get_dataids_with_real_values"><a class="viewcode-back" href="../../dataset_adapters.html#disaggregator.PecanStreetDatasetAdapter.get_dataids_with_real_values">[docs]</a><span class="k">def</span> <span class="nf">get_dataids_with_real_values</span><span class="p">(</span><span class="n">schema</span><span class="p">,</span><span class="n">table</span><span class="p">,</span><span class="n">appliance</span><span class="p">,</span><span class="n">ids</span><span class="p">):</span>
+<div class="viewcode-block" id="get_dataids_with_real_values"><a class="viewcode-back" href="../../dataset_adapters.html#disaggregator.PecanStreetDatasetAdapter.get_dataids_with_real_values">[docs]</a><span class="k">def</span> <span class="nf">get_dataids_with_real_values</span><span class="p">(</span><span class="n">schema</span><span class="p">,</span><span class="n">table</span><span class="p">,</span><span class="n">appliance</span><span class="p">):</span>
     <span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">    Returns ids that contain non-&#39;NoneType&#39; values for a given appliance</span>
 <span class="sd">    &#39;&#39;&#39;</span>
     <span class="k">global</span> <span class="n">schema_names</span><span class="p">,</span> <span class="n">source</span>
     <span class="n">schema_name</span> <span class="o">=</span> <span class="n">schema_names</span><span class="p">[</span><span class="n">schema</span><span class="p">]</span>
-    <span class="n">real_ids</span><span class="o">=</span><span class="p">[]</span>
-    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">ids</span><span class="p">:</span>
-        <span class="n">query</span><span class="o">=</span> <span class="s">&#39;select {0}, {1} from &quot;{2}&quot;.{3} where dataid={4} LIMIT 1&#39;</span>\
-            <span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">appliance</span><span class="p">,</span><span class="n">time_columns</span><span class="p">[</span><span class="n">schema</span><span class="p">],</span><span class="n">schema_name</span><span class="p">,</span><span class="n">table</span><span class="p">,</span><span class="n">i</span><span class="p">)</span>
-        <span class="n">df</span><span class="o">=</span><span class="n">get_dataframe</span><span class="p">(</span><span class="n">query</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">df</span><span class="p">[</span><span class="n">appliance</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
-            <span class="n">real_ids</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>  
+    <span class="n">query</span> <span class="o">=</span> <span class="s">&quot;&quot;&quot;</span>
+<span class="s">        WITH summary AS (</span>
+<span class="s">            SELECT v.dataid,</span>
+<span class="s">                   v.{0},</span>
+<span class="s">                   ROW_NUMBER() OVER(PARTITION BY v.dataid) AS rk</span>
+<span class="s">            FROM &quot;{1}&quot;.{2} v)</span>
+<span class="s">        SELECT s.dataid</span>
+<span class="s">        FROM summary s</span>
+<span class="s">        WHERE s.rk = 1 and s.{0} is not null</span>
+<span class="s">        &quot;&quot;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">appliance</span><span class="p">,</span><span class="n">schema_name</span><span class="p">,</span><span class="n">table</span><span class="p">)</span>
+    <span class="n">real_ids</span> <span class="o">=</span> <span class="p">[</span><span class="n">row</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">eng</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">query</span><span class="p">)</span><span class="o">.</span><span class="n">fetchall</span><span class="p">()]</span>
     <span class="k">return</span> <span class="n">real_ids</span>
 </div>
 <div class="viewcode-block" id="generate_type_for_appliance_by_dataids"><a class="viewcode-back" href="../../dataset_adapters.html#disaggregator.PecanStreetDatasetAdapter.generate_type_for_appliance_by_dataids">[docs]</a><span class="k">def</span> <span class="nf">generate_type_for_appliance_by_dataids</span><span class="p">(</span><span class="n">schema</span><span class="p">,</span><span class="n">table</span><span class="p">,</span><span class="n">appliance</span><span class="p">,</span><span class="n">ids</span><span class="p">):</span>
@@ -411,7 +420,7 @@
             <span class="s">&#39;schema&#39;</span><span class="p">:</span><span class="n">schema</span><span class="p">,</span>
             <span class="s">&#39;table&#39;</span><span class="p">:</span><span class="n">table</span> <span class="p">,</span>
             <span class="s">&#39;device_name&#39;</span><span class="p">:</span><span class="n">traces</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">series</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
-            <span class="s">&#39;dataid&#39;</span><span class="p">:</span><span class="n">i</span><span class="p">,</span>
+            <span class="s">&#39;dataid&#39;</span><span class="p">:</span><span class="n">traces</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">metadata</span><span class="p">[</span><span class="s">&#39;dataid&#39;</span><span class="p">],</span>
             <span class="p">}</span>
         <span class="n">instances</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ApplianceInstance</span><span class="p">([</span><span class="n">trace</span><span class="p">],</span><span class="n">metadata_instance</span><span class="p">))</span>
     <span class="k">return</span> <span class="n">ApplianceType</span><span class="p">(</span><span class="n">instances</span><span class="p">,</span><span class="n">metadata_type</span><span class="p">)</span>
