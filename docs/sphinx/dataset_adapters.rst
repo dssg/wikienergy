@@ -66,7 +66,7 @@ Example Usage
 Methods
 ~~~~~~~
 
-.. automodule:: disaggregator.TracebaseDatasetAdapter
+.. autoclass:: disaggregator.TracebaseDatasetAdapter
    :members:
 
 GreenButton Dataset Adapter
