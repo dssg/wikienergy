@@ -55,8 +55,8 @@ class TracebaseDatasetAdapter(object):
         df['time']=pd.to_datetime(df['time'], format='%d/%m/%Y %H:%M:%S')
         df.set_index('time', inplace=True)
         try:
-	    series=df['1s_W'].resample(self.sample_rate,how='sum')/3600.0
-            series=series.map(decimal.Decimal)
+	    series=df['1s_W'].resample(self.sample_rate,how='mean')
+	    series=series.map(decimal.Decimal)
             series.name=device
         except ValueError:
 	    raise SampleError(self.sample_rate)

@@ -305,7 +305,7 @@ def get_single_app_trace_need_house_id(house_df, app):
 def generate_traces_for_appliance_by_dataids(schema,table,appliance,ids):
     '''
     Returns traces for a single appliance type across a set of dataids.
-    The data is converted from average kW to Wh 
+    The traces are in decimal form and in average Watts.
     '''
     global schema_names, source
     schema_name = schema_names[schema]
@@ -317,13 +317,7 @@ def generate_traces_for_appliance_by_dataids(schema,table,appliance,ids):
         df = df.rename(columns={time_columns[schema]: 'time'})
         df['time'] = pd.to_datetime(df['time'],utc=True)
         df.set_index('time', inplace=True)
-        series = pd.Series(df[appliance],name = appliance)
-	if(schema=='shared'):
-		series=series/decimal.Decimal(60.0)*1000
-	elif(schema=='curated'):
-		series=series/decimal.Decimal(4.0)*1000
-	elif(schema=='raw'):
-        	raise NotImplementedError
+        series = pd.Series(df[appliance],name = appliance)*decimal.Decimal(1000.0)
         metadata = {'source':source,
                 'schema':schema,
                 'table':table ,
