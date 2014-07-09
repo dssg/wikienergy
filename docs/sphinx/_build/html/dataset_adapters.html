@@ -85,7 +85,7 @@ Credentials are required for access to the database.</p>
 </div>
 <div class="section" id="module-disaggregator.PecanStreetDatasetAdapter">
 <span id="methods"></span><h3>Methods<a class="headerlink" href="#module-disaggregator.PecanStreetDatasetAdapter" title="Permalink to this headline">¶</a></h3>
-<dl class="exception">
+<span class="target" id="module-PecanStreetDatasetAdapter"></span><dl class="exception">
 <dt id="disaggregator.PecanStreetDatasetAdapter.SchemaError">
 <em class="property">exception </em><tt class="descclassname">disaggregator.PecanStreetDatasetAdapter.</tt><tt class="descname">SchemaError</tt><big>(</big><em>schema</em><big>)</big><a class="reference internal" href="_modules/disaggregator/PecanStreetDatasetAdapter.html#SchemaError"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#disaggregator.PecanStreetDatasetAdapter.SchemaError" title="Permalink to this definition">¶</a></dt>
 <dd><p>Exception raised for errors in the schema.</p>
@@ -237,10 +237,54 @@ and time period.</p>
 </div>
 <div class="section" id="id3">
 <h3>Methods<a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h3>
-<span class="target" id="module-disaggregator.TracebaseDatasetAdapter"></span><dl class="exception">
-<dt id="disaggregator.TracebaseDatasetAdapter.SampleError">
-<em class="property">exception </em><tt class="descclassname">disaggregator.TracebaseDatasetAdapter.</tt><tt class="descname">SampleError</tt><big>(</big><em>sample_rate</em><big>)</big><a class="reference internal" href="_modules/disaggregator/TracebaseDatasetAdapter.html#SampleError"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#disaggregator.TracebaseDatasetAdapter.SampleError" title="Permalink to this definition">¶</a></dt>
-<dd><p>Exception raised for errors in the re-sampling of the data.</p>
+<dl class="class">
+<dt id="disaggregator.TracebaseDatasetAdapter">
+<em class="property">class </em><tt class="descclassname">disaggregator.</tt><tt class="descname">TracebaseDatasetAdapter</tt><big>(</big><em>path</em>, <em>trace_length='D'</em>, <em>sample_rate='15T'</em><big>)</big><a class="headerlink" href="#disaggregator.TracebaseDatasetAdapter" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="method">
+<dt id="disaggregator.TracebaseDatasetAdapter.generate_instance">
+<tt class="descname">generate_instance</tt><big>(</big><em>device</em>, <em>instance_id</em><big>)</big><a class="headerlink" href="#disaggregator.TracebaseDatasetAdapter.generate_instance" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function imports the CSV files from a single device 
+instance in a device folder</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="disaggregator.TracebaseDatasetAdapter.generate_traces">
+<tt class="descname">generate_traces</tt><big>(</big><em>device</em>, <em>instance_id</em>, <em>date</em><big>)</big><a class="headerlink" href="#disaggregator.TracebaseDatasetAdapter.generate_traces" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="docutils">
+<dt>Returns trace:</dt>
+<dd>series: indexed by time with column name &#8216;time&#8217;,
+series is series of average power value</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="disaggregator.TracebaseDatasetAdapter.generate_type">
+<tt class="descname">generate_type</tt><big>(</big><em>device</em><big>)</big><a class="headerlink" href="#disaggregator.TracebaseDatasetAdapter.generate_type" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function imports the CSV files from ALL device instances
+in a single device folder</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="disaggregator.TracebaseDatasetAdapter.get_trace_dates_from_instance">
+<tt class="descname">get_trace_dates_from_instance</tt><big>(</big><em>device</em>, <em>instance</em><big>)</big><a class="headerlink" href="#disaggregator.TracebaseDatasetAdapter.get_trace_dates_from_instance" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function returns a unique set of dates (corresponding to
+individual files) for a single device instance id</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="disaggregator.TracebaseDatasetAdapter.get_unique_instance_ids">
+<tt class="descname">get_unique_instance_ids</tt><big>(</big><em>device</em><big>)</big><a class="headerlink" href="#disaggregator.TracebaseDatasetAdapter.get_unique_instance_ids" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function returns a unique set of instance ids from tracebase</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="disaggregator.TracebaseDatasetAdapter.split_on_NANs">
+<tt class="descname">split_on_NANs</tt><big>(</big><em>series</em><big>)</big><a class="headerlink" href="#disaggregator.TracebaseDatasetAdapter.split_on_NANs" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function splits a trace into several traces, 
+divided by the NAN values. Only outputs traces that have at 
+least 6 hours of real values</p>
+</dd></dl>
+
 </dd></dl>
 
 </div>
