@@ -132,6 +132,7 @@ class ApplianceSet(object):
         Get top k energy-consuming appliances
         '''
         # TODO compare speeds of individual instance summing vs dataframe building and summing
+        # TODO more intelligently create the metadata
         total_usages = self.df.sum(axis=0)
         usage_order = np.argsort(total_usages)[::-1] # assumes correctly ordered columns
         top_k_instances = [self.instances[i] for i in usage_order[:k]]
@@ -144,6 +145,7 @@ class ApplianceSet(object):
         with all zeros)
         '''
         # TODO compare speeds of individual instance summing vs dataframe building and summing
+        # TODO moe intelligently create the metadata
         total_usages = self.df.sum(axis=0)
         usage_order = np.argsort(total_usages)[::-1] # assumes correctly ordered columns
         non_zero_instances = [self.instances[i] for i in usage_order if total_usages[i] > 0 ]
