@@ -70,6 +70,13 @@ signal.</p>
 </dd></dl>
 
 <dl class="function">
+<dt id="disaggregator.utils.bootstrap_appliance_set">
+<tt class="descclassname">disaggregator.utils.</tt><tt class="descname">bootstrap_appliance_set</tt><big>(</big><em>appliance_sets</em>, <em>k</em>, <em>n</em>, <em>how='strict'</em><big>)</big><a class="reference internal" href="_modules/disaggregator/utils.html#bootstrap_appliance_set"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#disaggregator.utils.bootstrap_appliance_set" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a list of n bootstrapped appliance sets (each with k appliances).
+Fails if how=&#8221;strict&#8221; and appliance sets are not aligned.</p>
+</dd></dl>
+
+<dl class="function">
 <dt id="disaggregator.utils.concatenate_traces">
 <tt class="descclassname">disaggregator.utils.</tt><tt class="descname">concatenate_traces</tt><big>(</big><em>traces</em>, <em>metadata=None</em>, <em>how='strict'</em><big>)</big><a class="reference internal" href="_modules/disaggregator/utils.html#concatenate_traces"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#disaggregator.utils.concatenate_traces" title="Permalink to this definition">¶</a></dt>
 <dd><p>Given a list of appliance traces, returns a single concatenated
@@ -124,22 +131,22 @@ offset aliases described in panda time series.
 </dd></dl>
 
 <dl class="function">
-<dt id="disaggregator.utils.split_instance_traces_into_daily">
-<tt class="descclassname">disaggregator.utils.</tt><tt class="descname">split_instance_traces_into_daily</tt><big>(</big><em>device_instance</em><big>)</big><a class="reference internal" href="_modules/disaggregator/utils.html#split_instance_traces_into_daily"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#disaggregator.utils.split_instance_traces_into_daily" title="Permalink to this definition">¶</a></dt>
+<dt id="disaggregator.utils.split_instance_traces_into_rate">
+<tt class="descclassname">disaggregator.utils.</tt><tt class="descname">split_instance_traces_into_rate</tt><big>(</big><em>device_instance</em>, <em>rate</em><big>)</big><a class="reference internal" href="_modules/disaggregator/utils.html#split_instance_traces_into_rate"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#disaggregator.utils.split_instance_traces_into_rate" title="Permalink to this definition">¶</a></dt>
 <dd><p>Each trace in an instance is split into multiple traces that are each
 from a unique date</p>
 </dd></dl>
 
 <dl class="function">
-<dt id="disaggregator.utils.split_trace_into_daily">
-<tt class="descclassname">disaggregator.utils.</tt><tt class="descname">split_trace_into_daily</tt><big>(</big><em>trace</em><big>)</big><a class="reference internal" href="_modules/disaggregator/utils.html#split_trace_into_daily"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#disaggregator.utils.split_trace_into_daily" title="Permalink to this definition">¶</a></dt>
+<dt id="disaggregator.utils.split_trace_into_rate">
+<tt class="descclassname">disaggregator.utils.</tt><tt class="descname">split_trace_into_rate</tt><big>(</big><em>trace</em>, <em>rate</em><big>)</big><a class="reference internal" href="_modules/disaggregator/utils.html#split_trace_into_rate"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#disaggregator.utils.split_trace_into_rate" title="Permalink to this definition">¶</a></dt>
 <dd><p>Given a single trace, a list of traces are returned that are each
 from a unique date.</p>
 </dd></dl>
 
 <dl class="function">
-<dt id="disaggregator.utils.split_type_traces_into_daily">
-<tt class="descclassname">disaggregator.utils.</tt><tt class="descname">split_type_traces_into_daily</tt><big>(</big><em>device_type</em><big>)</big><a class="reference internal" href="_modules/disaggregator/utils.html#split_type_traces_into_daily"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#disaggregator.utils.split_type_traces_into_daily" title="Permalink to this definition">¶</a></dt>
+<dt id="disaggregator.utils.split_type_traces_into_rate">
+<tt class="descclassname">disaggregator.utils.</tt><tt class="descname">split_type_traces_into_rate</tt><big>(</big><em>device_type</em>, <em>rate</em><big>)</big><a class="reference internal" href="_modules/disaggregator/utils.html#split_type_traces_into_rate"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#disaggregator.utils.split_type_traces_into_rate" title="Permalink to this definition">¶</a></dt>
 <dd><p>Each trace in each instance of a type is split into multiple traces 
 that are each from a unique date</p>
 </dd></dl>
