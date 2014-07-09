@@ -89,8 +89,9 @@ def pickle_object(obj,title):
     '''
 
     #sys.path.append('../../')
-    silly_path = os.path.abspath(os.path.join(os.path.dirname( '' ), '../..','data/'))
-    with open(os.path.join(silly_path,'{}.p'.format(title)),'wb') as f:
+    #silly_path = os.path.abspath(os.path.join(os.path.dirname( '' ), '../..','data/'))
+    rel_path = os.path.relpath(os.get_cwd(),'data')
+    with open(os.path.join(rel_path,'{}.p'.format(title)),'wb') as f:
         pickle.dump(object, f)
 
 def shuffle_appliance_sets(sets,other_params):
