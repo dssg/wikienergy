@@ -224,7 +224,6 @@ def check_sample_rate(schema,sampling_rate):
     accepted_rates = {'curated':'15T' ,'raw':'15' ,'shared':'1T' }
 
 def generate_month_traces_from_table_name(schema,table,dataid):
-    # TODO change this name
     '''
     Returns a list of traces for one house and one month
     '''
@@ -360,7 +359,7 @@ def generate_type_for_appliance_by_dataids(schema,table,appliance,ids):
             'schema':schema,
             'table':table ,
             'device_name':traces[0].series.name,
-            'dataid':i,
+            'dataid':traces[0].metadata['dataid'],
             }
         instances.append(ApplianceInstance([trace],metadata_instance))
     return ApplianceType(instances,metadata_type)
