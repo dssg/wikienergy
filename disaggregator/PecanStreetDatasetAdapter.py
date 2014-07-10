@@ -227,7 +227,7 @@ def check_sample_rate(schema,sampling_rate):
     # TODO get from the data directly not like this
     accepted_rates = {'curated':'15T' ,'raw':'15' ,'shared':'1T' }
 
-def generate_month_traces_from_table_name(schema,table,dataid):
+def generate_traces_by_table_and_dataid(schema,table,dataid,sample_rate=None):
     '''
     Returns a list of traces for one house and one month
     '''
@@ -252,16 +252,19 @@ def generate_month_traces_from_table_name(schema,table,dataid):
                 'dataid':dataid,
                 'device_name':s.name
                 }
+            trace = ApplianceTrace(s,meta)
+            if sample_rate:
+                utils.resample_trace(trace,sample_rate)
             traces.append(ApplianceTrace(s,meta))
     return traces
 
-def generate_set_by_house_and_month(schema,table,dataid):
+def generate_set_by_table_and_dataid(schema,table,dataid,sample_rate=None):
     '''
     Returns an ApplianceSet for given month and house.
     '''
-    traces = get_month_traces_from_table_name(schema,table,dataid)
-    instances = [ApplianceInstance(t.series,t.metadata) for t in traces]
-    metadata = instance[0].metadata.pop("device_name")
+    traces = generate_traces_by_table_and_dataid(schema,table,dataid,sample_rate)
+    instances = [ApplianceInstance([t],t.metadata) for t in traces]
+    metadata = instances[0].metadata.pop("device_name")
     return ApplianceSet(instances,metadata)
 
 def get_table_name(schema,year,month,group=None, rate = None):
