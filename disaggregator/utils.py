@@ -73,13 +73,8 @@ def split_trace_into_rate(trace,rate):
     series_list=None;
     traces=[]
     if rate == 'D':
-<<<<<<< HEAD
-        for i,group in enumerate(trace.series.groupby(trace.series.index.date, sort=True)):
+        for i,group in enumerate(trace.series.groupby(trace.series.index.date)):
             metadata=dict.copy(trace.metadata)
-=======
-        for i,group in enumerate(trace.series.groupby(trace.series.index.date,sort=True)):
-            metadata=trace.metadata
->>>>>>> f607e491c7d296e56def435b7649d6cb136512d5
             metadata['trace_num']=i
             traces.append(appliance.ApplianceTrace(group[1],metadata))
     elif rate == 'W':
