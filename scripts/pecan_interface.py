@@ -86,7 +86,9 @@ elif str(boo)=='no':
     app = str(raw_input())
     print 'this step takes quite a while'
     pecan.set_url(db_url)
-    type = pecan.generate_traces_for_appliance_by_dataids(schema, month,app,i)
+    dataids = pecan.get_dataids_with_real_values(schema,month,app)
+    
+    type = pecan.generate_traces_for_appliance_by_dataids(schema, month,app,dataids)
     utils.pickle_object(type, '{}_{}'.format(app,month))
 
 else:
