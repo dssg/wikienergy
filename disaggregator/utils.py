@@ -153,7 +153,7 @@ def resample_trace(trace,sample_rate):
     http://pandas.pydata.org/pandas-docs/stable/timeseries.html#offset-aliases
     '''
     try:
-	      new_series=trace.series.astype(float)
+        new_series=trace.series.astype(float)
         new_series=new_series.resample(sample_rate,how='mean')
         new_series=new_series.map(decimal.Decimal)
         new_series.name=trace.series.name
