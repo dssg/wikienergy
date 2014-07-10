@@ -107,6 +107,13 @@ also dropped.</p>
 </dd></dl>
 
 <dl class="function">
+<dt id="disaggregator.PecanStreetDatasetAdapter.generate_appliance_trace">
+<tt class="descclassname">disaggregator.PecanStreetDatasetAdapter.</tt><tt class="descname">generate_appliance_trace</tt><big>(</big><em>schema</em>, <em>table</em>, <em>appliance</em>, <em>dataid</em>, <em>sample_rate=None</em><big>)</big><a class="reference internal" href="_modules/disaggregator/PecanStreetDatasetAdapter.html#generate_appliance_trace"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#disaggregator.PecanStreetDatasetAdapter.generate_appliance_trace" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return an appliance trace by dataid. The trace is in decimal form and in
+average Watts.</p>
+</dd></dl>
+
+<dl class="function">
 <dt id="disaggregator.PecanStreetDatasetAdapter.generate_month_traces_from_attributes">
 <tt class="descclassname">disaggregator.PecanStreetDatasetAdapter.</tt><tt class="descname">generate_month_traces_from_attributes</tt><big>(</big><em>schema</em>, <em>year</em>, <em>month</em>, <em>group=None</em>, <em>rate=None</em>, <em>dataid=None</em><big>)</big><a class="reference internal" href="_modules/disaggregator/PecanStreetDatasetAdapter.html#generate_month_traces_from_attributes"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#disaggregator.PecanStreetDatasetAdapter.generate_month_traces_from_attributes" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns a list of traces from a given month. It first finds the table
@@ -122,14 +129,13 @@ name associated with that month.</p>
 <dl class="function">
 <dt id="disaggregator.PecanStreetDatasetAdapter.generate_set_by_house_and_month">
 <tt class="descclassname">disaggregator.PecanStreetDatasetAdapter.</tt><tt class="descname">generate_set_by_house_and_month</tt><big>(</big><em>schema</em>, <em>table</em>, <em>dataid</em><big>)</big><a class="reference internal" href="_modules/disaggregator/PecanStreetDatasetAdapter.html#generate_set_by_house_and_month"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#disaggregator.PecanStreetDatasetAdapter.generate_set_by_house_and_month" title="Permalink to this definition">¶</a></dt>
-<dd><p>Returns an ApplianceSet, for given month and house.</p>
+<dd><p>Returns an ApplianceSet for given month and house.</p>
 </dd></dl>
 
 <dl class="function">
 <dt id="disaggregator.PecanStreetDatasetAdapter.generate_traces_for_appliance_by_dataids">
-<tt class="descclassname">disaggregator.PecanStreetDatasetAdapter.</tt><tt class="descname">generate_traces_for_appliance_by_dataids</tt><big>(</big><em>schema</em>, <em>table</em>, <em>appliance</em>, <em>ids</em><big>)</big><a class="reference internal" href="_modules/disaggregator/PecanStreetDatasetAdapter.html#generate_traces_for_appliance_by_dataids"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#disaggregator.PecanStreetDatasetAdapter.generate_traces_for_appliance_by_dataids" title="Permalink to this definition">¶</a></dt>
-<dd><p>Returns traces for a single appliance type across a set of dataids.
-The traces are in decimal form and in average Watts.</p>
+<tt class="descclassname">disaggregator.PecanStreetDatasetAdapter.</tt><tt class="descname">generate_traces_for_appliance_by_dataids</tt><big>(</big><em>schema</em>, <em>table</em>, <em>appliance</em>, <em>ids</em>, <em>sample_rate=None</em><big>)</big><a class="reference internal" href="_modules/disaggregator/PecanStreetDatasetAdapter.html#generate_traces_for_appliance_by_dataids"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#disaggregator.PecanStreetDatasetAdapter.generate_traces_for_appliance_by_dataids" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns traces for a single appliance type across a set of dataids.</p>
 </dd></dl>
 
 <dl class="function">
@@ -148,12 +154,6 @@ The traces are in decimal form and in average Watts.</p>
 <dt id="disaggregator.PecanStreetDatasetAdapter.get_dataids_with_real_values">
 <tt class="descclassname">disaggregator.PecanStreetDatasetAdapter.</tt><tt class="descname">get_dataids_with_real_values</tt><big>(</big><em>schema</em>, <em>table</em>, <em>appliance</em><big>)</big><a class="reference internal" href="_modules/disaggregator/PecanStreetDatasetAdapter.html#get_dataids_with_real_values"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#disaggregator.PecanStreetDatasetAdapter.get_dataids_with_real_values" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns ids that contain non-&#8216;NoneType&#8217; values for a given appliance</p>
-</dd></dl>
-
-<dl class="function">
-<dt id="disaggregator.PecanStreetDatasetAdapter.get_single_app_trace_need_house_id">
-<tt class="descclassname">disaggregator.PecanStreetDatasetAdapter.</tt><tt class="descname">get_single_app_trace_need_house_id</tt><big>(</big><em>house_df</em>, <em>app</em><big>)</big><a class="reference internal" href="_modules/disaggregator/PecanStreetDatasetAdapter.html#get_single_app_trace_need_house_id"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#disaggregator.PecanStreetDatasetAdapter.get_single_app_trace_need_house_id" title="Permalink to this definition">¶</a></dt>
-<dd><p>by house is fastest also have get all apps below</p>
 </dd></dl>
 
 <dl class="function">
@@ -383,7 +383,7 @@ suppliers to provide end-users with historical energy usages</p>
     </div>
     <div class="footer">
         &copy; Copyright 2014, Phil Ngo, Miguel Perez, Stephen Suffian, Sabina Tomkins.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.2.
     </div>
   </body>
 </html>

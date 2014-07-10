@@ -322,7 +322,7 @@ def generate_appliance_trace(schema,table,appliance,dataid,sample_rate=None):
             }
     trace = ApplianceTrace(series,metadata)
     if sample_rate:
-        trace = resample_trace(trace,sample_rate):
+        trace = resample_trace(trace,sample_rate)
     return trace
 
 def generate_traces_for_appliance_by_dataids(
