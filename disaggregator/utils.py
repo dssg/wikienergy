@@ -74,17 +74,16 @@ def split_trace_into_rate(trace,rate):
     traces=[]
     if rate == 'D':
         for i,group in enumerate(trace.series.groupby(trace.series.index.date)):
-            metadata=trace.metadata
+            metadata=dict.copy(trace.metadata)
             metadata['trace_num']=i
             traces.append(appliance.ApplianceTrace(group[1],metadata))
     elif rate == 'W':
         for i,group in enumerate(trace.series.groupby(trace.series.index.week)):
-            metadata=trace.metadata
+            metadata=dict.copy(trace.metadata)
             metadata['trace_num']=i
             traces.append(appliance.ApplianceTrace(group[1],metadata))
     else:
         print 'Looking for \'week\' or \'day\''
-
     return traces
 
 def split_instance_traces_into_rate(device_instance,rate):
@@ -95,24 +94,18 @@ def split_instance_traces_into_rate(device_instance,rate):
     traces=[]
     for trace in device_instance.traces:
         traces.extend(split_trace_into_rate(trace,rate))
-    device_instance.traces=traces
-    return device_instance
+        import pdb;pdb.set_trace()
+    return appliance.ApplianceInstance(traces,device_instance.metadata)
 
 def split_type_traces_into_rate(device_type, rate):
     '''
     Each trace in each instance of a type is split into multiple traces 
     that are each from a unique date
     '''
-    traces=[]
     instances=[]
     for instance in device_type.instances:
-        for trace in instance.traces:
-            traces.extend(split_trace_into_rate(trace, rate))
-        instance.traces=traces
-        instances.append(instance)
-
-    device_type.instances=instances    
-    return device_type
+        instances.append(split_instance_traces_into_rate(instance,rate))
+    return appliance.ApplianceType(instances,device_type.metadata)
 
 def concatenate_traces(traces, metadata=None, how="strict"):
     '''
