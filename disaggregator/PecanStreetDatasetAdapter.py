@@ -14,6 +14,7 @@ from appliance import ApplianceTrace
 from appliance import ApplianceInstance
 from appliance import ApplianceSet
 from appliance import ApplianceType
+import utils
 
 import sqlalchemy
 import pandas as pd
@@ -130,6 +131,7 @@ def verify_same_range(pair,pairs):
     '''
     Check that all data points have the same range
     '''
+    #TODO this should go into utils
     pass
 
 def get_table_dataids(schema,table):
@@ -189,6 +191,7 @@ def time_align():
     Checks that for all traces in a home the total time lengths are the
     same
     '''
+    # TODO this should go into utils
     pass
 
 def clean_dataframe(df,schema,drop_cols):
@@ -207,7 +210,7 @@ def clean_dataframe(df,schema,drop_cols):
     df = df.rename(columns={time_columns[schema]: 'time'})
 
     # use a DatetimeIndex
-    df['time'] = pd.to_datetime(df['time'],utc=True)
+    df['time'] = pd.to_datetime(df['time'],utc=False)
     df.set_index('time', inplace=True)
 
     # drop unnecessary columns
@@ -221,7 +224,7 @@ def clean_dataframe(df,schema,drop_cols):
 
 
 def check_sample_rate(schema,sampling_rate):
-    # get from the data directly not like this
+    # TODO get from the data directly not like this
     accepted_rates = {'curated':'15T' ,'raw':'15' ,'shared':'1T' }
 
 def generate_month_traces_from_table_name(schema,table,dataid):
@@ -254,7 +257,7 @@ def generate_month_traces_from_table_name(schema,table,dataid):
 
 def generate_set_by_house_and_month(schema,table,dataid):
     '''
-    Returns an ApplianceSet, for given month and house.
+    Returns an ApplianceSet for given month and house.
     '''
     traces = get_month_traces_from_table_name(schema,table,dataid)
     instances = [ApplianceInstance(t.series,t.metadata) for t in traces]
@@ -297,35 +300,40 @@ def generate_month_traces_from_attributes(schema,year,month,group=None, rate = N
     return get_month_traces_from_table_name(schema,table,dataid)
 
 
-def get_single_app_trace_need_house_id(house_df, app):
-    # TODO what is this function
-    '''by house is fastest also have get all apps below'''
-    pass
-
-def generate_traces_for_appliance_by_dataids(schema,table,appliance,ids):
+def generate_appliance_trace(schema,table,appliance,dataid,sample_rate=None):
     '''
-    Returns traces for a single appliance type across a set of dataids.
-    The traces are in decimal form and in average Watts.
+    Return an appliance trace by dataid. The trace is in decimal form and in
+    average Watts.
     '''
     global schema_names, source
     schema_name = schema_names[schema]
-    traces = []
-    for i in ids:
-        query= 'select {0}, {1} from "{2}".{3} where dataid={4}'\
-            .format(appliance,time_columns[schema],schema_name,table,i)
-        print query
-        df=get_dataframe(query)
-        df = df.rename(columns={time_columns[schema]: 'time'})
-        df['time'] = pd.to_datetime(df['time'],utc=True)
-        df.set_index('time', inplace=True)
-        series = pd.Series(df[appliance],name = appliance)*decimal.Decimal(1000.0)
-        metadata = {'source':source,
-                'schema':schema,
-                'table':table ,
-                'dataid':i,
-                'device_name':series.name,
-                }
-        traces.append(ApplianceTrace(series,metadata))
+    query= 'select {0}, {1} from "{2}".{3} where dataid={4}'\
+        .format(appliance,time_columns[schema],schema_name,table,dataid)
+    print query
+    df = get_dataframe(query)
+    df = df.rename(columns={time_columns[schema]: 'time'})
+    df['time'] = pd.to_datetime(df['time'],utc=False)
+    df.set_index('time', inplace=True)
+    series = pd.Series(df[appliance],name = appliance).fillna(0) *\
+        decimal.Decimal(1000.0)
+    metadata = {'source':source,
+            'schema':schema,
+            'table':table ,
+            'dataid':dataid,
+            'device_name':series.name,
+            }
+    trace = ApplianceTrace(series,metadata)
+    if sample_rate:
+        trace = utils.resample_trace(trace,sample_rate)
+    return trace
+
+def generate_traces_for_appliance_by_dataids(
+        schema, table, appliance, ids, sample_rate=None):
+    '''
+    Returns traces for a single appliance type across a set of dataids.
+    '''
+    traces = [generate_appliance_trace(schema,table,appliance,id_,sample_rate)\
+              for id_ in ids]
     return traces
 
 def get_dataids_with_real_values(schema,table,appliance):
