@@ -65,6 +65,7 @@
 <span class="kn">from</span> <span class="nn">appliance</span> <span class="kn">import</span> <span class="n">ApplianceInstance</span>
 <span class="kn">from</span> <span class="nn">appliance</span> <span class="kn">import</span> <span class="n">ApplianceSet</span>
 <span class="kn">from</span> <span class="nn">appliance</span> <span class="kn">import</span> <span class="n">ApplianceType</span>
+<span class="kn">import</span> <span class="nn">utils</span>
 
 <span class="kn">import</span> <span class="nn">sqlalchemy</span>
 <span class="kn">import</span> <span class="nn">pandas</span> <span class="kn">as</span> <span class="nn">pd</span>
@@ -260,7 +261,7 @@
     <span class="n">df</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">rename</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="p">{</span><span class="n">time_columns</span><span class="p">[</span><span class="n">schema</span><span class="p">]:</span> <span class="s">&#39;time&#39;</span><span class="p">})</span>
 
     <span class="c"># use a DatetimeIndex</span>
-    <span class="n">df</span><span class="p">[</span><span class="s">&#39;time&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">to_datetime</span><span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="s">&#39;time&#39;</span><span class="p">],</span><span class="n">utc</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+    <span class="n">df</span><span class="p">[</span><span class="s">&#39;time&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">to_datetime</span><span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="s">&#39;time&#39;</span><span class="p">],</span><span class="n">utc</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
     <span class="n">df</span><span class="o">.</span><span class="n">set_index</span><span class="p">(</span><span class="s">&#39;time&#39;</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
 
     <span class="c"># drop unnecessary columns</span>
@@ -277,7 +278,7 @@
     <span class="c"># TODO get from the data directly not like this</span>
     <span class="n">accepted_rates</span> <span class="o">=</span> <span class="p">{</span><span class="s">&#39;curated&#39;</span><span class="p">:</span><span class="s">&#39;15T&#39;</span> <span class="p">,</span><span class="s">&#39;raw&#39;</span><span class="p">:</span><span class="s">&#39;15&#39;</span> <span class="p">,</span><span class="s">&#39;shared&#39;</span><span class="p">:</span><span class="s">&#39;1T&#39;</span> <span class="p">}</span>
 
-<div class="viewcode-block" id="generate_month_traces_from_table_name"><a class="viewcode-back" href="../../dataset_adapters.html#disaggregator.PecanStreetDatasetAdapter.generate_month_traces_from_table_name">[docs]</a><span class="k">def</span> <span class="nf">generate_month_traces_from_table_name</span><span class="p">(</span><span class="n">schema</span><span class="p">,</span><span class="n">table</span><span class="p">,</span><span class="n">dataid</span><span class="p">):</span>
+<div class="viewcode-block" id="generate_traces_by_table_and_dataid"><a class="viewcode-back" href="../../dataset_adapters.html#disaggregator.PecanStreetDatasetAdapter.generate_traces_by_table_and_dataid">[docs]</a><span class="k">def</span> <span class="nf">generate_traces_by_table_and_dataid</span><span class="p">(</span><span class="n">schema</span><span class="p">,</span><span class="n">table</span><span class="p">,</span><span class="n">dataid</span><span class="p">,</span><span class="n">sample_rate</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
     <span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">    Returns a list of traces for one house and one month</span>
 <span class="sd">    &#39;&#39;&#39;</span>
@@ -302,16 +303,19 @@
                 <span class="s">&#39;dataid&#39;</span><span class="p">:</span><span class="n">dataid</span><span class="p">,</span>
                 <span class="s">&#39;device_name&#39;</span><span class="p">:</span><span class="n">s</span><span class="o">.</span><span class="n">name</span>
                 <span class="p">}</span>
+            <span class="n">trace</span> <span class="o">=</span> <span class="n">ApplianceTrace</span><span class="p">(</span><span class="n">s</span><span class="p">,</span><span class="n">meta</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">sample_rate</span><span class="p">:</span>
+                <span class="n">utils</span><span class="o">.</span><span class="n">resample_trace</span><span class="p">(</span><span class="n">trace</span><span class="p">,</span><span class="n">sample_rate</span><span class="p">)</span>
             <span class="n">traces</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ApplianceTrace</span><span class="p">(</span><span class="n">s</span><span class="p">,</span><span class="n">meta</span><span class="p">))</span>
     <span class="k">return</span> <span class="n">traces</span>
 </div>
-<div class="viewcode-block" id="generate_set_by_house_and_month"><a class="viewcode-back" href="../../dataset_adapters.html#disaggregator.PecanStreetDatasetAdapter.generate_set_by_house_and_month">[docs]</a><span class="k">def</span> <span class="nf">generate_set_by_house_and_month</span><span class="p">(</span><span class="n">schema</span><span class="p">,</span><span class="n">table</span><span class="p">,</span><span class="n">dataid</span><span class="p">):</span>
+<div class="viewcode-block" id="generate_set_by_table_and_dataid"><a class="viewcode-back" href="../../dataset_adapters.html#disaggregator.PecanStreetDatasetAdapter.generate_set_by_table_and_dataid">[docs]</a><span class="k">def</span> <span class="nf">generate_set_by_table_and_dataid</span><span class="p">(</span><span class="n">schema</span><span class="p">,</span><span class="n">table</span><span class="p">,</span><span class="n">dataid</span><span class="p">,</span><span class="n">sample_rate</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
     <span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">    Returns an ApplianceSet for given month and house.</span>
 <span class="sd">    &#39;&#39;&#39;</span>
-    <span class="n">traces</span> <span class="o">=</span> <span class="n">get_month_traces_from_table_name</span><span class="p">(</span><span class="n">schema</span><span class="p">,</span><span class="n">table</span><span class="p">,</span><span class="n">dataid</span><span class="p">)</span>
-    <span class="n">instances</span> <span class="o">=</span> <span class="p">[</span><span class="n">ApplianceInstance</span><span class="p">(</span><span class="n">t</span><span class="o">.</span><span class="n">series</span><span class="p">,</span><span class="n">t</span><span class="o">.</span><span class="n">metadata</span><span class="p">)</span> <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">traces</span><span class="p">]</span>
-    <span class="n">metadata</span> <span class="o">=</span> <span class="n">instance</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">metadata</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s">&quot;device_name&quot;</span><span class="p">)</span>
+    <span class="n">traces</span> <span class="o">=</span> <span class="n">generate_traces_by_table_and_dataid</span><span class="p">(</span><span class="n">schema</span><span class="p">,</span><span class="n">table</span><span class="p">,</span><span class="n">dataid</span><span class="p">,</span><span class="n">sample_rate</span><span class="p">)</span>
+    <span class="n">instances</span> <span class="o">=</span> <span class="p">[</span><span class="n">ApplianceInstance</span><span class="p">([</span><span class="n">t</span><span class="p">],</span><span class="n">t</span><span class="o">.</span><span class="n">metadata</span><span class="p">)</span> <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">traces</span><span class="p">]</span>
+    <span class="n">metadata</span> <span class="o">=</span> <span class="n">instances</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">metadata</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s">&quot;device_name&quot;</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">ApplianceSet</span><span class="p">(</span><span class="n">instances</span><span class="p">,</span><span class="n">metadata</span><span class="p">)</span>
 </div>
 <div class="viewcode-block" id="get_table_name"><a class="viewcode-back" href="../../dataset_adapters.html#disaggregator.PecanStreetDatasetAdapter.get_table_name">[docs]</a><span class="k">def</span> <span class="nf">get_table_name</span><span class="p">(</span><span class="n">schema</span><span class="p">,</span><span class="n">year</span><span class="p">,</span><span class="n">month</span><span class="p">,</span><span class="n">group</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">rate</span> <span class="o">=</span> <span class="bp">None</span><span class="p">):</span>
@@ -362,9 +366,10 @@
     <span class="k">print</span> <span class="n">query</span>
     <span class="n">df</span> <span class="o">=</span> <span class="n">get_dataframe</span><span class="p">(</span><span class="n">query</span><span class="p">)</span>
     <span class="n">df</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">rename</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="p">{</span><span class="n">time_columns</span><span class="p">[</span><span class="n">schema</span><span class="p">]:</span> <span class="s">&#39;time&#39;</span><span class="p">})</span>
-    <span class="n">df</span><span class="p">[</span><span class="s">&#39;time&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">to_datetime</span><span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="s">&#39;time&#39;</span><span class="p">],</span><span class="n">utc</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+    <span class="n">df</span><span class="p">[</span><span class="s">&#39;time&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">to_datetime</span><span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="s">&#39;time&#39;</span><span class="p">],</span><span class="n">utc</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
     <span class="n">df</span><span class="o">.</span><span class="n">set_index</span><span class="p">(</span><span class="s">&#39;time&#39;</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
-    <span class="n">series</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="n">appliance</span><span class="p">],</span><span class="n">name</span> <span class="o">=</span> <span class="n">appliance</span><span class="p">)</span> <span class="o">*</span> <span class="n">decimal</span><span class="o">.</span><span class="n">Decimal</span><span class="p">(</span><span class="mf">1000.0</span><span class="p">)</span>
+    <span class="n">series</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="n">appliance</span><span class="p">],</span><span class="n">name</span> <span class="o">=</span> <span class="n">appliance</span><span class="p">)</span><span class="o">.</span><span class="n">fillna</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span> <span class="o">*</span>\
+        <span class="n">decimal</span><span class="o">.</span><span class="n">Decimal</span><span class="p">(</span><span class="mf">1000.0</span><span class="p">)</span>
     <span class="n">metadata</span> <span class="o">=</span> <span class="p">{</span><span class="s">&#39;source&#39;</span><span class="p">:</span><span class="n">source</span><span class="p">,</span>
             <span class="s">&#39;schema&#39;</span><span class="p">:</span><span class="n">schema</span><span class="p">,</span>
             <span class="s">&#39;table&#39;</span><span class="p">:</span><span class="n">table</span> <span class="p">,</span>
@@ -373,7 +378,7 @@
             <span class="p">}</span>
     <span class="n">trace</span> <span class="o">=</span> <span class="n">ApplianceTrace</span><span class="p">(</span><span class="n">series</span><span class="p">,</span><span class="n">metadata</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">sample_rate</span><span class="p">:</span>
-        <span class="n">trace</span> <span class="o">=</span> <span class="n">resample_trace</span><span class="p">(</span><span class="n">trace</span><span class="p">,</span><span class="n">sample_rate</span><span class="p">)</span>
+        <span class="n">trace</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">resample_trace</span><span class="p">(</span><span class="n">trace</span><span class="p">,</span><span class="n">sample_rate</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">trace</span>
 </div>
 <div class="viewcode-block" id="generate_traces_for_appliance_by_dataids"><a class="viewcode-back" href="../../dataset_adapters.html#disaggregator.PecanStreetDatasetAdapter.generate_traces_for_appliance_by_dataids">[docs]</a><span class="k">def</span> <span class="nf">generate_traces_for_appliance_by_dataids</span><span class="p">(</span>
@@ -420,9 +425,9 @@
     <span class="k">for</span> <span class="n">trace</span> <span class="ow">in</span> <span class="n">traces</span><span class="p">:</span>
         <span class="n">metadata_instance</span> <span class="o">=</span> <span class="p">{</span><span class="s">&#39;source&#39;</span><span class="p">:</span><span class="n">source</span><span class="p">,</span>
             <span class="s">&#39;schema&#39;</span><span class="p">:</span><span class="n">schema</span><span class="p">,</span>
-            <span class="s">&#39;table&#39;</span><span class="p">:</span><span class="n">table</span> <span class="p">,</span>
-            <span class="s">&#39;device_name&#39;</span><span class="p">:</span><span class="n">traces</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">series</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
-            <span class="s">&#39;dataid&#39;</span><span class="p">:</span><span class="n">traces</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">metadata</span><span class="p">[</span><span class="s">&#39;dataid&#39;</span><span class="p">],</span>
+            <span class="s">&#39;table&#39;</span><span class="p">:</span><span class="n">table</span><span class="p">,</span>
+            <span class="s">&#39;device_name&#39;</span><span class="p">:</span><span class="n">trace</span><span class="o">.</span><span class="n">series</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
+            <span class="s">&#39;dataid&#39;</span><span class="p">:</span><span class="n">trace</span><span class="o">.</span><span class="n">metadata</span><span class="p">[</span><span class="s">&#39;dataid&#39;</span><span class="p">],</span>
             <span class="p">}</span>
         <span class="n">instances</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ApplianceInstance</span><span class="p">([</span><span class="n">trace</span><span class="p">],</span><span class="n">metadata_instance</span><span class="p">))</span>
     <span class="k">return</span> <span class="n">ApplianceType</span><span class="p">(</span><span class="n">instances</span><span class="p">,</span><span class="n">metadata_type</span><span class="p">)</span>
@@ -488,7 +493,7 @@
     </div>
     <div class="footer">
         &copy; Copyright 2014, Phil Ngo, Miguel Perez, Stephen Suffian, Sabina Tomkins.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.2.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.
     </div>
   </body>
 </html>
