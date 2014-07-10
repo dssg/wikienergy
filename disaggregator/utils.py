@@ -185,7 +185,7 @@ def order_traces(traces):
     Given a set of traces, orders them chronologically and catches
     overlapping traces.
     '''
-    order = np.argsort([t.series[0] for t in traces])
+    order = np.argsort([t.series.index[0] for t in traces])
     new_traces = [traces[i] for i in order]
     return new_traces
 
