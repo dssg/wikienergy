@@ -73,7 +73,7 @@ def split_trace_into_rate(trace,rate):
     series_list=None;
     traces=[]
     if rate == 'D':
-        for i,group in enumerate(trace.series.groupby(trace.series.index.date),sort=True):
+        for i,group in enumerate(trace.series.groupby(trace.series.index.date,sort=True)):
             metadata=trace.metadata
             metadata['trace_num']=i
             traces.append(appliance.ApplianceTrace(group[1],metadata))
