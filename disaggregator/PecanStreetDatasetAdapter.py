@@ -371,9 +371,9 @@ def generate_type_for_appliance_by_dataids(schema,table,appliance,ids):
     for trace in traces:
         metadata_instance = {'source':source,
             'schema':schema,
-            'table':table ,
-            'device_name':traces[0].series.name,
-            'dataid':traces[0].metadata['dataid'],
+            'table':table,
+            'device_name':trace.series.name,
+            'dataid':trace.metadata['dataid'],
             }
         instances.append(ApplianceInstance([trace],metadata_instance))
     return ApplianceType(instances,metadata_type)
