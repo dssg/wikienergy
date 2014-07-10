@@ -4,6 +4,7 @@ sys.path.append(os.path.abspath(os.path.join(os.pardir,os.pardir)))
 import disaggregator as da
 import disaggregator.PecanStreetDatasetAdapter as psda
 import pickle
+import numpy as np
 
 db_url = "postgresql://USERNAME:PASSWORD@db.wiki-energy.org:5432/postgres"
 psda.set_url(db_url)
@@ -99,8 +100,36 @@ non_car_ids = [86, 93, 94, 410, 484,
                9937, 9938, 9939, 9982, 9983]
 
 print "hi"
-non_car_use = psda.generate_traces_for_appliance_by_dataids(
-    schema, tables[0], "use", non_car_ids)
 
-import pdb;pdb.set_trace()
+n_cars = len(common_car_ids)
+n_non_cars = len(non_car_ids)
+
+# split into training, validation, and testing
+np.random.seed(1)
+
+def get_train_valid_test_indices(n):
+    indices = np.arange(n)
+    np.random.shuffle(indices)
+    n_train = n/2
+    n_valid = n/4
+    n_test = n - n_train - n_valid
+    assert(n == n_train + n_valid + n_test)
+    return (indices[:n_train],
+           indices[n_train:n_train+n_valid],
+           indices[n_train+n_valid:])
+
+def trace_windows(trace,window_length,window_step):
+    import pdb;pdb.set_trace()
+
+car_train_i, car_valid_i, car_test_i = get_train_valid_test_indices(n_cars)
+non_car_train_i, non_car_valid_i, non_car_test_i =\
+    get_train_valid_test_indices(n_non_cars)
+
+car_training_traces = []
+for i in car_train_i:
+    print 'car train {}'.format(i)
+    trace = psda.generate_appliance_trace(
+        schema, tables[0], "use", common_car_ids[i], '15T')
+    arrays = trace_windows(trace,672,12) # one week, steps of 3 hours
+    car_training_traces.append((trace,1))
 
