@@ -4,6 +4,9 @@ sys.path.append(os.path.abspath(os.path.join(os.pardir,os.pardir)))
 import disaggregator as da
 import disaggregator.PecanStreetDatasetAdapter as psda
 import pickle
+import numpy as np
+import pylearn2
+import pylearn2.datasets as ds
 
 db_url = "postgresql://USERNAME:PASSWORD@db.wiki-energy.org:5432/postgres"
 psda.set_url(db_url)
@@ -98,9 +101,99 @@ non_car_ids = [86, 93, 94, 410, 484,
                9771, 9875, 9915, 9922, 9926,
                9937, 9938, 9939, 9982, 9983]
 
-print "hi"
-non_car_use = psda.generate_traces_for_appliance_by_dataids(
-    schema, tables[0], "use", non_car_ids)
+n_cars = len(common_car_ids)
+n_non_cars = len(non_car_ids)
+
+# split into training, validation, and testing
+np.random.seed(1)
+
+def get_train_valid_test_indices(n):
+    indices = np.arange(n)
+    np.random.shuffle(indices)
+    n_train = n/2
+    n_valid = n/4
+    n_test = n - n_train - n_valid
+    assert(n == n_train + n_valid + n_test)
+    return (indices[:n_train],
+           indices[n_train:n_train+n_valid],
+           indices[n_train+n_valid:])
+
+def trace_windows(trace,window_length,window_step):
+    total_length = trace.series.size
+    n_steps = int((total_length - window_length) / window_step)
+    windows = []
+    for step in range(n_steps):
+        start = step * window_step
+        window = trace.series[start:start + window_length].as_matrix()
+        windows.append(window)
+    return np.array(windows,dtype=np.float)
+
+def get_training_arrays(schema, table, ids, column, sample_rate,
+        window_length, window_step,label):
+    training_array = []
+    for id_ in ids:
+        trace = psda.generate_appliance_trace(
+            schema, table, column, id_, sample_rate)
+        id_array_chunk = trace_windows(trace,window_length,window_step)
+        training_array.append(id_array_chunk)
+    training_array = np.concatenate(training_array,axis=0)
+    label_array = np.array([label for _ in xrange(training_array.shape[0])])
+    return training_array,label_array
+
+# randomly pick indices
+car_train_i, car_valid_i, car_test_i = get_train_valid_test_indices(n_cars)
+non_car_train_i, non_car_valid_i, non_car_test_i =\
+    get_train_valid_test_indices(n_non_cars)
+
+# turn these into sets of ids
+car_train_ids = [common_car_ids[i] for i in car_train_i[:]]
+car_valid_ids = [common_car_ids[i] for i in car_valid_i[:]]
+car_test_ids = [common_car_ids[i] for i in car_test_i[:]]
+non_car_train_ids = [non_car_ids[i] for i in non_car_train_i[:]]
+non_car_valid_ids = [non_car_ids[i] for i in non_car_valid_i[:]]
+non_car_test_ids = [non_car_ids[i] for i in non_car_test_i[:]]
+
+# make arrays and labels
+car_train_X, car_train_y = get_training_arrays(schema, tables[0],
+                                              car_train_ids, 'use',
+                                              '15T', 672, 96, [0,1])
+car_valid_X, car_valid_y = get_training_arrays(schema, tables[0],
+                                              car_valid_ids, 'use',
+                                              '15T', 672, 96, [0,1])
+car_test_X, car_test_y = get_training_arrays(schema, tables[0],
+                                              car_test_ids, 'use',
+                                              '15T', 672, 96, [0,1])
+non_car_train_X, non_car_train_y = get_training_arrays(schema, tables[0],
+                                                       non_car_train_ids,
+                                                       'use','15T',672,96,[1,0])
+non_car_valid_X, non_car_valid_y = get_training_arrays(schema, tables[0],
+                                                       non_car_valid_ids,
+                                                       'use','15T',672,96,[1,0])
+non_car_test_X, non_car_test_y = get_training_arrays(schema, tables[0],
+                                                     non_car_test_ids,
+                                                     'use','15T',672,96,[1,0])
+
+#concatenate
+train_X = np.concatenate((car_train_X,non_car_train_X),axis=0)
+train_y = np.concatenate((car_train_y,non_car_train_y),axis=0)
+valid_X = np.concatenate((car_valid_X,non_car_valid_X),axis=0)
+valid_y = np.concatenate((car_valid_y,non_car_valid_y),axis=0)
+test_X = np.concatenate((car_test_X,non_car_test_X),axis=0)
+test_y = np.concatenate((car_test_y,non_car_test_y),axis=0)
+
+# make pylearn2 datasets
+train_set = ds.DenseDesignMatrix(X=train_X,y=train_y)
+valid_set = ds.DenseDesignMatrix(X=valid_X,y=valid_y)
+test_set = ds.DenseDesignMatrix(X=test_X,y=test_y)
+
+import pdb; pdb.set_trace()
+
+# pickle the datasets
+with open('../../data/pylearn2/train_car.pkl','w') as f:
+    pickle.dump(train_set,f)
+with open('../../data/pylearn2/valid_car.pkl','w') as f:
+    pickle.dump(valid_set,f)
+with open('../../data/pylearn2/test_car.pkl','w') as f:
+    pickle.dump(test_set,f)
 
 import pdb;pdb.set_trace()
-
