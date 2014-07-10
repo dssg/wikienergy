@@ -97,6 +97,14 @@
     <span class="k">else</span><span class="p">:</span>
         <span class="k">return</span> <span class="ne">NotImplementedError</span>
 </div>
+<div class="viewcode-block" id="bootstrap_appliance_set"><a class="viewcode-back" href="../../utils.html#disaggregator.utils.bootstrap_appliance_set">[docs]</a><span class="k">def</span> <span class="nf">bootstrap_appliance_set</span><span class="p">(</span><span class="n">appliance_sets</span><span class="p">,</span> <span class="n">k</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">how</span><span class="o">=</span><span class="s">&quot;strict&quot;</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Returns a list of n bootstrapped appliance sets (each with k appliances).</span>
+<span class="sd">    Fails if how=&quot;strict&quot; and appliance sets are not aligned.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c"># TODO write this function.</span>
+    <span class="k">pass</span>
+</div>
 <div class="viewcode-block" id="get_common_ids"><a class="viewcode-back" href="../../utils.html#disaggregator.utils.get_common_ids">[docs]</a><span class="k">def</span> <span class="nf">get_common_ids</span><span class="p">(</span><span class="n">id_lists</span><span class="p">):</span>
     <span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">    Returns a list of ids common to the supplied lists. (id set intersection)</span>
@@ -108,38 +116,55 @@
     <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="n">common_ids</span><span class="p">)</span>
 
 </div>
-<div class="viewcode-block" id="split_trace_into_daily"><a class="viewcode-back" href="../../utils.html#disaggregator.utils.split_trace_into_daily">[docs]</a><span class="k">def</span> <span class="nf">split_trace_into_daily</span><span class="p">(</span><span class="n">trace</span><span class="p">):</span>
+<div class="viewcode-block" id="split_trace_into_rate"><a class="viewcode-back" href="../../utils.html#disaggregator.utils.split_trace_into_rate">[docs]</a><span class="k">def</span> <span class="nf">split_trace_into_rate</span><span class="p">(</span><span class="n">trace</span><span class="p">,</span><span class="n">rate</span><span class="p">):</span>
     <span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">    Given a single trace, a list of traces are returned that are each</span>
 <span class="sd">    from a unique date.</span>
 <span class="sd">    &#39;&#39;&#39;</span>
     <span class="n">series_list</span><span class="o">=</span><span class="bp">None</span><span class="p">;</span>
     <span class="n">traces</span><span class="o">=</span><span class="p">[]</span>
-    <span class="k">for</span> <span class="n">i</span><span class="p">,</span><span class="n">group</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">trace</span><span class="o">.</span><span class="n">series</span><span class="o">.</span><span class="n">groupby</span><span class="p">(</span><span class="n">trace</span><span class="o">.</span><span class="n">series</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">date</span><span class="p">)):</span>
+    <span class="k">if</span> <span class="n">rate</span> <span class="o">==</span> <span class="s">&#39;day&#39;</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span><span class="n">group</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">trace</span><span class="o">.</span><span class="n">series</span><span class="o">.</span><span class="n">groupby</span><span class="p">(</span><span class="n">trace</span><span class="o">.</span><span class="n">series</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">date</span><span class="p">)):</span>
             <span class="n">metadata</span><span class="o">=</span><span class="n">trace</span><span class="o">.</span><span class="n">metadata</span>
             <span class="n">metadata</span><span class="p">[</span><span class="s">&#39;trace_num&#39;</span><span class="p">]</span><span class="o">=</span><span class="n">i</span>
             <span class="n">traces</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">appliance</span><span class="o">.</span><span class="n">ApplianceTrace</span><span class="p">(</span><span class="n">group</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span><span class="n">metadata</span><span class="p">))</span>
+    <span class="k">elif</span> <span class="n">rate</span> <span class="o">==</span> <span class="s">&#39;week&#39;</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span><span class="n">group</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">trace</span><span class="o">.</span><span class="n">series</span><span class="o">.</span><span class="n">groupby</span><span class="p">(</span><span class="n">trace</span><span class="o">.</span><span class="n">series</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">week</span><span class="p">)):</span>
+            <span class="n">metadata</span><span class="o">=</span><span class="n">trace</span><span class="o">.</span><span class="n">metadata</span>
+            <span class="n">metadata</span><span class="p">[</span><span class="s">&#39;trace_num&#39;</span><span class="p">]</span><span class="o">=</span><span class="n">i</span>
+            <span class="n">traces</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">appliance</span><span class="o">.</span><span class="n">ApplianceTrace</span><span class="p">(</span><span class="n">group</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span><span class="n">metadata</span><span class="p">))</span>
+
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">print</span> <span class="s">&#39;Looking for </span><span class="se">\&#39;</span><span class="s">week</span><span class="se">\&#39;</span><span class="s"> or </span><span class="se">\&#39;</span><span class="s">day</span><span class="se">\&#39;</span><span class="s">&#39;</span>
+
     <span class="k">return</span> <span class="n">traces</span>
 </div>
-<div class="viewcode-block" id="split_instance_traces_into_daily"><a class="viewcode-back" href="../../utils.html#disaggregator.utils.split_instance_traces_into_daily">[docs]</a><span class="k">def</span> <span class="nf">split_instance_traces_into_daily</span><span class="p">(</span><span class="n">device_instance</span><span class="p">):</span>
+<div class="viewcode-block" id="split_instance_traces_into_rate"><a class="viewcode-back" href="../../utils.html#disaggregator.utils.split_instance_traces_into_rate">[docs]</a><span class="k">def</span> <span class="nf">split_instance_traces_into_rate</span><span class="p">(</span><span class="n">device_instance</span><span class="p">,</span><span class="n">rate</span><span class="p">):</span>
     <span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">    Each trace in an instance is split into multiple traces that are each</span>
 <span class="sd">    from a unique date</span>
 <span class="sd">    &#39;&#39;&#39;</span>
     <span class="n">traces</span><span class="o">=</span><span class="p">[]</span>
     <span class="k">for</span> <span class="n">trace</span> <span class="ow">in</span> <span class="n">device_instance</span><span class="o">.</span><span class="n">traces</span><span class="p">:</span>
-        <span class="n">traces</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">split_trace_into_daily</span><span class="p">(</span><span class="n">trace</span><span class="p">))</span>
+
+        <span class="n">traces</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">split_trace_into_daily</span><span class="p">(</span><span class="n">trace</span><span class="p">,</span><span class="n">rate</span><span class="p">))</span>
+
     <span class="n">device_instance</span><span class="o">.</span><span class="n">traces</span><span class="o">=</span><span class="n">traces</span>
     <span class="k">return</span> <span class="n">device_instance</span>
 </div>
-<div class="viewcode-block" id="split_type_traces_into_daily"><a class="viewcode-back" href="../../utils.html#disaggregator.utils.split_type_traces_into_daily">[docs]</a><span class="k">def</span> <span class="nf">split_type_traces_into_daily</span><span class="p">(</span><span class="n">device_type</span><span class="p">):</span>
+<div class="viewcode-block" id="split_type_traces_into_rate"><a class="viewcode-back" href="../../utils.html#disaggregator.utils.split_type_traces_into_rate">[docs]</a><span class="k">def</span> <span class="nf">split_type_traces_into_rate</span><span class="p">(</span><span class="n">device_type</span><span class="p">,</span> <span class="n">rate</span><span class="p">):</span>
     <span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">    Each trace in each instance of a type is split into multiple traces </span>
 <span class="sd">    that are each from a unique date</span>
 <span class="sd">    &#39;&#39;&#39;</span>
     <span class="n">instances</span><span class="o">=</span><span class="p">[]</span>
     <span class="k">for</span> <span class="n">instance</span> <span class="ow">in</span> <span class="n">device_type</span><span class="o">.</span><span class="n">instances</span><span class="p">:</span>
-        <span class="n">instances</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">split_instance_traces_into_daily</span><span class="p">(</span><span class="n">instance</span><span class="p">))</span>
+
+        <span class="k">for</span> <span class="n">trace</span> <span class="ow">in</span> <span class="n">instance</span><span class="o">.</span><span class="n">traces</span><span class="p">:</span>
+            <span class="n">traces</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">split_trace_into_daily</span><span class="p">(</span><span class="n">trace</span><span class="p">,</span> <span class="n">rate</span><span class="p">))</span>
+        <span class="n">instance</span><span class="o">.</span><span class="n">traces</span><span class="o">=</span><span class="n">traces</span>
+        <span class="n">instances</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">instance</span><span class="p">)</span>
+
     <span class="n">device_type</span><span class="o">.</span><span class="n">instances</span><span class="o">=</span><span class="n">instances</span>    
     <span class="k">return</span> <span class="n">device_type</span>
 </div>
@@ -181,11 +206,11 @@
 <span class="sd">    http://pandas.pydata.org/pandas-docs/stable/timeseries.html#offset-aliases</span>
 <span class="sd">    &#39;&#39;&#39;</span>
     <span class="k">try</span><span class="p">:</span>
-	<span class="n">new_series</span><span class="o">=</span><span class="nb">float</span><span class="p">(</span><span class="n">trace</span><span class="o">.</span><span class="n">series</span><span class="p">)</span>
-        <span class="n">new_series</span><span class="o">=</span><span class="n">new_series</span><span class="o">.</span><span class="n">resample</span><span class="p">(</span><span class="n">sample_rate</span><span class="p">,</span><span class="n">how</span><span class="o">=</span><span class="s">&#39;sum&#39;</span><span class="p">)</span><span class="o">/</span><span class="mf">3600.0</span>
+	<span class="n">new_series</span><span class="o">=</span><span class="n">trace</span><span class="o">.</span><span class="n">series</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">float</span><span class="p">)</span>
+        <span class="n">new_series</span><span class="o">=</span><span class="n">new_series</span><span class="o">.</span><span class="n">resample</span><span class="p">(</span><span class="n">sample_rate</span><span class="p">,</span><span class="n">how</span><span class="o">=</span><span class="s">&#39;mean&#39;</span><span class="p">)</span>
 	<span class="n">new_series</span><span class="o">=</span><span class="n">new_series</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="n">decimal</span><span class="o">.</span><span class="n">Decimal</span><span class="p">)</span>
 	<span class="n">new_series</span><span class="o">.</span><span class="n">name</span><span class="o">=</span><span class="n">trace</span><span class="o">.</span><span class="n">series</span><span class="o">.</span><span class="n">name</span>
-        <span class="k">return</span> <span class="n">ApplianceTrace</span><span class="p">(</span><span class="n">new_series</span><span class="p">,</span><span class="n">trace</span><span class="o">.</span><span class="n">metadata</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">appliance</span><span class="o">.</span><span class="n">ApplianceTrace</span><span class="p">(</span><span class="n">new_series</span><span class="p">,</span><span class="n">trace</span><span class="o">.</span><span class="n">metadata</span><span class="p">)</span>
     <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
         <span class="k">raise</span> <span class="n">SampleError</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">sample_rate</span><span class="p">)</span>
 
@@ -197,7 +222,7 @@
     <span class="n">new_traces</span><span class="o">=</span><span class="p">[]</span>
     <span class="k">for</span> <span class="n">trace</span> <span class="ow">in</span> <span class="n">device_instance</span><span class="o">.</span><span class="n">traces</span><span class="p">:</span>
         <span class="n">new_traces</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">resample_trace</span><span class="p">(</span><span class="n">trace</span><span class="p">,</span><span class="n">sample_rate</span><span class="p">))</span>
-    <span class="k">return</span> <span class="n">ApplianceInstance</span><span class="p">(</span><span class="n">new_traces</span><span class="p">,</span><span class="n">device_instance</span><span class="o">.</span><span class="n">metadata</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">appliance</span><span class="o">.</span><span class="n">ApplianceInstance</span><span class="p">(</span><span class="n">new_traces</span><span class="p">,</span><span class="n">device_instance</span><span class="o">.</span><span class="n">metadata</span><span class="p">)</span>
 </div>
 <div class="viewcode-block" id="resample_type_traces"><a class="viewcode-back" href="../../utils.html#disaggregator.utils.resample_type_traces">[docs]</a><span class="k">def</span> <span class="nf">resample_type_traces</span><span class="p">(</span><span class="n">device_type</span><span class="p">,</span><span class="n">sample_rate</span><span class="p">):</span>
     <span class="sd">&#39;&#39;&#39;</span>
@@ -206,7 +231,7 @@
     <span class="n">new_instances</span><span class="o">=</span><span class="p">[]</span>
     <span class="k">for</span> <span class="n">instance</span> <span class="ow">in</span> <span class="n">device_type</span><span class="o">.</span><span class="n">instances</span><span class="p">:</span>
     	<span class="n">new_instances</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">resample_instance_traces</span><span class="p">(</span><span class="n">instance</span><span class="p">,</span><span class="n">sample_rate</span><span class="p">))</span>
-    <span class="k">return</span> <span class="n">ApplianceType</span><span class="p">(</span><span class="n">new_instances</span><span class="p">,</span><span class="n">device_type</span><span class="o">.</span><span class="n">metadata</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">appliance</span><span class="o">.</span><span class="n">ApplianceType</span><span class="p">(</span><span class="n">new_instances</span><span class="p">,</span><span class="n">device_type</span><span class="o">.</span><span class="n">metadata</span><span class="p">)</span>
 </div>
 <div class="viewcode-block" id="order_traces"><a class="viewcode-back" href="../../utils.html#disaggregator.utils.order_traces">[docs]</a><span class="k">def</span> <span class="nf">order_traces</span><span class="p">(</span><span class="n">traces</span><span class="p">):</span>
     <span class="sd">&#39;&#39;&#39;</span>
@@ -224,8 +249,8 @@
 
     <span class="c">#sys.path.append(&#39;../../&#39;)</span>
     <span class="c">#silly_path = os.path.abspath(os.path.join(os.path.dirname( &#39;&#39; ), &#39;../..&#39;,&#39;data/&#39;))</span>
-    <span class="n">rel_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">relpath</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">get_cwd</span><span class="p">(),</span><span class="s">&#39;data&#39;</span><span class="p">)</span>
-    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">rel_path</span><span class="p">,</span><span class="s">&#39;{}.p&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">title</span><span class="p">)),</span><span class="s">&#39;wb&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+    <span class="n">rel_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">relpath</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">getcwd</span><span class="p">(),</span><span class="s">&#39;data&#39;</span><span class="p">)</span>
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">rel_path</span><span class="p">,</span><span class="s">&#39;data/{}.p&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">title</span><span class="p">)),</span><span class="s">&#39;wb&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
         <span class="n">pickle</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="nb">object</span><span class="p">,</span> <span class="n">f</span><span class="p">)</span>
 </div>
 <span class="k">def</span> <span class="nf">shuffle_appliance_sets</span><span class="p">(</span><span class="n">sets</span><span class="p">,</span><span class="n">other_params</span><span class="p">):</span>
