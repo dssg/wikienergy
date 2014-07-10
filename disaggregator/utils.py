@@ -72,17 +72,16 @@ def split_trace_into_rate(trace,rate):
     '''
     series_list=None;
     traces=[]
-    if rate == 'day':
+    if rate == 'D':
         for i,group in enumerate(trace.series.groupby(trace.series.index.date)):
             metadata=trace.metadata
             metadata['trace_num']=i
             traces.append(appliance.ApplianceTrace(group[1],metadata))
-    elif rate == 'week':
+    elif rate == 'W':
         for i,group in enumerate(trace.series.groupby(trace.series.index.week)):
             metadata=trace.metadata
             metadata['trace_num']=i
             traces.append(appliance.ApplianceTrace(group[1],metadata))
-
     else:
         print 'Looking for \'week\' or \'day\''
 
@@ -95,9 +94,7 @@ def split_instance_traces_into_rate(device_instance,rate):
     '''
     traces=[]
     for trace in device_instance.traces:
-
-        traces.extend(split_trace_into_daily(trace,rate))
-
+        traces.extend(split_trace_into_rate(trace,rate))
     device_instance.traces=traces
     return device_instance
 
@@ -106,11 +103,11 @@ def split_type_traces_into_rate(device_type, rate):
     Each trace in each instance of a type is split into multiple traces 
     that are each from a unique date
     '''
+    traces=[]
     instances=[]
     for instance in device_type.instances:
-
         for trace in instance.traces:
-            traces.extend(split_trace_into_daily(trace, rate))
+            traces.extend(split_trace_into_rate(trace, rate))
         instance.traces=traces
         instances.append(instance)
 
@@ -129,7 +126,8 @@ def concatenate_traces(traces, metadata=None, how="strict"):
     if how == "strict":
         # require ordered list of consecutive, similarly sampled traces with no
         # missing data.
-        return appliance.ApplianceTrace(pd.concat([t.series for t in traces]),metadata)
+        return appliance.ApplianceTrace(pd.concat([t.series for t in traces]),
+                                        metadata)
     else:
         raise NotImplementedError
 
@@ -155,10 +153,10 @@ def resample_trace(trace,sample_rate):
     http://pandas.pydata.org/pandas-docs/stable/timeseries.html#offset-aliases
     '''
     try:
-	new_series=trace.series.astype(float)
+        new_series=trace.series.astype(float)
         new_series=new_series.resample(sample_rate,how='mean')
-	new_series=new_series.map(decimal.Decimal)
-	new_series.name=trace.series.name
+        new_series=new_series.map(decimal.Decimal)
+        new_series.name=trace.series.name
         return appliance.ApplianceTrace(new_series,trace.metadata)
     except ValueError:
         raise SampleError(self.sample_rate)
@@ -179,7 +177,7 @@ def resample_type_traces(device_type,sample_rate):
     '''
     new_instances=[]
     for instance in device_type.instances:
-    	new_instances.append(resample_instance_traces(instance,sample_rate))
+        new_instances.append(resample_instance_traces(instance,sample_rate))
     return appliance.ApplianceType(new_instances,device_type.metadata)
 
 def order_traces(traces):
