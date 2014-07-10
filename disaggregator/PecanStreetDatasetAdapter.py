@@ -312,7 +312,7 @@ def generate_appliance_trace(schema,table,appliance,dataid,sample_rate=None):
     print query
     df = get_dataframe(query)
     df = df.rename(columns={time_columns[schema]: 'time'})
-    df['time'] = pd.to_datetime(df['time'],utc=True)
+    df['time'] = pd.to_datetime(df['time'],utc=False)
     df.set_index('time', inplace=True)
     series = pd.Series(df[appliance],name = appliance) * decimal.Decimal(1000.0)
     metadata = {'source':source,
@@ -370,9 +370,9 @@ def generate_type_for_appliance_by_dataids(schema,table,appliance,ids):
     for trace in traces:
         metadata_instance = {'source':source,
             'schema':schema,
-            'table':table ,
-            'device_name':traces[0].series.name,
-            'dataid':traces[0].metadata['dataid'],
+            'table':table,
+            'device_name':trace.series.name,
+            'dataid':trace.metadata['dataid'],
             }
         instances.append(ApplianceInstance([trace],metadata_instance))
     return ApplianceType(instances,metadata_type)
