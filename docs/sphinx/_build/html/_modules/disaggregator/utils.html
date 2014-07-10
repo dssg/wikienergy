@@ -133,7 +133,6 @@
             <span class="n">metadata</span><span class="o">=</span><span class="n">trace</span><span class="o">.</span><span class="n">metadata</span>
             <span class="n">metadata</span><span class="p">[</span><span class="s">&#39;trace_num&#39;</span><span class="p">]</span><span class="o">=</span><span class="n">i</span>
             <span class="n">traces</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">appliance</span><span class="o">.</span><span class="n">ApplianceTrace</span><span class="p">(</span><span class="n">group</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span><span class="n">metadata</span><span class="p">))</span>
-
     <span class="k">else</span><span class="p">:</span>
         <span class="k">print</span> <span class="s">&#39;Looking for </span><span class="se">\&#39;</span><span class="s">week</span><span class="se">\&#39;</span><span class="s"> or </span><span class="se">\&#39;</span><span class="s">day</span><span class="se">\&#39;</span><span class="s">&#39;</span>
 
@@ -146,7 +145,6 @@
 <span class="sd">    &#39;&#39;&#39;</span>
     <span class="n">traces</span><span class="o">=</span><span class="p">[]</span>
     <span class="k">for</span> <span class="n">trace</span> <span class="ow">in</span> <span class="n">device_instance</span><span class="o">.</span><span class="n">traces</span><span class="p">:</span>
-
         <span class="n">traces</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">split_trace_into_daily</span><span class="p">(</span><span class="n">trace</span><span class="p">,</span><span class="n">rate</span><span class="p">))</span>
 
     <span class="n">device_instance</span><span class="o">.</span><span class="n">traces</span><span class="o">=</span><span class="n">traces</span>
@@ -159,7 +157,6 @@
 <span class="sd">    &#39;&#39;&#39;</span>
     <span class="n">instances</span><span class="o">=</span><span class="p">[]</span>
     <span class="k">for</span> <span class="n">instance</span> <span class="ow">in</span> <span class="n">device_type</span><span class="o">.</span><span class="n">instances</span><span class="p">:</span>
-
         <span class="k">for</span> <span class="n">trace</span> <span class="ow">in</span> <span class="n">instance</span><span class="o">.</span><span class="n">traces</span><span class="p">:</span>
             <span class="n">traces</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">split_trace_into_daily</span><span class="p">(</span><span class="n">trace</span><span class="p">,</span> <span class="n">rate</span><span class="p">))</span>
         <span class="n">instance</span><span class="o">.</span><span class="n">traces</span><span class="o">=</span><span class="n">traces</span>
@@ -180,7 +177,8 @@
     <span class="k">if</span> <span class="n">how</span> <span class="o">==</span> <span class="s">&quot;strict&quot;</span><span class="p">:</span>
         <span class="c"># require ordered list of consecutive, similarly sampled traces with no</span>
         <span class="c"># missing data.</span>
-        <span class="k">return</span> <span class="n">appliance</span><span class="o">.</span><span class="n">ApplianceTrace</span><span class="p">(</span><span class="n">pd</span><span class="o">.</span><span class="n">concat</span><span class="p">([</span><span class="n">t</span><span class="o">.</span><span class="n">series</span> <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">traces</span><span class="p">]),</span><span class="n">metadata</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">appliance</span><span class="o">.</span><span class="n">ApplianceTrace</span><span class="p">(</span><span class="n">pd</span><span class="o">.</span><span class="n">concat</span><span class="p">([</span><span class="n">t</span><span class="o">.</span><span class="n">series</span> <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">traces</span><span class="p">]),</span>
+                                        <span class="n">metadata</span><span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span>
 </div>
@@ -206,10 +204,10 @@
 <span class="sd">    http://pandas.pydata.org/pandas-docs/stable/timeseries.html#offset-aliases</span>
 <span class="sd">    &#39;&#39;&#39;</span>
     <span class="k">try</span><span class="p">:</span>
-	<span class="n">new_series</span><span class="o">=</span><span class="n">trace</span><span class="o">.</span><span class="n">series</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">float</span><span class="p">)</span>
+        <span class="n">new_series</span><span class="o">=</span><span class="n">trace</span><span class="o">.</span><span class="n">series</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">float</span><span class="p">)</span>
         <span class="n">new_series</span><span class="o">=</span><span class="n">new_series</span><span class="o">.</span><span class="n">resample</span><span class="p">(</span><span class="n">sample_rate</span><span class="p">,</span><span class="n">how</span><span class="o">=</span><span class="s">&#39;mean&#39;</span><span class="p">)</span>
-	<span class="n">new_series</span><span class="o">=</span><span class="n">new_series</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="n">decimal</span><span class="o">.</span><span class="n">Decimal</span><span class="p">)</span>
-	<span class="n">new_series</span><span class="o">.</span><span class="n">name</span><span class="o">=</span><span class="n">trace</span><span class="o">.</span><span class="n">series</span><span class="o">.</span><span class="n">name</span>
+        <span class="n">new_series</span><span class="o">=</span><span class="n">new_series</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="n">decimal</span><span class="o">.</span><span class="n">Decimal</span><span class="p">)</span>
+        <span class="n">new_series</span><span class="o">.</span><span class="n">name</span><span class="o">=</span><span class="n">trace</span><span class="o">.</span><span class="n">series</span><span class="o">.</span><span class="n">name</span>
         <span class="k">return</span> <span class="n">appliance</span><span class="o">.</span><span class="n">ApplianceTrace</span><span class="p">(</span><span class="n">new_series</span><span class="p">,</span><span class="n">trace</span><span class="o">.</span><span class="n">metadata</span><span class="p">)</span>
     <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
         <span class="k">raise</span> <span class="n">SampleError</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">sample_rate</span><span class="p">)</span>
@@ -230,7 +228,7 @@
 <span class="sd">    &#39;&#39;&#39;</span>
     <span class="n">new_instances</span><span class="o">=</span><span class="p">[]</span>
     <span class="k">for</span> <span class="n">instance</span> <span class="ow">in</span> <span class="n">device_type</span><span class="o">.</span><span class="n">instances</span><span class="p">:</span>
-    	<span class="n">new_instances</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">resample_instance_traces</span><span class="p">(</span><span class="n">instance</span><span class="p">,</span><span class="n">sample_rate</span><span class="p">))</span>
+        <span class="n">new_instances</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">resample_instance_traces</span><span class="p">(</span><span class="n">instance</span><span class="p">,</span><span class="n">sample_rate</span><span class="p">))</span>
     <span class="k">return</span> <span class="n">appliance</span><span class="o">.</span><span class="n">ApplianceType</span><span class="p">(</span><span class="n">new_instances</span><span class="p">,</span><span class="n">device_type</span><span class="o">.</span><span class="n">metadata</span><span class="p">)</span>
 </div>
 <div class="viewcode-block" id="order_traces"><a class="viewcode-back" href="../../utils.html#disaggregator.utils.order_traces">[docs]</a><span class="k">def</span> <span class="nf">order_traces</span><span class="p">(</span><span class="n">traces</span><span class="p">):</span>
@@ -295,7 +293,7 @@
     </div>
     <div class="footer">
         &copy; Copyright 2014, Phil Ngo, Miguel Perez, Stephen Suffian, Sabina Tomkins.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.2.
     </div>
   </body>
 </html>

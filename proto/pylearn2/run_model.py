@@ -7,9 +7,9 @@ parser.add_argument("filename",type=str,
 args = parser.parse_args()
 
 with open(args.filename,'r') as f:
-    simple_nn = f.read()
+    nn_yaml = f.read()
 
-print simple_nn
+print nn_yaml
 
-train_softmax = yaml_parse.load(simple_nn)
-train_softmax.main_loop()
+train = yaml_parse.load(nn_yaml)
+train.main_loop()
