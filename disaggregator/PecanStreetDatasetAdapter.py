@@ -210,7 +210,7 @@ def clean_dataframe(df,schema,drop_cols):
     df = df.rename(columns={time_columns[schema]: 'time'})
 
     # use a DatetimeIndex
-    df['time'] = pd.to_datetime(df['time'],utc=True)
+    df['time'] = pd.to_datetime(df['time'],utc=False)
     df.set_index('time', inplace=True)
 
     # drop unnecessary columns
@@ -312,9 +312,10 @@ def generate_appliance_trace(schema,table,appliance,dataid,sample_rate=None):
     print query
     df = get_dataframe(query)
     df = df.rename(columns={time_columns[schema]: 'time'})
-    df['time'] = pd.to_datetime(df['time'],utc=True)
+    df['time'] = pd.to_datetime(df['time'],utc=False)
     df.set_index('time', inplace=True)
-    series = pd.Series(df[appliance],name = appliance) * decimal.Decimal(1000.0)
+    series = pd.Series(df[appliance],name = appliance).fillna(0) *\
+        decimal.Decimal(1000.0)
     metadata = {'source':source,
             'schema':schema,
             'table':table ,
