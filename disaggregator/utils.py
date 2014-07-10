@@ -72,12 +72,12 @@ def split_trace_into_rate(trace,rate):
     '''
     series_list=None;
     traces=[]
-    if rate == 'day':
+    if rate == 'D':
         for i,group in enumerate(trace.series.groupby(trace.series.index.date)):
             metadata=trace.metadata
             metadata['trace_num']=i
             traces.append(appliance.ApplianceTrace(group[1],metadata))
-    elif rate == 'week':
+    elif rate == 'W':
         for i,group in enumerate(trace.series.groupby(trace.series.index.week)):
             metadata=trace.metadata
             metadata['trace_num']=i
@@ -94,8 +94,7 @@ def split_instance_traces_into_rate(device_instance,rate):
     '''
     traces=[]
     for trace in device_instance.traces:
-        traces.extend(split_trace_into_daily(trace,rate))
-
+        traces.extend(split_trace_into_rate(trace,rate))
     device_instance.traces=traces
     return device_instance
 
@@ -104,10 +103,11 @@ def split_type_traces_into_rate(device_type, rate):
     Each trace in each instance of a type is split into multiple traces 
     that are each from a unique date
     '''
+    traces=[]
     instances=[]
     for instance in device_type.instances:
         for trace in instance.traces:
-            traces.extend(split_trace_into_daily(trace, rate))
+            traces.extend(split_trace_into_rate(trace, rate))
         instance.traces=traces
         instances.append(instance)
 
