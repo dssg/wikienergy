@@ -57,7 +57,7 @@
 
 <span class="sd">.. moduleauthor:: Phil Ngo &lt;ngo.phil@gmail.com&gt;</span>
 <span class="sd">.. moduleauthor:: Stephen Suffian &lt;steve@invalid.com&gt;</span>
-<span class="sd">.. moduleauthor:: Sabina Tomkins &lt;sabina@invalid.com&gt;</span>
+<span class="sd">.. moduleauthor:: Sabina Tomkins &lt;sabina.tomkins@gmail.com&gt;</span>
 
 <span class="sd">&quot;&quot;&quot;</span>
 
@@ -356,7 +356,7 @@
 <div class="viewcode-block" id="generate_traces_for_appliance_by_dataids"><a class="viewcode-back" href="../../dataset_adapters.html#disaggregator.PecanStreetDatasetAdapter.generate_traces_for_appliance_by_dataids">[docs]</a><span class="k">def</span> <span class="nf">generate_traces_for_appliance_by_dataids</span><span class="p">(</span><span class="n">schema</span><span class="p">,</span><span class="n">table</span><span class="p">,</span><span class="n">appliance</span><span class="p">,</span><span class="n">ids</span><span class="p">):</span>
     <span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">    Returns traces for a single appliance type across a set of dataids.</span>
-<span class="sd">    The data is converted from average kW to Wh </span>
+<span class="sd">    The traces are in decimal form and in average Watts.</span>
 <span class="sd">    &#39;&#39;&#39;</span>
     <span class="k">global</span> <span class="n">schema_names</span><span class="p">,</span> <span class="n">source</span>
     <span class="n">schema_name</span> <span class="o">=</span> <span class="n">schema_names</span><span class="p">[</span><span class="n">schema</span><span class="p">]</span>
@@ -364,17 +364,12 @@
     <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">ids</span><span class="p">:</span>
         <span class="n">query</span><span class="o">=</span> <span class="s">&#39;select {0}, {1} from &quot;{2}&quot;.{3} where dataid={4}&#39;</span>\
             <span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">appliance</span><span class="p">,</span><span class="n">time_columns</span><span class="p">[</span><span class="n">schema</span><span class="p">],</span><span class="n">schema_name</span><span class="p">,</span><span class="n">table</span><span class="p">,</span><span class="n">i</span><span class="p">)</span>
+        <span class="k">print</span> <span class="n">query</span>
         <span class="n">df</span><span class="o">=</span><span class="n">get_dataframe</span><span class="p">(</span><span class="n">query</span><span class="p">)</span>
         <span class="n">df</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">rename</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="p">{</span><span class="n">time_columns</span><span class="p">[</span><span class="n">schema</span><span class="p">]:</span> <span class="s">&#39;time&#39;</span><span class="p">})</span>
         <span class="n">df</span><span class="p">[</span><span class="s">&#39;time&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">to_datetime</span><span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="s">&#39;time&#39;</span><span class="p">],</span><span class="n">utc</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
         <span class="n">df</span><span class="o">.</span><span class="n">set_index</span><span class="p">(</span><span class="s">&#39;time&#39;</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
-        <span class="n">series</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="n">appliance</span><span class="p">],</span><span class="n">name</span> <span class="o">=</span> <span class="n">appliance</span><span class="p">)</span>
-	<span class="k">if</span><span class="p">(</span><span class="n">schema</span><span class="o">==</span><span class="s">&#39;shared&#39;</span><span class="p">):</span>
-		<span class="n">series</span><span class="o">=</span><span class="n">series</span><span class="o">/</span><span class="n">decimal</span><span class="o">.</span><span class="n">Decimal</span><span class="p">(</span><span class="mf">60.0</span><span class="p">)</span><span class="o">*</span><span class="mi">1000</span>
-	<span class="k">elif</span><span class="p">(</span><span class="n">schema</span><span class="o">==</span><span class="s">&#39;curated&#39;</span><span class="p">):</span>
-		<span class="n">series</span><span class="o">=</span><span class="n">series</span><span class="o">/</span><span class="n">decimal</span><span class="o">.</span><span class="n">Decimal</span><span class="p">(</span><span class="mf">4.0</span><span class="p">)</span><span class="o">*</span><span class="mi">1000</span>
-	<span class="k">elif</span><span class="p">(</span><span class="n">schema</span><span class="o">==</span><span class="s">&#39;raw&#39;</span><span class="p">):</span>
-        	<span class="k">raise</span> <span class="ne">NotImplementedError</span>
+        <span class="n">series</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="n">appliance</span><span class="p">],</span><span class="n">name</span> <span class="o">=</span> <span class="n">appliance</span><span class="p">)</span><span class="o">*</span><span class="n">decimal</span><span class="o">.</span><span class="n">Decimal</span><span class="p">(</span><span class="mf">1000.0</span><span class="p">)</span>
         <span class="n">metadata</span> <span class="o">=</span> <span class="p">{</span><span class="s">&#39;source&#39;</span><span class="p">:</span><span class="n">source</span><span class="p">,</span>
                 <span class="s">&#39;schema&#39;</span><span class="p">:</span><span class="n">schema</span><span class="p">,</span>
                 <span class="s">&#39;table&#39;</span><span class="p">:</span><span class="n">table</span> <span class="p">,</span>
