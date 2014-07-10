@@ -14,6 +14,7 @@ from appliance import ApplianceTrace
 from appliance import ApplianceInstance
 from appliance import ApplianceSet
 from appliance import ApplianceType
+import utils
 
 import sqlalchemy
 import pandas as pd
@@ -322,7 +323,7 @@ def generate_appliance_trace(schema,table,appliance,dataid,sample_rate=None):
             }
     trace = ApplianceTrace(series,metadata)
     if sample_rate:
-        trace = resample_trace(trace,sample_rate)
+        trace = utils.resample_trace(trace,sample_rate)
     return trace
 
 def generate_traces_for_appliance_by_dataids(
