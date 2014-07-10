@@ -100,13 +100,6 @@ non_car_ids = [86, 93, 94, 410, 484,
                9937, 9938, 9939, 9982, 9983]
 
 print "hi"
-car_use = psda.generate_traces_for_appliance_by_dataids(
-    schema, tables[0], "use", common_car_ids, '15T')
-
-import pdb;pdb.set_trace()
-
-#with open('../../data/car_use_validated_01_2014.pkl','r') as f:
-#    car_use = pickle.load(f)
 
 n_cars = len(common_car_ids)
 n_non_cars = len(non_car_ids)
@@ -135,8 +128,8 @@ non_car_train_i, non_car_valid_i, non_car_test_i =\
 car_training_traces = []
 for i in car_train_i:
     print 'car train {}'.format(i)
-    with open('../../data/car_use/trace_{0:03d}.pkl'.format(i),'r') as f:
-        trace = pickle.load(f)
+    trace = psda.generate_appliance_trace(
+        schema, tables[0], "use", common_car_ids[i], '15T')
     arrays = trace_windows(trace,672,12) # one week, steps of 3 hours
     car_training_traces.append((trace,1))
 
