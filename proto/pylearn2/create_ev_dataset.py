@@ -100,8 +100,11 @@ non_car_ids = [86, 93, 94, 410, 484,
                9937, 9938, 9939, 9982, 9983]
 
 print "hi"
-#car_use = psda.generate_traces_for_appliance_by_dataids(
-#    schema, tables[0], "use", common_car_ids)
+car_use = psda.generate_traces_for_appliance_by_dataids(
+    schema, tables[0], "use", common_car_ids, '15T')
+
+import pdb;pdb.set_trace()
+
 #with open('../../data/car_use_validated_01_2014.pkl','r') as f:
 #    car_use = pickle.load(f)
 
