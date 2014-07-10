@@ -1,6 +1,6 @@
 import sys
 import os.path
-sys.path.append(os.path.join(os.pardir,os.pardir))
+sys.path.append(os.path.abspath(os.path.join(os.pardir,os.pardir)))
 import disaggregator as da
 import disaggregator.PecanStreetDatasetAdapter as psda
 import pickle
@@ -15,50 +15,92 @@ tables = [u'validated_01_2014',
           u'validated_04_2014',
           u'validated_05_2014',]
 
-all_ids = [psda.get_table_dataids(schema,table) for table in tables]
-common_ids = da.get_common_ids(all_ids)
+'''
+all_car_ids = []
+for table in tables:
+    all_car_ids.append(psda.get_dataids_with_real_values(schema,table,'car1'))
 
-## For regenerating a list of car ids.
-def get_car_ids(schema,table,common_ids):
-    '''
-    Get a list of ids which seem to have cars
-    '''
-    columns = psda.get_table_column_names(schema,table)
-    ev_traces = psda.generate_traces_for_appliance_by_dataids(schema,
-        table, 'car1', common_ids)
-    car_ids = [dataid for dataid,trace in zip(common_ids,ev_traces)\
-        if trace.get_total_usage() > 0]
-    return car_ids
+common_car_ids = sorted(da.utils.get_common_ids(all_car_ids))
 
-# car_ids = get_car_ids(schema,tables[0],common_ids)
-car_ids = [ 9729, 8197, 4641, 4135, 2638,
-            9830, 624, 3192, 3723, 4767,
-            7850, 1714, 6836, 7863, 7875,
-            9932, 9934, 9937, 3795, 2769,
-            5357, 1782, 9484, 2814, 7940,
-            6941, 3367, 9609, 4957, 8046,
-            661, 4998, 4505, 3482, 2470,
-            4526, 5109, 8645, 1953, 8142,
-            8669, 6910, 6139]
+all_use_ids = []
+for table in tables:
+    all_use_ids.append(psda.get_dataids_with_real_values(schema,table,'use'))
 
-ev_traces = psda.generate_traces_for_appliance_by_dataids(schema,tables[3],
-    'car1', car_ids)
-with open('data/ev_traces_shared_04.pkl','w') as f:
-    pickle.dump(ev_traces,f)
+common_use_ids = sorted(da.utils.get_common_ids(all_use_ids))
+'''
 
-ev_traces = psda.generate_traces_for_appliance_by_dataids(schema,tables[4],
-    'car1', car_ids)
-with open('data/ev_traces_shared_05.pkl','w') as f:
-    pickle.dump(ev_traces,f)
+common_car_ids = [624, 661, 1714, 1782, 1953,
+                  2470, 2638, 2769, 2814, 3192,
+                  3367, 3482, 3723, 3795, 4135,
+                  4505, 4526, 4641, 4767, 4957,
+                  4998, 5109, 5357, 6139, 6836,
+                  6910, 6941, 7850, 7863, 7875,
+                  7940, 8046, 8142, 8197, 8645,
+                  8669, 9484, 9609, 9729, 9830,
+                  9932, 9934]
 
-quit()
+common_use_ids = [86, 93, 94, 410, 484,
+                  585, 624, 661, 739, 744,
+                  821, 871, 936, 1167, 1283,
+                  1334, 1632, 1714, 1718, 1782,
+                  1790, 1800, 1953, 1994, 2094,
+                  2129, 2156, 2158, 2171, 2233,
+                  2242, 2337, 2449, 2470, 2575,
+                  2606, 2638, 2769, 2814, 2829,
+                  2864, 2945, 2953, 2974, 3092,
+                  3192, 3221, 3263, 3367, 3394,
+                  3456, 3482, 3504, 3544, 3649,
+                  3652, 3723, 3736, 3778, 3795,
+                  3893, 3918, 4031, 4135, 4154,
+                  4298, 4313, 4447, 4505, 4526,
+                  4641, 4732, 4767, 4874, 4922,
+                  4956, 4957, 4998, 5026, 5109,
+                  5209, 5218, 5262, 5275, 5357,
+                  5395, 5545, 5568, 5677, 5785,
+                  5814, 5874, 5938, 5949, 5972,
+                  6139, 6412, 6636, 6673, 6730,
+                  6836, 6910, 6941, 7062, 7319,
+                  7390, 7531, 7536, 7617, 7731,
+                  7769, 7788, 7800, 7850, 7863,
+                  7875, 7940, 7951, 8046, 8079,
+                  8084, 8142, 8197, 8292, 8317,
+                  8342, 8419, 8467, 8645, 8669,
+                  8741, 8829, 8852, 8956, 9019,
+                  9036, 9121, 9160, 9343, 9356,
+                  9484, 9555, 9578, 9609, 9643,
+                  9654, 9701, 9729, 9737, 9771,
+                  9830, 9875, 9915, 9922, 9926,
+                  9932, 9934, 9937, 9938, 9939,
+                  9982, 9983]
 
-with open('data/ev_traces_shared_01.pkl', 'r') as f:
-    ev_traces_shared_01 = pickle.load(f)
+non_car_ids = [86, 93, 94, 410, 484,
+               585, 739, 744, 821, 871,
+               936, 1167, 1283, 1334, 1632,
+               1718, 1790, 1800, 1994, 2094,
+               2129, 2156, 2158, 2171, 2233,
+               2242, 2337, 2449, 2575, 2606,
+               2829, 2864, 2945, 2953, 2974,
+               3092, 3221, 3263, 3394, 3456,
+               3504, 3544, 3649, 3652, 3736,
+               3778, 3893, 3918, 4031, 4154,
+               4298, 4313, 4447, 4732, 4874,
+               4922, 4956, 5026, 5209, 5218,
+               5262, 5275, 5395, 5545, 5568,
+               5677, 5785, 5814, 5874, 5938,
+               5949, 5972, 6412, 6636, 6673,
+               6730, 7062, 7319, 7390, 7531,
+               7536, 7617, 7731, 7769, 7788,
+               7800, 7951, 8079, 8084, 8292,
+               8317, 8342, 8419, 8467, 8741,
+               8829, 8852, 8956, 9019, 9036,
+               9121, 9160, 9343, 9356, 9555,
+               9578, 9643, 9654, 9701, 9737,
+               9771, 9875, 9915, 9922, 9926,
+               9937, 9938, 9939, 9982, 9983]
 
-usages = [trace.get_total_usage() for trace in ev_traces_shared_01]
-
-for usage in usages:
-    print usage
+print "hi"
+non_car_use = psda.generate_traces_for_appliance_by_dataids(
+    schema, tables[0], "use", non_car_ids)
 
 import pdb;pdb.set_trace()
+
