@@ -94,7 +94,10 @@ def split_instance_traces_into_rate(device_instance,rate):
     traces=[]
     for trace in device_instance.traces:
         traces.extend(split_trace_into_rate(trace,rate))
-        import pdb;pdb.set_trace()
+    print
+    for trace in traces:
+        print trace.series.index[0]
+    print
     return appliance.ApplianceInstance(traces,device_instance.metadata)
 
 def split_type_traces_into_rate(device_type, rate):
@@ -104,8 +107,12 @@ def split_type_traces_into_rate(device_type, rate):
     '''
     instances=[]
     for instance in device_type.instances:
-        instances.append(split_instance_traces_into_rate(instance,rate))
+        new_instance= split_instance_traces_into_rate(instance,rate)
+        instances.append(new_instance)
+        for trace in new_instance.traces:
+            print trace.series.index[0]
     return appliance.ApplianceType(instances,device_type.metadata)
+
 
 def concatenate_traces(traces, metadata=None, how="strict"):
     '''
