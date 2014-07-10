@@ -74,7 +74,7 @@ def split_trace_into_rate(trace,rate):
     traces=[]
     if rate == 'D':
         for i,group in enumerate(trace.series.groupby(trace.series.index.date)):
-            metadata=trace.metadata
+            metadata=dict.copy(trace.metadata)
             metadata['trace_num']=i
             traces.append(appliance.ApplianceTrace(group[1],metadata))
     elif rate == 'W':
@@ -84,7 +84,6 @@ def split_trace_into_rate(trace,rate):
             traces.append(appliance.ApplianceTrace(group[1],metadata))
     else:
         print 'Looking for \'week\' or \'day\''
-
     return traces
 
 def split_instance_traces_into_rate(device_instance,rate):
@@ -95,6 +94,10 @@ def split_instance_traces_into_rate(device_instance,rate):
     traces=[]
     for trace in device_instance.traces:
         traces.extend(split_trace_into_rate(trace,rate))
+    print
+    for trace in traces:
+        print trace.series.index[0]
+    print
     return appliance.ApplianceInstance(traces,device_instance.metadata)
 
 def split_type_traces_into_rate(device_type, rate):
@@ -104,8 +107,12 @@ def split_type_traces_into_rate(device_type, rate):
     '''
     instances=[]
     for instance in device_type.instances:
-        instances.append(split_instance_traces_into_rate(instance,rate))
+        new_instance= split_instance_traces_into_rate(instance,rate)
+        instances.append(new_instance)
+        for trace in new_instance.traces:
+            print trace.series.index[0]
     return appliance.ApplianceType(instances,device_type.metadata)
+
 
 def concatenate_traces(traces, metadata=None, how="strict"):
     '''
@@ -178,7 +185,7 @@ def order_traces(traces):
     Given a set of traces, orders them chronologically and catches
     overlapping traces.
     '''
-    order = np.argsort([t.series[0] for t in traces])
+    order = np.argsort([t.series.index[0] for t in traces])
     new_traces = [traces[i] for i in order]
     return new_traces
 
