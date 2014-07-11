@@ -2,9 +2,12 @@ import sys
 import os.path
 sys.path.append(os.path.abspath(os.pardir))
 from disaggregator import evaluation_metrics as evm
+from disaggregator import appliance as app
 
 import unittest
 import numpy as np
+import pandas as pd
+
 
 class EvaluationMetricsTestCase(unittest.TestCase):
 
@@ -31,6 +34,29 @@ class EvaluationMetricsTestCase(unittest.TestCase):
     def test_truth_from_power(self):
         #print evm.guess_truth_from_power(np.array([2,3,4,51,2]),3)
         pass
+    
+    def test_fraction_energy_assigned_correctly(self):
+        traces = [[1,1,1,1,1],[5,5,5,5,5],[0,0,0,0,0]]
+        p_traces = [[1,1,1,1,1],[5,5,5,5,5],[0,0,0,0,0]]
+        meta = {'source':'test',
+            'schema':'test_schema',
+            'table':'test_table',
+            'dataid':'test_id',
+            'device_name':'',
+        }
+        traces = [app.ApplianceTrace(pd.Series(t),meta) for t in traces]
+        for i,t in enumerate(traces):
+            traces[i].metadata['device_name']==i
+        p_traces =[app.ApplianceTrace(pd.Series(t),meta) for t in p_traces]
+        for i,t in enumerate(p_traces):
+            p_traces[i].metadata['device_name']==i
+        meta_i = meta.pop('dataid')
+        instance_p = app.ApplianceInstance(p_traces, meta_i)
+        instance_t = app.ApplianceInstance(traces, meta_i)
+        print 'printing'
+        print evm.fraction_energy_assigned_correctly(instance_p,instance_t)
+
+
 
 if __name__ == '__main__':
     unittest.main()
