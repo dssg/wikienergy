@@ -19,6 +19,43 @@ def sum_error(truth,prediction):
     '''
     return math.fabs(truth.sum()-prediction.sum())
 
+def get_index(app_set,app):
+    traces = app_set.instances.traces
+    for t_i in range(len(traces)):
+        if traces[t_i]==app:
+           return t_i
+    return -1	
+       
+
+def fraction_energy_assigned_correctly(predicted__power_as_set, ground_truth_as_set):
+'''
+From NILMTK toolkit. Assumes that appliances are aligned in the sets. 
+'''
+    traces_truth = ground_truth_as_set.instances.traces
+    #traces_power = [t.series for t in traces]
+    traces_predicted = predicted_power_as_set.instances.traces
+    #traces_predicted_power = [t.series for t in traces_predicted] 
+    total_energy_ground_truth = np.sum([np.sum(t.series) for t in traces_truth])
+    percent_power_by_app = np.array([])
+    for trace_index in range(len(traces_predicted)):
+        app_energy_predicted = np.sum(traces_predicted[trace_index].series)
+        if traces_truth[trace_index].series.name==traces_predicted[trace_index].eries.name:
+            app_energy_ground_truth = np.sum(traces_truth[trace_index])
+        else:
+            index = get_index(predicted_power_as_set,traces_predicted[trace_index].series.name)
+            if index!=-1:
+                app_energy_ground_truth = np.sum(traces_truth[index])
+            else:
+                app_energy_ground_truth = sys.maxint
+        percent_power_by_app = np.append(percent_power_by_app,np.min(app_energy_predicted,app_energy_ground_truth)
+
+    return np.divide(np.sum(percent_power_by_app),total_energy_ground_truth)
+        
+       
+    
+    
+    
+
 def rss(truth,prediction):
     '''Sum of squared residuals'''
     return np.sum(np.square(np.subtract(truth,prediction)))

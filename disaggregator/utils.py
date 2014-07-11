@@ -192,7 +192,7 @@ def pickle_object(obj,title):
     #silly_path = os.path.abspath(os.path.join(os.path.dirname( '' ), '../..','data/'))
     rel_path = os.path.relpath(os.getcwd(),'data')
     with open(os.path.join(rel_path,'data/{}.p'.format(title)),'wb') as f:
-        pickle.dump(object, f)
+        pickle.dump(obj, f)
 
 def shuffle_appliance_sets(sets,other_params):
     pass
