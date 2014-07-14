@@ -62,7 +62,7 @@ def get_common_ids(id_lists):
     common_ids = id_sets[0]
     for id_set in id_sets[1:]:
         common_ids &= id_set
-    return list(common_ids)
+    return sorted(list(common_ids))
 
 
 def split_trace_into_rate(trace,rate):
