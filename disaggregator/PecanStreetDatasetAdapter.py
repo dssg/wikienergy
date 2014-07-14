@@ -330,6 +330,38 @@ def generate_appliance_trace(schema,table,appliance,dataid,sample_rate=None):
         trace = utils.resample_trace(trace,sample_rate)
     return trace
 
+def generate_appliances_traces(
+        schema,table,appliances,dataid,sample_rate=None,verbose=True):
+    '''
+    Return a list of appliance traces by dataid. Each trace is in decimal form
+    and in average Watts.
+    '''
+    global schema_names, source
+    schema_name = schema_names[schema]
+    query= 'select {0}, {1} from "{2}".{3} where dataid={4}'.format(
+        ','.join(appliances), time_columns[schema], schema_name, table, dataid)
+    if verbose:
+        print query
+    df = get_dataframe(query)
+    df = df.rename(columns={time_columns[schema]: 'time'})
+    df['time'] = pd.to_datetime(df['time'],utc=False)
+    df.set_index('time', inplace=True)
+    traces = []
+    for appliance in appliances:
+        series = pd.Series(df[appliance],name = appliance).fillna(0)\
+            * decimal.Decimal(1000.0)
+        metadata = {'source':source,
+                    'schema':schema,
+                    'table':table ,
+                    'dataid':dataid,
+                    'device_name':series.name,
+                    }
+        trace = ApplianceTrace(series,metadata)
+        if sample_rate:
+            trace = utils.resample_trace(trace,sample_rate)
+        traces.append(trace)
+    return traces
+
 def generate_traces_for_appliance_by_dataids(
         schema, table, appliance, ids, sample_rate=None):
     '''
@@ -337,6 +369,27 @@ def generate_traces_for_appliance_by_dataids(
     '''
     traces = [generate_appliance_trace(schema,table,appliance,id_,sample_rate)\
               for id_ in ids]
+    return traces
+
+def generate_traces_for_appliances_by_dataid(
+        schema, table, appliances, dataid, sample_rate=None):
+    '''
+    Returns traces for a list of appliance types across a set of dataids.
+    '''
+    # TODO figure out a more efficient way to do this
+    traces = generate_appliances_traces(schema, table, appliances, dataid,
+                                        sample_rate)
+    return traces
+
+def generate_traces_for_appliances_by_dataids(
+        schema, table, appliances, dataids, sample_rate=None):
+    '''
+    Returns a list of lists of traces for appliance types for a list of dataids.
+    Ex. `traces[0][3]` gets the fourth appliance trace for the first dataid.
+    '''
+    traces = [generate_traces_for_appliances_by_dataid(
+                  schema, table, appliances, dataid, sample_rate)
+              for dataid in dataids]
     return traces
 
 def get_dataids_with_real_values(schema,table,appliance):
