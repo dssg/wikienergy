@@ -298,11 +298,12 @@ def generate_month_traces_from_attributes(schema,year,month,group=None, rate = N
     Returns a list of traces from a given month. It first finds the table
     name associated with that month.
     '''
-    table = get_table_name(schema, year, month,group,rate)
-    return get_month_traces_from_table_name(schema,table,dataid)
+    table = get_table_name(schema, year, month, group, rate)
+    return get_month_traces_from_table_name(schema, table, dataid)
 
 
-def generate_appliance_trace(schema,table,appliance,dataid,sample_rate=None):
+def generate_appliance_trace(schema, table, appliance, dataid,
+                             sample_rate=None, verbose=True):
     '''
     Return an appliance trace by dataid. The trace is in decimal form and in
     average Watts.
@@ -342,8 +343,7 @@ def generate_appliances_traces(
         print query
     df = get_dataframe(query)
     df = df.rename(columns={time_columns[schema]: 'time'})
-    df['time'] = pd.to_datetime(df['time'],utc=False)
-    df.set_index('time', inplace=True)
+    utils.create_datetimeindex(df)
     traces = []
     for appliance in appliances:
         series = pd.Series(df[appliance],name = appliance).fillna(0)\
@@ -379,7 +379,7 @@ def generate_appliances_instances(
                       sample_rate=None,verbose=True) for table in tables]
 
     # transpose
-    appliance_traces = list(zip(*traces))
+    appliance_traces = list(zip(*all_traces))
 
     # concatenate by appliance
     appliance_traces = [utils.concatenate_trace(traces)
