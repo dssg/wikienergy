@@ -9,16 +9,6 @@ import numpy as np
 import pylearn2
 import pylearn2.datasets as ds
 
-db_url = "postgresql://USERNAME:PASSWORD@db.wiki-energy.org:5432/postgres"
-psda.set_url(db_url)
-
-schema = 'shared'
-tables = [u'validated_01_2014',
-          u'validated_02_2014',
-          u'validated_03_2014',
-          u'validated_04_2014',
-          u'validated_05_2014',]
-
 common_use_ids = [86, 93, 94, 410, 484,
                   585, 624, 661, 739, 744,
                   821, 871, 936, 1167, 1283,
@@ -53,6 +43,17 @@ common_use_ids = [86, 93, 94, 410, 484,
                   9932, 9934, 9937, 9938, 9939,
                   9982, 9983]
 
+
+db_url = "postgresql://USERNAME:PASSWORD@db.wiki-energy.org:5432/postgres"
+psda.set_url(db_url)
+
+schema = 'shared'
+tables = [u'validated_01_2014',
+          u'validated_02_2014',
+          u'validated_03_2014',
+          u'validated_04_2014',
+          u'validated_05_2014',]
+
 def trace_windows(trace,window_length,window_step):
     total_length = trace.series.size
     n_steps = int((total_length - window_length) / window_step)
@@ -79,17 +80,12 @@ def get_training_arrays(schema, table, ids, column, sample_rate,
 np.random.seed(1)
 
 # randomly pick indices
-car_train_i, car_valid_i, car_test_i = get_train_valid_test_indices(n_cars)
-non_car_train_i, non_car_valid_i, non_car_test_i =\
-    get_train_valid_test_indices(n_non_cars)
+tr_i, va_i, te_i = da.utils.get_train_valid_test_indices(len(common_use_ids))
 
 # turn these into sets of ids
-car_train_ids = [common_car_ids[i] for i in car_train_i[:]]
-car_valid_ids = [common_car_ids[i] for i in car_valid_i[:]]
-car_test_ids = [common_car_ids[i] for i in car_test_i[:]]
-non_car_train_ids = [non_car_ids[i] for i in non_car_train_i[:]]
-non_car_valid_ids = [non_car_ids[i] for i in non_car_valid_i[:]]
-non_car_test_ids = [non_car_ids[i] for i in non_car_test_i[:]]
+tr_ids = [common_use_ids[i] for i in tr_i[:]]
+va_ids = [common_use_ids[i] for i in va_i[:]]
+te_ids = [common_use_ids[i] for i in te_i[:]]
 
 # make arrays and labels
 for i in range(5):
