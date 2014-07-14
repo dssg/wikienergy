@@ -56,6 +56,12 @@
   <div class="section" id="module-disaggregator.evaluation_metrics">
 <span id="evaluation-metrics"></span><h1>Evaluation Metrics<a class="headerlink" href="#module-disaggregator.evaluation_metrics" title="Permalink to this headline">¶</a></h1>
 <span class="target" id="module-evaluation_metrics"></span><dl class="function">
+<dt id="disaggregator.evaluation_metrics.fraction_energy_assigned_correctly">
+<tt class="descclassname">disaggregator.evaluation_metrics.</tt><tt class="descname">fraction_energy_assigned_correctly</tt><big>(</big><em>predicted_power_as_instances</em>, <em>ground_truth_as_instances</em><big>)</big><a class="reference internal" href="_modules/disaggregator/evaluation_metrics.html#fraction_energy_assigned_correctly"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#disaggregator.evaluation_metrics.fraction_energy_assigned_correctly" title="Permalink to this definition">¶</a></dt>
+<dd><p>From NILMTK toolkit. Assumes that appliances are aligned in the sets.</p>
+</dd></dl>
+
+<dl class="function">
 <dt id="disaggregator.evaluation_metrics.get_accuracy">
 <tt class="descclassname">disaggregator.evaluation_metrics.</tt><tt class="descname">get_accuracy</tt><big>(</big><em>stats</em><big>)</big><a class="reference internal" href="_modules/disaggregator/evaluation_metrics.html#get_accuracy"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#disaggregator.evaluation_metrics.get_accuracy" title="Permalink to this definition">¶</a></dt>
 <dd><p>Takes an array of true positives, false negatives, true negatives, and false positives. Returns the Accuracy measure where accuracy is tp+tn/(tn+fn+tp+fp)</p>
