@@ -62,6 +62,7 @@
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
 <span class="kn">import</span> <span class="nn">math</span>
 <span class="kn">import</span> <span class="nn">scipy</span>
+<span class="kn">import</span> <span class="nn">sys</span>
 
 <div class="viewcode-block" id="sum_error"><a class="viewcode-back" href="../../evaluation_metrics.html#disaggregator.evaluation_metrics.sum_error">[docs]</a><span class="k">def</span> <span class="nf">sum_error</span><span class="p">(</span><span class="n">truth</span><span class="p">,</span><span class="n">prediction</span><span class="p">):</span>
     <span class="sd">&#39;&#39;&#39;</span>
@@ -69,6 +70,43 @@
 <span class="sd">    absolute value of the difference between their sums.</span>
 <span class="sd">    &#39;&#39;&#39;</span>
     <span class="k">return</span> <span class="n">math</span><span class="o">.</span><span class="n">fabs</span><span class="p">(</span><span class="n">truth</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span><span class="o">-</span><span class="n">prediction</span><span class="o">.</span><span class="n">sum</span><span class="p">())</span>
+</div>
+<span class="k">def</span> <span class="nf">get_index</span><span class="p">(</span><span class="n">app_instances</span><span class="p">,</span><span class="n">app</span><span class="p">):</span>
+    <span class="n">traces</span> <span class="o">=</span> <span class="n">app_instances</span><span class="o">.</span><span class="n">traces</span>
+    <span class="k">for</span> <span class="n">t_i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">traces</span><span class="p">)):</span>
+        <span class="k">if</span> <span class="n">traces</span><span class="p">[</span><span class="n">t_i</span><span class="p">]</span><span class="o">==</span><span class="n">app</span><span class="p">:</span>
+           <span class="k">return</span> <span class="n">t_i</span>
+    <span class="k">return</span> <span class="o">-</span><span class="mi">1</span>	
+       
+
+<div class="viewcode-block" id="fraction_energy_assigned_correctly"><a class="viewcode-back" href="../../evaluation_metrics.html#disaggregator.evaluation_metrics.fraction_energy_assigned_correctly">[docs]</a><span class="k">def</span> <span class="nf">fraction_energy_assigned_correctly</span><span class="p">(</span><span class="n">predicted_power_as_instances</span><span class="p">,</span> <span class="n">ground_truth_as_instances</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        From NILMTK toolkit. Assumes that appliances are aligned in the sets.</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="n">traces_truth</span> <span class="o">=</span> <span class="n">ground_truth_as_instances</span><span class="o">.</span><span class="n">traces</span>
+    <span class="c">#traces_power = [t.series for t in traces]</span>
+    <span class="n">traces_predicted</span> <span class="o">=</span> <span class="n">predicted_power_as_instances</span><span class="o">.</span><span class="n">traces</span>
+    <span class="c">#traces_predicted_power = [t.series for t in traces_predicted] </span>
+    <span class="n">total_energy_ground_truth</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">([</span><span class="nb">float</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">t</span><span class="o">.</span><span class="n">series</span><span class="p">))</span> <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">traces_truth</span><span class="p">])</span>
+    <span class="n">percent_power_by_app</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([])</span>
+    <span class="k">for</span> <span class="n">trace_index</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">traces_predicted</span><span class="p">)):</span>
+        <span class="n">app_energy_predicted</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">traces_predicted</span><span class="p">[</span><span class="n">trace_index</span><span class="p">]</span><span class="o">.</span><span class="n">series</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">traces_truth</span><span class="p">[</span><span class="n">trace_index</span><span class="p">]</span><span class="o">.</span><span class="n">series</span><span class="o">.</span><span class="n">name</span><span class="o">==</span><span class="n">traces_predicted</span><span class="p">[</span><span class="n">trace_index</span><span class="p">]</span><span class="o">.</span><span class="n">series</span><span class="o">.</span><span class="n">name</span><span class="p">:</span>
+            <span class="n">app_energy_ground_truth</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">traces_truth</span><span class="p">[</span><span class="n">trace_index</span><span class="p">])</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">index</span> <span class="o">=</span> <span class="n">get_index</span><span class="p">(</span><span class="n">predicted_power_as_instances</span><span class="p">,</span><span class="n">traces_predicted</span><span class="p">[</span><span class="n">trace_index</span><span class="p">]</span><span class="o">.</span><span class="n">series</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">index</span><span class="o">!=-</span><span class="mi">1</span><span class="p">:</span>
+                <span class="n">app_energy_ground_truth</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">traces_truth</span><span class="p">[</span><span class="n">index</span><span class="p">])</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">app_energy_ground_truth</span> <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">maxint</span>
+        <span class="n">percent_power_by_app</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">percent_power_by_app</span><span class="p">,</span><span class="nb">float</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">([</span><span class="n">app_energy_predicted</span><span class="p">,</span><span class="n">app_energy_ground_truth</span><span class="p">])))</span>
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">divide</span><span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">percent_power_by_app</span><span class="p">)),</span><span class="nb">float</span><span class="p">(</span><span class="n">total_energy_ground_truth</span><span class="p">))</span>
+
+        
+       
+    
+    
+    
 </div>
 <div class="viewcode-block" id="rss"><a class="viewcode-back" href="../../evaluation_metrics.html#disaggregator.evaluation_metrics.rss">[docs]</a><span class="k">def</span> <span class="nf">rss</span><span class="p">(</span><span class="n">truth</span><span class="p">,</span><span class="n">prediction</span><span class="p">):</span>
     <span class="sd">&#39;&#39;&#39;Sum of squared residuals&#39;&#39;&#39;</span>
