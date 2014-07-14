@@ -54,6 +54,16 @@ def bootstrap_appliance_set(appliance_sets, k, n, how="strict"):
     # TODO write this function.
     pass
 
+def create_datetimeindex(df):
+    """
+    Modify a dataframe inplace to give it a DatetimeIndex. Must have the column
+    'time', which will be removed and used as the index.
+    """
+    no_tz = [t.replace(tzinfo=None) for t in df['time']] # is this efficient?
+    df['time'] = pd.to_datetime(no_tz,utc=True)
+    df.set_index('time', inplace=True)
+
+
 def get_common_ids(id_lists):
     '''
     Returns a list of ids common to the supplied lists. (id set intersection)
