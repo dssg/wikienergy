@@ -65,6 +65,21 @@ def get_common_ids(id_lists):
     return list(common_ids)
 
 
+def get_train_valid_test_indices(n):
+    '''
+    Given an number n, return three arrays of length n/2, n/4, n/4 respectively,
+    which collectively contain the indices [0..n-1] ordered psuedo-randomly.
+    '''
+    indices = np.arange(n)
+    np.random.shuffle(indices)
+    n_train = n/2
+    n_valid = n/4
+    n_test = n - n_train - n_valid
+    assert(n == n_train + n_valid + n_test)
+    return (indices[:n_train],
+           indices[n_train:n_train+n_valid],
+           indices[n_train+n_valid:])
+
 def split_trace_into_rate(trace,rate):
     '''
     Given a single trace, a list of traces are returned that are each
