@@ -310,7 +310,7 @@ def generate_appliance_trace(schema,table,appliance,dataid,sample_rate=None):
     '''
     global schema_names, source
     schema_name = schema_names[schema]
-    query= 'select {0}, {1} from "{2}".{3} where dataid={4}'\
+    query= 'select {0},{1} from "{2}".{3} where dataid={4}'\
         .format(appliance,time_columns[schema],schema_name,table,dataid)
     print query
     df = get_dataframe(query)
@@ -338,7 +338,7 @@ def generate_appliances_traces(
     '''
     global schema_names, source
     schema_name = schema_names[schema]
-    query= 'select {0}, {1} from "{2}".{3} where dataid={4}'.format(
+    query= 'select {0},{1} from "{2}".{3} where dataid={4}'.format(
         ','.join(appliances), time_columns[schema], schema_name, table, dataid)
     if verbose:
         print query
@@ -361,6 +361,37 @@ def generate_appliances_traces(
             trace = utils.resample_trace(trace,sample_rate)
         traces.append(trace)
     return traces
+
+def generate_appliance_instance(
+        schema,tables,appliances,dataid,sample_rate=None,verbose=True):
+    """
+    Return an appliance instance from consecutive tables. Concatenates traces.
+    """
+    traces = [generate_appliance_trace(schema,table,appliances,dataid,
+                  sample_rate=None,verbose=True) for table in tables]
+    traces = [utils.concatenate_trace(traces)]
+    return ApplianceInstance(traces,traces[0].metadata)
+
+def generate_appliances_instances(
+        schema,tables,appliances,dataid,sample_rate=None,verbose=True):
+    """
+    Return an appliance instances from consecutive tables. Concatenates traces.
+    """
+    all_traces = [generate_appliances_traces(schema,table,appliances,dataid,
+                      sample_rate=None,verbose=True) for table in tables]
+
+    # transpose
+    appliance_traces = list(zip(*traces))
+
+    # concatenate by appliance
+    appliance_traces = [utils.concatenate_trace(traces)
+                        for traces in appliance_traces]
+    return [ApplianceInstance(traces,traces[0].metadata)
+            for traces in appliance_traces]
+
+def generate_instances_for_appliance_by_dataids(
+        schema, tables, appliance, ids, sample_rate=None):
+    pass
 
 def generate_traces_for_appliance_by_dataids(
         schema, table, appliance, ids, sample_rate=None):
