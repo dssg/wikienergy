@@ -92,9 +92,23 @@ list of n traces.</p>
 </dd></dl>
 
 <dl class="function">
+<dt id="disaggregator.utils.create_datetimeindex">
+<tt class="descclassname">disaggregator.utils.</tt><tt class="descname">create_datetimeindex</tt><big>(</big><em>df</em><big>)</big><a class="reference internal" href="_modules/disaggregator/utils.html#create_datetimeindex"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#disaggregator.utils.create_datetimeindex" title="Permalink to this definition">¶</a></dt>
+<dd><p>Modify a dataframe inplace to give it a DatetimeIndex. Must have the column
+&#8216;time&#8217;, which will be removed and used as the index.</p>
+</dd></dl>
+
+<dl class="function">
 <dt id="disaggregator.utils.get_common_ids">
 <tt class="descclassname">disaggregator.utils.</tt><tt class="descname">get_common_ids</tt><big>(</big><em>id_lists</em><big>)</big><a class="reference internal" href="_modules/disaggregator/utils.html#get_common_ids"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#disaggregator.utils.get_common_ids" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns a list of ids common to the supplied lists. (id set intersection)</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="disaggregator.utils.get_train_valid_test_indices">
+<tt class="descclassname">disaggregator.utils.</tt><tt class="descname">get_train_valid_test_indices</tt><big>(</big><em>n</em><big>)</big><a class="reference internal" href="_modules/disaggregator/utils.html#get_train_valid_test_indices"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#disaggregator.utils.get_train_valid_test_indices" title="Permalink to this definition">¶</a></dt>
+<dd><p>Given an number n, return three arrays of length n/2, n/4, n/4 respectively,
+which collectively contain the indices [0..n-1] ordered psuedo-randomly.</p>
 </dd></dl>
 
 <dl class="function">
