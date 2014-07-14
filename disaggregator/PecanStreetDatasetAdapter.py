@@ -366,7 +366,7 @@ def generate_appliance_instance(
     Return an appliance instance from consecutive tables. Concatenates traces.
     """
     traces = [generate_appliance_trace(schema,table,appliances,dataid,
-                  sample_rate=None,verbose=True) for table in tables]
+                  sample_rate,verbose) for table in tables]
     traces = [utils.concatenate_trace(traces)]
     return ApplianceInstance(traces,traces[0].metadata)
 
@@ -376,7 +376,7 @@ def generate_appliances_instances(
     Return an appliance instances from consecutive tables. Concatenates traces.
     """
     all_traces = [generate_appliances_traces(schema,table,appliances,dataid,
-                      sample_rate=None,verbose=True) for table in tables]
+                      sample_rate,verbose) for table in tables]
 
     # transpose
     appliance_traces = list(zip(*all_traces))
@@ -410,7 +410,6 @@ def generate_traces_for_appliances_by_dataid(
     Returns traces for a list of appliance types across a set of dataids.
     Wrapper for `generate_appliances_traces` function
     '''
-    # TODO figure out a more efficient way to do this
     traces = generate_appliances_traces(schema, table, appliances, dataid,
                                         sample_rate)
     return traces
@@ -420,6 +419,7 @@ def generate_instances_for_appliances_by_dataids(
     """
     Returns instances for a single appliance type across a set of dataids
     """
+    #TODO probably a more efficient way to do this
     instances = [generate_appliances_instances(schema, tables, appliances,
                  dataid, sample_rate) for dataid in dataids]
 
