@@ -382,14 +382,18 @@ def generate_appliances_instances(
     appliance_traces = list(zip(*all_traces))
 
     # concatenate by appliance
-    appliance_traces = [utils.concatenate_trace(traces)
+    appliance_traces = [utils.concatenate_traces(traces)
                         for traces in appliance_traces]
-    return [ApplianceInstance(traces,traces[0].metadata)
-            for traces in appliance_traces]
+    return [ApplianceInstance([trace],trace.metadata)
+            for trace in appliance_traces]
 
 def generate_instances_for_appliance_by_dataids(
-        schema, tables, appliance, ids, sample_rate=None):
-    pass
+        schema, tables, appliance, dataids, sample_rate=None):
+    """
+    Returns instances for a single appliance type across a set of dataids
+    """
+    instances = [generate_appliance_instance(schema, tables, appliance, dataid,
+                 sample_rate) for dataid in dataids]
 
 def generate_traces_for_appliance_by_dataids(
         schema, table, appliance, ids, sample_rate=None):
@@ -404,11 +408,21 @@ def generate_traces_for_appliances_by_dataid(
         schema, table, appliances, dataid, sample_rate=None):
     '''
     Returns traces for a list of appliance types across a set of dataids.
+    Wrapper for `generate_appliances_traces` function
     '''
     # TODO figure out a more efficient way to do this
     traces = generate_appliances_traces(schema, table, appliances, dataid,
                                         sample_rate)
     return traces
+
+def generate_instances_for_appliances_by_dataids(
+        schema, tables, appliance, dataids, sample_rate=None):
+    """
+    Returns instances for a single appliance type across a set of dataids
+    """
+    instances = [generate_appliances_instances(schema, tables, appliances,
+                 dataid, sample_rate) for dataid in dataids]
+
 
 def generate_traces_for_appliances_by_dataids(
         schema, table, appliances, dataids, sample_rate=None):
