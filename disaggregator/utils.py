@@ -236,7 +236,8 @@ def generate_random_appliance_sets(appliance_sets,k,n):
         for _ in xrange(k):
             instance = all_instances[random.randrange(n_instances)]
             instances.append(instance)
-        appliance_set = ApplianceSet(instances)
+            metadata = {'name': None, 'source': "random sample"}
+            appliance_set = ApplianceSet(instances, metadata)
         all_sets.append(appliance_set)
     return all_sets
 
