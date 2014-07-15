@@ -219,10 +219,31 @@ def pickle_object(obj,title):
     with open(os.path.join(rel_path,'data/{}.p'.format(title)),'wb') as f:
         pickle.dump(obj, f)
 
-def shuffle_appliance_sets(sets,other_params):
-    pass
+def generate_random_appliance_sets(appliance_sets,k,n):
+    """
+    Given a list of appliance sets, returns n randomly
+    sets, whose instances have been sampled
+    (w/replacement) from the instances of the given appliance_sets.
+
+    Appliance sets must be aligned.
+    """
+    all_instances = [instance for appliance_set in appliance_sets
+                     for instance in appliance_set.instances]
+    n_instances = len(all_instances)
+    all_sets = []
+    for _ in xrange(n):
+        instances = []
+        for _ in xrange(k):
+            instance = all_instances[random.randrange(n_instances)]
+            instances.append(instance)
+        appliance_set = ApplianceSet(instances)
+        all_sets.append(appliance_set)
+    return all_sets
 
 def get_trace_windows(trace,window_length,window_step):
+    """
+    Returns a nump array with stacked sliding windows of data from a trace.
+    """
     total_length = trace.series.size
     n_steps = int((total_length - window_length) / window_step)
     windows = []
