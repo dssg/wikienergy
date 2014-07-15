@@ -394,6 +394,7 @@ def generate_instances_for_appliance_by_dataids(
     """
     instances = [generate_appliance_instance(schema, tables, appliance, dataid,
                  sample_rate) for dataid in dataids]
+    return instances
 
 def generate_traces_for_appliance_by_dataids(
         schema, table, appliance, ids, sample_rate=None):
@@ -422,6 +423,7 @@ def generate_instances_for_appliances_by_dataids(
     #TODO probably a more efficient way to do this
     instances = [generate_appliances_instances(schema, tables, appliances,
                  dataid, sample_rate) for dataid in dataids]
+    return instances
 
 
 def generate_traces_for_appliances_by_dataids(
