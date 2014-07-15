@@ -190,6 +190,13 @@ Ex. <cite>traces[0][3]</cite> gets the fourth appliance trace for the first data
 </dd></dl>
 
 <dl class="function">
+<dt id="disaggregator.PecanStreetDatasetAdapter.get_appliance_detection_arrays">
+<tt class="descclassname">disaggregator.PecanStreetDatasetAdapter.</tt><tt class="descname">get_appliance_detection_arrays</tt><big>(</big><em>schema</em>, <em>tables</em>, <em>appliance</em>, <em>window_length</em>, <em>window_stride</em>, <em>drop_percentile</em>, <em>verbose=True</em><big>)</big><a class="reference internal" href="_modules/disaggregator/PecanStreetDatasetAdapter.html#get_appliance_detection_arrays"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#disaggregator.PecanStreetDatasetAdapter.get_appliance_detection_arrays" title="Permalink to this definition">¶</a></dt>
+<dd><p>Given an appliance, get all information from a schema in the database
+about what usage looks like when the appliance is present.</p>
+</dd></dl>
+
+<dl class="function">
 <dt id="disaggregator.PecanStreetDatasetAdapter.get_dataframe">
 <tt class="descclassname">disaggregator.PecanStreetDatasetAdapter.</tt><tt class="descname">get_dataframe</tt><big>(</big><em>query</em><big>)</big><a class="reference internal" href="_modules/disaggregator/PecanStreetDatasetAdapter.html#get_dataframe"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#disaggregator.PecanStreetDatasetAdapter.get_dataframe" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns a Pandas dataframe with the query results</p>
@@ -237,6 +244,15 @@ column names for this schema and table</p>
 <tt class="descclassname">disaggregator.PecanStreetDatasetAdapter.</tt><tt class="descname">get_unique_dataids</tt><big>(</big><em>schema</em>, <em>year</em>, <em>month</em>, <em>group=None</em><big>)</big><a class="reference internal" href="_modules/disaggregator/PecanStreetDatasetAdapter.html#get_unique_dataids"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#disaggregator.PecanStreetDatasetAdapter.get_unique_dataids" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns a list of dataids for a specifc schema (&#8220;curated&#8221;,&#8221;shared&#8221;, or
 &#8220;raw&#8221;), month (int), year (int), and [group (int) - only if &#8220;curated&#8221;].</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="disaggregator.PecanStreetDatasetAdapter.get_use_for_active_windows">
+<tt class="descclassname">disaggregator.PecanStreetDatasetAdapter.</tt><tt class="descname">get_use_for_active_windows</tt><big>(</big><em>schema</em>, <em>tables</em>, <em>appliances</em>, <em>dataids</em>, <em>window_length</em>, <em>window_stride</em>, <em>drop_percentile=10</em>, <em>sample_rate='15T'</em><big>)</big><a class="reference internal" href="_modules/disaggregator/PecanStreetDatasetAdapter.html#get_use_for_active_windows"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#disaggregator.PecanStreetDatasetAdapter.get_use_for_active_windows" title="Permalink to this definition">¶</a></dt>
+<dd><p>Given a list of consecutive tables, returns windows of total use data
+for which the appliance waas active.</p>
+<p>Appliances should not include the &#8216;use&#8217; column. Drops the lowest
+drop_percentile samples. Use appliances=None for unfiltered windows.</p>
 </dd></dl>
 
 <dl class="function">
