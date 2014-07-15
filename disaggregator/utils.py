@@ -87,9 +87,9 @@ def get_train_valid_test_indices(n):
     n_valid = n/4
     n_test = n - n_train - n_valid
     assert(n == n_train + n_valid + n_test)
-    return (indices[:n_train],
-           indices[n_train:n_train+n_valid],
-           indices[n_train+n_valid:])
+    return (sorted(indices[:n_train]),
+            sorted(indices[n_train:n_train+n_valid]),
+            sorted(indices[n_train+n_valid:]))
 
 def split_trace_into_rate(trace,rate):
     '''
