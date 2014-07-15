@@ -107,10 +107,41 @@ also dropped.</p>
 </dd></dl>
 
 <dl class="function">
+<dt id="disaggregator.PecanStreetDatasetAdapter.generate_appliance_instance">
+<tt class="descclassname">disaggregator.PecanStreetDatasetAdapter.</tt><tt class="descname">generate_appliance_instance</tt><big>(</big><em>schema</em>, <em>tables</em>, <em>appliances</em>, <em>dataid</em>, <em>sample_rate=None</em>, <em>verbose=True</em><big>)</big><a class="reference internal" href="_modules/disaggregator/PecanStreetDatasetAdapter.html#generate_appliance_instance"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#disaggregator.PecanStreetDatasetAdapter.generate_appliance_instance" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return an appliance instance from consecutive tables. Concatenates traces.</p>
+</dd></dl>
+
+<dl class="function">
 <dt id="disaggregator.PecanStreetDatasetAdapter.generate_appliance_trace">
-<tt class="descclassname">disaggregator.PecanStreetDatasetAdapter.</tt><tt class="descname">generate_appliance_trace</tt><big>(</big><em>schema</em>, <em>table</em>, <em>appliance</em>, <em>dataid</em>, <em>sample_rate=None</em><big>)</big><a class="reference internal" href="_modules/disaggregator/PecanStreetDatasetAdapter.html#generate_appliance_trace"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#disaggregator.PecanStreetDatasetAdapter.generate_appliance_trace" title="Permalink to this definition">¶</a></dt>
+<tt class="descclassname">disaggregator.PecanStreetDatasetAdapter.</tt><tt class="descname">generate_appliance_trace</tt><big>(</big><em>schema</em>, <em>table</em>, <em>appliance</em>, <em>dataid</em>, <em>sample_rate=None</em>, <em>verbose=True</em><big>)</big><a class="reference internal" href="_modules/disaggregator/PecanStreetDatasetAdapter.html#generate_appliance_trace"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#disaggregator.PecanStreetDatasetAdapter.generate_appliance_trace" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return an appliance trace by dataid. The trace is in decimal form and in
 average Watts.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="disaggregator.PecanStreetDatasetAdapter.generate_appliances_instances">
+<tt class="descclassname">disaggregator.PecanStreetDatasetAdapter.</tt><tt class="descname">generate_appliances_instances</tt><big>(</big><em>schema</em>, <em>tables</em>, <em>appliances</em>, <em>dataid</em>, <em>sample_rate=None</em>, <em>verbose=True</em><big>)</big><a class="reference internal" href="_modules/disaggregator/PecanStreetDatasetAdapter.html#generate_appliances_instances"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#disaggregator.PecanStreetDatasetAdapter.generate_appliances_instances" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return an appliance instances from consecutive tables. Concatenates traces.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="disaggregator.PecanStreetDatasetAdapter.generate_appliances_traces">
+<tt class="descclassname">disaggregator.PecanStreetDatasetAdapter.</tt><tt class="descname">generate_appliances_traces</tt><big>(</big><em>schema</em>, <em>table</em>, <em>appliances</em>, <em>dataid</em>, <em>sample_rate=None</em>, <em>verbose=True</em><big>)</big><a class="reference internal" href="_modules/disaggregator/PecanStreetDatasetAdapter.html#generate_appliances_traces"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#disaggregator.PecanStreetDatasetAdapter.generate_appliances_traces" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return a list of appliance traces by dataid. Each trace is in decimal form
+and in average Watts.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="disaggregator.PecanStreetDatasetAdapter.generate_instances_for_appliance_by_dataids">
+<tt class="descclassname">disaggregator.PecanStreetDatasetAdapter.</tt><tt class="descname">generate_instances_for_appliance_by_dataids</tt><big>(</big><em>schema</em>, <em>tables</em>, <em>appliance</em>, <em>dataids</em>, <em>sample_rate=None</em><big>)</big><a class="reference internal" href="_modules/disaggregator/PecanStreetDatasetAdapter.html#generate_instances_for_appliance_by_dataids"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#disaggregator.PecanStreetDatasetAdapter.generate_instances_for_appliance_by_dataids" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns instances for a single appliance type across a set of dataids</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="disaggregator.PecanStreetDatasetAdapter.generate_instances_for_appliances_by_dataids">
+<tt class="descclassname">disaggregator.PecanStreetDatasetAdapter.</tt><tt class="descname">generate_instances_for_appliances_by_dataids</tt><big>(</big><em>schema</em>, <em>tables</em>, <em>appliances</em>, <em>dataids</em>, <em>sample_rate=None</em><big>)</big><a class="reference internal" href="_modules/disaggregator/PecanStreetDatasetAdapter.html#generate_instances_for_appliances_by_dataids"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#disaggregator.PecanStreetDatasetAdapter.generate_instances_for_appliances_by_dataids" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns instances for a list of appliances across a set of dataids</p>
 </dd></dl>
 
 <dl class="function">
@@ -136,6 +167,20 @@ name associated with that month.</p>
 <dt id="disaggregator.PecanStreetDatasetAdapter.generate_traces_for_appliance_by_dataids">
 <tt class="descclassname">disaggregator.PecanStreetDatasetAdapter.</tt><tt class="descname">generate_traces_for_appliance_by_dataids</tt><big>(</big><em>schema</em>, <em>table</em>, <em>appliance</em>, <em>ids</em>, <em>sample_rate=None</em><big>)</big><a class="reference internal" href="_modules/disaggregator/PecanStreetDatasetAdapter.html#generate_traces_for_appliance_by_dataids"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#disaggregator.PecanStreetDatasetAdapter.generate_traces_for_appliance_by_dataids" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns traces for a single appliance type across a set of dataids.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="disaggregator.PecanStreetDatasetAdapter.generate_traces_for_appliances_by_dataid">
+<tt class="descclassname">disaggregator.PecanStreetDatasetAdapter.</tt><tt class="descname">generate_traces_for_appliances_by_dataid</tt><big>(</big><em>schema</em>, <em>table</em>, <em>appliances</em>, <em>dataid</em>, <em>sample_rate=None</em><big>)</big><a class="reference internal" href="_modules/disaggregator/PecanStreetDatasetAdapter.html#generate_traces_for_appliances_by_dataid"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#disaggregator.PecanStreetDatasetAdapter.generate_traces_for_appliances_by_dataid" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns traces for a list of appliance types across a set of dataids.
+Wrapper for <cite>generate_appliances_traces</cite> function</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="disaggregator.PecanStreetDatasetAdapter.generate_traces_for_appliances_by_dataids">
+<tt class="descclassname">disaggregator.PecanStreetDatasetAdapter.</tt><tt class="descname">generate_traces_for_appliances_by_dataids</tt><big>(</big><em>schema</em>, <em>table</em>, <em>appliances</em>, <em>dataids</em>, <em>sample_rate=None</em><big>)</big><a class="reference internal" href="_modules/disaggregator/PecanStreetDatasetAdapter.html#generate_traces_for_appliances_by_dataids"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#disaggregator.PecanStreetDatasetAdapter.generate_traces_for_appliances_by_dataids" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a list of lists of traces for appliance types for a list of dataids.
+Ex. <cite>traces[0][3]</cite> gets the fourth appliance trace for the first dataid.</p>
 </dd></dl>
 
 <dl class="function">
