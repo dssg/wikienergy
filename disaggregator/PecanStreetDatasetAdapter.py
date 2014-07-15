@@ -511,7 +511,7 @@ def get_use_for_active_windows(schema, tables, appliances, dataids,
         usage_windows = utils.get_trace_windows(usage.traces[0],window_length,
                 window_stride)
         appliance_windows = []
-        if instances.empty():
+        if instances is []:
             if drop_percentile is not 0:
                 print "Warning: ignoring drop_percentile"
 
