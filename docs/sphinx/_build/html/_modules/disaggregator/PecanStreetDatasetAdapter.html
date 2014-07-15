@@ -468,7 +468,7 @@
 <div class="viewcode-block" id="generate_instances_for_appliances_by_dataids"><a class="viewcode-back" href="../../dataset_adapters.html#disaggregator.PecanStreetDatasetAdapter.generate_instances_for_appliances_by_dataids">[docs]</a><span class="k">def</span> <span class="nf">generate_instances_for_appliances_by_dataids</span><span class="p">(</span>
         <span class="n">schema</span><span class="p">,</span> <span class="n">tables</span><span class="p">,</span> <span class="n">appliance</span><span class="p">,</span> <span class="n">dataids</span><span class="p">,</span> <span class="n">sample_rate</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Returns instances for a single appliance type across a set of dataids</span>
+<span class="sd">    Returns instances for a list of appliances across a set of dataids</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="c">#TODO probably a more efficient way to do this</span>
     <span class="n">instances</span> <span class="o">=</span> <span class="p">[</span><span class="n">generate_appliances_instances</span><span class="p">(</span><span class="n">schema</span><span class="p">,</span> <span class="n">tables</span><span class="p">,</span> <span class="n">appliances</span><span class="p">,</span>

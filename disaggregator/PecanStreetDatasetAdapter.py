@@ -417,7 +417,7 @@ def generate_traces_for_appliances_by_dataid(
 def generate_instances_for_appliances_by_dataids(
         schema, tables, appliance, dataids, sample_rate=None):
     """
-    Returns instances for a single appliance type across a set of dataids
+    Returns instances for a list of appliances across a set of dataids
     """
     #TODO probably a more efficient way to do this
     instances = [generate_appliances_instances(schema, tables, appliances,
