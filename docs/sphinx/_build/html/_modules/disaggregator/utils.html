@@ -137,9 +137,9 @@
     <span class="n">n_valid</span> <span class="o">=</span> <span class="n">n</span><span class="o">/</span><span class="mi">4</span>
     <span class="n">n_test</span> <span class="o">=</span> <span class="n">n</span> <span class="o">-</span> <span class="n">n_train</span> <span class="o">-</span> <span class="n">n_valid</span>
     <span class="k">assert</span><span class="p">(</span><span class="n">n</span> <span class="o">==</span> <span class="n">n_train</span> <span class="o">+</span> <span class="n">n_valid</span> <span class="o">+</span> <span class="n">n_test</span><span class="p">)</span>
-    <span class="k">return</span> <span class="p">(</span><span class="n">indices</span><span class="p">[:</span><span class="n">n_train</span><span class="p">],</span>
-           <span class="n">indices</span><span class="p">[</span><span class="n">n_train</span><span class="p">:</span><span class="n">n_train</span><span class="o">+</span><span class="n">n_valid</span><span class="p">],</span>
-           <span class="n">indices</span><span class="p">[</span><span class="n">n_train</span><span class="o">+</span><span class="n">n_valid</span><span class="p">:])</span>
+    <span class="k">return</span> <span class="p">(</span><span class="nb">sorted</span><span class="p">(</span><span class="n">indices</span><span class="p">[:</span><span class="n">n_train</span><span class="p">]),</span>
+            <span class="nb">sorted</span><span class="p">(</span><span class="n">indices</span><span class="p">[</span><span class="n">n_train</span><span class="p">:</span><span class="n">n_train</span><span class="o">+</span><span class="n">n_valid</span><span class="p">]),</span>
+            <span class="nb">sorted</span><span class="p">(</span><span class="n">indices</span><span class="p">[</span><span class="n">n_train</span><span class="o">+</span><span class="n">n_valid</span><span class="p">:]))</span>
 </div>
 <div class="viewcode-block" id="split_trace_into_rate"><a class="viewcode-back" href="../../utils.html#disaggregator.utils.split_trace_into_rate">[docs]</a><span class="k">def</span> <span class="nf">split_trace_into_rate</span><span class="p">(</span><span class="n">trace</span><span class="p">,</span><span class="n">rate</span><span class="p">):</span>
     <span class="sd">&#39;&#39;&#39;</span>
@@ -272,6 +272,16 @@
 </div>
 <span class="k">def</span> <span class="nf">shuffle_appliance_sets</span><span class="p">(</span><span class="n">sets</span><span class="p">,</span><span class="n">other_params</span><span class="p">):</span>
     <span class="k">pass</span>
+
+<span class="k">def</span> <span class="nf">get_trace_windows</span><span class="p">(</span><span class="n">trace</span><span class="p">,</span><span class="n">window_length</span><span class="p">,</span><span class="n">window_step</span><span class="p">):</span>
+    <span class="n">total_length</span> <span class="o">=</span> <span class="n">trace</span><span class="o">.</span><span class="n">series</span><span class="o">.</span><span class="n">size</span>
+    <span class="n">n_steps</span> <span class="o">=</span> <span class="nb">int</span><span class="p">((</span><span class="n">total_length</span> <span class="o">-</span> <span class="n">window_length</span><span class="p">)</span> <span class="o">/</span> <span class="n">window_step</span><span class="p">)</span>
+    <span class="n">windows</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">step</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_steps</span><span class="p">):</span>
+        <span class="n">start</span> <span class="o">=</span> <span class="n">step</span> <span class="o">*</span> <span class="n">window_step</span>
+        <span class="n">window</span> <span class="o">=</span> <span class="n">trace</span><span class="o">.</span><span class="n">series</span><span class="p">[</span><span class="n">start</span><span class="p">:</span><span class="n">start</span> <span class="o">+</span> <span class="n">window_length</span><span class="p">]</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
+        <span class="n">windows</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">window</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">windows</span><span class="p">,</span><span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float</span><span class="p">)</span>
 </pre></div>
 
           </div>
