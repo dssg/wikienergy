@@ -18,6 +18,7 @@ import os
 import pickle
 import sys
 import decimal
+import datetime
 
 def aggregate_instances(instances, metadata, how="strict"):
     '''
@@ -221,6 +222,40 @@ def pickle_object(obj,title):
 
 def shuffle_appliance_sets(sets,other_params):
     pass
+
+def get_trace_in_time_of_day(device_trace,start_time,end_time):
+    '''
+    Given a trace and a start and end datetime.time, it returns a trace within that time period.
+    '''
+    new_series=device_trace.series.ix[start_time:end_time]
+    return appliance.ApplianceTrace(new_series,device_trace.metadata)
+
+def get_instance_in_time_of_day(device_instance,start_time,end_time):
+    '''
+    Given an instance and a start and end datetime.time, it returns a trace within that time period.
+    '''
+    new_traces=[]
+    for trace in device_instance.traces:
+        new_traces.append(get_trace_in_time_of_day(trace,start_time,end_time))
+    return appliance.ApplianceInstance(new_traces,device_instance.metadata)
+
+def get_type_in_time_of_day(device_type,start_time,end_time):
+    '''
+    Resamples all traces in each instance of a given type.
+    '''
+    new_instances=[]
+    for instance in device_type.instances:
+        new_instances.append(get_instance_in_time_of_day(instance,start_time,end_time))
+    return appliance.ApplianceType(new_instances,device_type.metadata)
+
+def get_set_in_time_of_day(device_set,start_time,end_time):
+    '''
+    Resamples all traces in each instance of a given set.
+    '''
+    new_instances=[]
+    for instance in device_set.instances:
+        new_instances.append(get_instance_in_time_of_day(instance,start_time,end_time))
+    return appliance.ApplianceSet(new_instances,device_set.metadata)
 
 def get_trace_windows(trace,window_length,window_step):
     total_length = trace.series.size
