@@ -501,7 +501,7 @@ def get_use_for_active_windows(schema, tables, appliances, dataids,
     if not appliances:
         appliances = []
     appliances.append('use')
-    instances = psda.generate_instances_for_appliances_by_dataids(
+    instances = generate_instances_for_appliances_by_dataids(
             schema,tables,appliances,dataids,sample_rate)
     usages = [instances_for_id[-1] for instances_for_id in instances]
     instances = [instances_for_id[:-1] for instances_for_id in instances]
