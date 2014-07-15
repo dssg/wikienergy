@@ -213,9 +213,6 @@ def pickle_object(obj,title):
     '''
     Given an object and a filename saves the object in pickled format to the data directory.
     '''
-
-    #sys.path.append('../../')
-    #silly_path = os.path.abspath(os.path.join(os.path.dirname( '' ), '../..','data/'))
     rel_path = os.path.relpath(os.getcwd(),'data')
     with open(os.path.join(rel_path,'data/{}.p'.format(title)),'wb') as f:
         pickle.dump(obj, f)
@@ -255,3 +252,15 @@ def get_trace_windows(trace,window_length,window_step):
         windows.append(window)
     return np.array(windows,dtype=np.float)
 
+def traces_aligned(traces):
+    """
+    Returns True if traces are temporally aligned
+    """
+    pass
+
+def align_traces(traces,how="front",to=None):
+    """
+    Temporally aligns the traces. `how`="front" means to align to the front of
+    the `to` trace. If no `to` trace is given, the first trace is used.
+    """
+    pass
