@@ -263,8 +263,12 @@ def generate_set_by_table_and_dataid(schema,table,dataid,sample_rate=None):
     '''
     traces = generate_traces_by_table_and_dataid(schema,table,dataid,sample_rate)
     instances = [ApplianceInstance([t],t.metadata) for t in traces]
-    metadata = instances[0].metadata.pop("device_name")
-    return ApplianceSet(instances,metadata)
+    metadata_set= {'source':source,
+                'schema':schema,
+                'table':table ,
+                'dataid':instances[0].metadata['dataid']
+                }
+    return ApplianceSet(instances,metadata_set)
 
 def get_table_name(schema,year,month,group=None, rate = None):
     '''
@@ -306,7 +310,7 @@ def generate_appliance_trace(schema, table, appliance, dataid,
                              sample_rate=None, verbose=True):
     '''
     Return an appliance trace by dataid. The trace is in decimal form and in
-    average Watts.
+    average kiloWatts.
     '''
     global schema_names, source
     schema_name = schema_names[schema]
@@ -316,8 +320,7 @@ def generate_appliance_trace(schema, table, appliance, dataid,
     df = get_dataframe(query)
     df = df.rename(columns={time_columns[schema]: 'time'})
     utils.create_datetimeindex(df)
-    series = pd.Series(df[appliance],name = appliance).fillna(0) *\
-        decimal.Decimal(1000.0)
+    series = pd.Series(df[appliance],name = appliance).fillna(0)
     metadata = {'source':source,
             'schema':schema,
             'table':table ,
@@ -346,8 +349,7 @@ def generate_appliances_traces(
     utils.create_datetimeindex(df)
     traces = []
     for appliance in appliances:
-        series = pd.Series(df[appliance],name = appliance).fillna(0)\
-            * decimal.Decimal(1000.0)
+        series = pd.Series(df[appliance],name = appliance).fillna(0)
         metadata = {'source':source,
                     'schema':schema,
                     'table':table ,
