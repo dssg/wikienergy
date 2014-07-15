@@ -18,6 +18,7 @@ import os
 import pickle
 import sys
 import decimal
+import datetime
 import random
 
 def aggregate_instances(instances, metadata, how="strict"):
@@ -133,6 +134,16 @@ def split_type_traces_into_rate(device_type, rate):
         instances.append(new_instance)
     return appliance.ApplianceType(instances,device_type.metadata)
 
+def split_set_traces_into_rate(device_set, rate):
+    '''
+    Each trace in each instance of a set is split into multiple traces 
+    that are each from a unique date
+    '''
+    instances=[]
+    for instance in device_set.instances:
+        new_instance= split_instance_traces_into_rate(instance,rate)
+        instances.append(new_instance)
+    return appliance.ApplianceSet(instances,device_set.metadata)
 
 def concatenate_traces(traces, metadata=None, how="strict"):
     '''
@@ -238,6 +249,58 @@ def generate_random_appliance_sets(appliance_sets,k,n):
         appliance_set = appliance.ApplianceSet(instances, metadata)
         all_sets.append(appliance_set)
     return all_sets
+
+
+def trace_series_to_numpy_array(values):
+    '''
+    This takes the series from a trace and converts it to a numpy array for
+    ingestion into HMMs and certain plots. It also removes the NaNs.
+    '''
+    a=[]
+    X=[]
+    for i in values:
+        a.append(float(i))
+        X.append(a)
+        a=[]
+    array=np.array(X)
+    whereAreNaNs = np.isnan(array);
+    array[whereAreNaNs] = 0;
+    return array
+
+def get_trace_in_time_of_day(device_trace,start_time,end_time):
+    '''
+    Given a trace and a start and end datetime.time, it returns a trace
+    within that time period.
+    '''
+    new_series=device_trace.series.ix[start_time:end_time]
+    return appliance.ApplianceTrace(new_series,device_trace.metadata)
+
+def get_instance_in_time_of_day(device_instance,start_time,end_time):
+    '''
+    Given an instance and a start and end datetime.time, it returns a trace within that time period.
+    '''
+    new_traces=[]
+    for trace in device_instance.traces:
+        new_traces.append(get_trace_in_time_of_day(trace,start_time,end_time))
+    return appliance.ApplianceInstance(new_traces,device_instance.metadata)
+
+def get_type_in_time_of_day(device_type,start_time,end_time):
+    '''
+    Resamples all traces in each instance of a given type.
+    '''
+    new_instances=[]
+    for instance in device_type.instances:
+        new_instances.append(get_instance_in_time_of_day(instance,start_time,end_time))
+    return appliance.ApplianceType(new_instances,device_type.metadata)
+
+def get_set_in_time_of_day(device_set,start_time,end_time):
+    '''
+    Resamples all traces in each instance of a given set.
+    '''
+    new_instances=[]
+    for instance in device_set.instances:
+        new_instances.append(get_instance_in_time_of_day(instance,start_time,end_time))
+    return appliance.ApplianceSet(new_instances,device_set.metadata)
 
 def get_trace_windows(trace,window_length,window_step):
     """
