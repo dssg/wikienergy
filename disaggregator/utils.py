@@ -18,6 +18,7 @@ import os
 import pickle
 import sys
 import decimal
+import random
 
 def aggregate_instances(instances, metadata, how="strict"):
     '''
@@ -225,7 +226,7 @@ def generate_random_appliance_sets(appliance_sets,k,n):
     sets, whose instances have been sampled
     (w/replacement) from the instances of the given appliance_sets.
 
-    Appliance sets must be aligned.
+    ApplianceSets must be aligned.
     """
     all_instances = [instance for appliance_set in appliance_sets
                      for instance in appliance_set.instances]
@@ -237,7 +238,7 @@ def generate_random_appliance_sets(appliance_sets,k,n):
             instance = all_instances[random.randrange(n_instances)]
             instances.append(instance)
             metadata = {'name': None, 'source': "random sample"}
-            appliance_set = ApplianceSet(instances, metadata)
+            appliance_set = appliance.ApplianceSet(instances, metadata)
         all_sets.append(appliance_set)
     return all_sets
 
