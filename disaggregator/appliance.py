@@ -54,7 +54,8 @@ class ApplianceTrace(object):
 
 
 class ApplianceInstance(object):
-    """This class represents appliance instances, which may have multiple
+    """
+    This class represents appliance instances, which may have multiple
     appliance traces.
 
     Instances hold traces from a single instance of an appliance sampled
@@ -79,36 +80,22 @@ class ApplianceInstance(object):
 
 
 class ApplianceSet(object):
-    """This class represents appliance sets, which contain a set of temporally
+    """
+    This class represents appliance sets, which contain a set of temporally
     aligned appliance instances.
 
     Appliance sets are most frequently used as ground-truth for various
     algorithms, representing a particular home, building, or metered unit.
 
     """
-    #TODO remove automatic dataframe creation, but leave a function to generate
     def __init__(self,instances,metadata):
         '''
         Initializes an appliance set given a list of instances.
         '''
         self.instances = instances
         self.metadata = metadata
-        self.make_dataframe()
 
-    def add_instances(self,instances):
-        '''
-        Adds the list of appliances to the appliance set.
-        '''
-        self.instances += instances
-        self.add_to_dataframe(instances)
-
-    def add_to_dataframe(self,instances):
-        '''
-        Adds a new list of appliances to the dataframe.
-        '''
-        pass
-
-    def make_dataframe(self):
+    def get_dataframe(self):
         '''
         Makes a new dataframe of the appliance instances. Throws an exception if
         if the appliance instances have traces that don't align.
@@ -116,16 +103,9 @@ class ApplianceSet(object):
         # TODO concatenate all traces into a single trace
         # TODO change this to ordered dict
         # TODO actually throw an exception
-        series_dict = {instance.traces[0].series.name:instance.traces[0].series for instance in self.instances}
-        self.df = pd.DataFrame.from_dict(series_dict)
-
-    def set_instances(self,instances):
-        '''
-        Replaces the old instances with the new list. Makes a new dataframe
-        using those instances
-        '''
-        self.instances = instances
-        self.make_dataframe()
+        series_dict = {instance.traces[0].series.name:instance.traces[0].series
+                       for instance in self.instances}
+        return pd.DataFrame.from_dict(series_dict)
 
     def generate_top_k_set(self,k):
         '''
