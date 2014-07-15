@@ -1,5 +1,5 @@
 !obj:pylearn2.train.Train {
-    dataset: &train !pkl: "/home/pngo/wikienergy/data/pylearn2/train_car.pkl",
+    dataset: &train !pkl: "%(data_dir)s/train_car.pkl",
     model: !obj:pylearn2.models.mlp.MLP {
         batch_size: 100,
         input_space: !obj:pylearn2.space.Conv2DSpace {
@@ -29,8 +29,8 @@
         monitoring_dataset:
         {
             'train' : *train,
-            'valid' : !pkl: "/home/pngo/wikienergy/data/pylearn2/valid_car.pkl",
-            'test'  : !pkl: "/home/pngo/wikienergy/data/pylearn2/test_car.pkl",
+            'valid' : !pkl: "%(data_dir)s/valid_car.pkl",
+            'test'  : !pkl: "%(data_dir)s/test_car.pkl",
         },
         termination_criterion: !obj:pylearn2.termination_criteria.MonitorBased {
             channel_name: "valid_y_misclass"
