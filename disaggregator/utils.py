@@ -222,4 +222,13 @@ def pickle_object(obj,title):
 def shuffle_appliance_sets(sets,other_params):
     pass
 
+def get_trace_windows(trace,window_length,window_step):
+    total_length = trace.series.size
+    n_steps = int((total_length - window_length) / window_step)
+    windows = []
+    for step in range(n_steps):
+        start = step * window_step
+        window = trace.series[start:start + window_length].as_matrix()
+        windows.append(window)
+    return np.array(windows,dtype=np.float)
 
