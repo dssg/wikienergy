@@ -228,7 +228,7 @@ def get_trace_windows(trace,window_length,window_step):
     windows = []
     for step in range(n_steps):
         start = step * window_step
-        window = trace.series[start:start + window_length].as_matrix()
+        window = trace.series[start:start + window_length].tolist()
         windows.append(window)
     return np.array(windows,dtype=np.float)
 
