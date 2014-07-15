@@ -133,6 +133,16 @@ def split_type_traces_into_rate(device_type, rate):
         instances.append(new_instance)
     return appliance.ApplianceType(instances,device_type.metadata)
 
+def split_set_traces_into_rate(device_set, rate):
+    '''
+    Each trace in each instance of a set is split into multiple traces 
+    that are each from a unique date
+    '''
+    instances=[]
+    for instance in device_set.instances:
+        new_instance= split_instance_traces_into_rate(instance,rate)
+        instances.append(new_instance)
+    return appliance.ApplianceSet(instances,device_set.metadata)
 
 def concatenate_traces(traces, metadata=None, how="strict"):
     '''
@@ -223,9 +233,27 @@ def pickle_object(obj,title):
 def shuffle_appliance_sets(sets,other_params):
     pass
 
+
+def trace_series_to_numpy_array(values):
+    '''
+    This takes the series from a trace and converts it to a numpy array for
+    ingestion into HMMs and certain plots. It also removes the NaNs.
+    '''
+    a=[]
+    X=[]
+    for i in values:
+        a.append(float(i))
+        X.append(a)
+        a=[]
+    array=np.array(X)
+    whereAreNaNs = np.isnan(array);
+    array[whereAreNaNs] = 0;
+    return array
+
 def get_trace_in_time_of_day(device_trace,start_time,end_time):
     '''
-    Given a trace and a start and end datetime.time, it returns a trace within that time period.
+    Given a trace and a start and end datetime.time, it returns a trace
+    within that time period.
     '''
     new_series=device_trace.series.ix[start_time:end_time]
     return appliance.ApplianceTrace(new_series,device_trace.metadata)
