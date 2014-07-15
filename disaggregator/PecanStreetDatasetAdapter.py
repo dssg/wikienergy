@@ -489,6 +489,42 @@ def get_dataframe(query):
     df.columns = eng_object.keys()
     return df
 
+def get_use_for_active_windows(schema, tables, appliances, dataids,
+                               window_length, window_stride,
+                               drop_percentile=10, sample_rate='15T'):
+    '''
+    Given a list of consecutive tables, returns windows of total use data
+    for which the appliance waas active. Appliances should not include the
+    'use' column. Drops the lowest drop_percentile samples.
+    '''
+    appliances.append('use')
+    instances = psda.generate_instances_for_appliances_by_dataids(
+    schema,tables,appliances,dataids,sample_rate)
+    usages = [instances_for_id[-1] for instances_for_id in instances]
+    instances = [instances_for_id[:-1] for instances_for_id in instances]
+    all_appliance_windows = []
+    for usage, instances_ in zip(usages,instances):
+        assert(len(usage.traces) == 1)
+        usage_windows = da.utils.get_trace_windows(
+                usage.traces[0], window_length, window_stride)
+        appliance_windows = []
+        for instance in instances_:
+            assert(len(instance.traces) == 1)
+            appliance_window_array = da.utils.get_trace_windows(
+                    instance.traces[0], window_length, window_stride)
+            window_totals = np.sum(appliance_window_array,axis = 1)
+
+            # drop usage windows for which the appliance totals are in the
+            # bottom few percentiles
+            n_keep = window_totals.shape[0]*(100-drop_percentile)/100
+            keep_indices = sorted(np.argsort(window_totals)[::-1][:n_keep])
+            windows = np.array([usage_windows[i] for i in keep_indices])
+            windows = np.nan_to_num(windows)
+            appliance_windows.append(windows)
+        all_appliance_windows.append(appliance_windows)
+    return all_appliance_windows
+
+
 class SchemaError(Exception):
     '''Exception raised for errors in the schema.
 
