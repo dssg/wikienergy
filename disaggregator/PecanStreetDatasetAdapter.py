@@ -298,18 +298,19 @@ def generate_month_traces_from_attributes(schema,year,month,group=None, rate = N
     Returns a list of traces from a given month. It first finds the table
     name associated with that month.
     '''
-    table = get_table_name(schema, year, month,group,rate)
-    return get_month_traces_from_table_name(schema,table,dataid)
+    table = get_table_name(schema, year, month, group, rate)
+    return get_month_traces_from_table_name(schema, table, dataid)
 
 
-def generate_appliance_trace(schema,table,appliance,dataid,sample_rate=None):
+def generate_appliance_trace(schema, table, appliance, dataid,
+                             sample_rate=None, verbose=True):
     '''
     Return an appliance trace by dataid. The trace is in decimal form and in
     average Watts.
     '''
     global schema_names, source
     schema_name = schema_names[schema]
-    query= 'select {0}, {1} from "{2}".{3} where dataid={4}'\
+    query= 'select {0},{1} from "{2}".{3} where dataid={4}'\
         .format(appliance,time_columns[schema],schema_name,table,dataid)
     print query
     df = get_dataframe(query)
@@ -336,14 +337,13 @@ def generate_appliances_traces(
     '''
     global schema_names, source
     schema_name = schema_names[schema]
-    query= 'select {0}, {1} from "{2}".{3} where dataid={4}'.format(
+    query= 'select {0},{1} from "{2}".{3} where dataid={4}'.format(
         ','.join(appliances), time_columns[schema], schema_name, table, dataid)
     if verbose:
         print query
     df = get_dataframe(query)
     df = df.rename(columns={time_columns[schema]: 'time'})
-    df['time'] = pd.to_datetime(df['time'],utc=False)
-    df.set_index('time', inplace=True)
+    utils.create_datetimeindex(df)
     traces = []
     for appliance in appliances:
         series = pd.Series(df[appliance],name = appliance).fillna(0)\
@@ -360,6 +360,42 @@ def generate_appliances_traces(
         traces.append(trace)
     return traces
 
+def generate_appliance_instance(
+        schema,tables,appliances,dataid,sample_rate=None,verbose=True):
+    """
+    Return an appliance instance from consecutive tables. Concatenates traces.
+    """
+    traces = [generate_appliance_trace(schema,table,appliances,dataid,
+                  sample_rate,verbose) for table in tables]
+    traces = [utils.concatenate_trace(traces)]
+    return ApplianceInstance(traces,traces[0].metadata)
+
+def generate_appliances_instances(
+        schema,tables,appliances,dataid,sample_rate=None,verbose=True):
+    """
+    Return an appliance instances from consecutive tables. Concatenates traces.
+    """
+    all_traces = [generate_appliances_traces(schema,table,appliances,dataid,
+                      sample_rate,verbose) for table in tables]
+
+    # transpose
+    appliance_traces = list(zip(*all_traces))
+
+    # concatenate by appliance
+    appliance_traces = [utils.concatenate_traces(traces)
+                        for traces in appliance_traces]
+    return [ApplianceInstance([trace],trace.metadata)
+            for trace in appliance_traces]
+
+def generate_instances_for_appliance_by_dataids(
+        schema, tables, appliance, dataids, sample_rate=None):
+    """
+    Returns instances for a single appliance type across a set of dataids
+    """
+    instances = [generate_appliance_instance(schema, tables, appliance, dataid,
+                 sample_rate) for dataid in dataids]
+    return instances
+
 def generate_traces_for_appliance_by_dataids(
         schema, table, appliance, ids, sample_rate=None):
     '''
@@ -373,11 +409,22 @@ def generate_traces_for_appliances_by_dataid(
         schema, table, appliances, dataid, sample_rate=None):
     '''
     Returns traces for a list of appliance types across a set of dataids.
+    Wrapper for `generate_appliances_traces` function
     '''
-    # TODO figure out a more efficient way to do this
     traces = generate_appliances_traces(schema, table, appliances, dataid,
                                         sample_rate)
     return traces
+
+def generate_instances_for_appliances_by_dataids(
+        schema, tables, appliances, dataids, sample_rate=None):
+    """
+    Returns instances for a list of appliances across a set of dataids
+    """
+    #TODO probably a more efficient way to do this
+    instances = [generate_appliances_instances(schema, tables, appliances,
+                 dataid, sample_rate) for dataid in dataids]
+    return instances
+
 
 def generate_traces_for_appliances_by_dataids(
         schema, table, appliances, dataids, sample_rate=None):
