@@ -86,7 +86,7 @@ class ApplianceSet(object):
     algorithms, representing a particular home, building, or metered unit.
 
     """
-
+    #TODO remove automatic dataframe creation, but leave a function to generate
     def __init__(self,instances,metadata):
         '''
         Initializes an appliance set given a list of instances.
