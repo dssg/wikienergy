@@ -150,4 +150,15 @@ class ApplianceType(object):
         # TODO Check for uniqueness?
         self.instances = instances
         self.metadata = metadata
+        try:
+            self.instance_id_index={metadata['dataid']:i for i,instance in enumerate(instances)}
+        except KeyError:
+            print 'Warning: no "dataid" key found in metadata.'
+            
 
+    def get_instance_by_id(self,instance_id):
+        '''
+        Gets the instance of the type with a specified instance id
+        '''
+        index=self.instance_id_index[instance_id]
+        return ApplianceType.instances[index]
