@@ -502,10 +502,10 @@ def get_use_for_active_windows(schema, tables, appliances, dataids,
     drop_percentile samples. Use appliances=None for unfiltered windows.
     '''
     if not appliances:
-        appliances = []
-    appliances.append('use')
+        query_appliances = []
+    query_appliances.append('use')
     instances = generate_instances_for_appliances_by_dataids(
-            schema,tables,appliances,dataids,sample_rate)
+            schema,tables,query_appliances,dataids,sample_rate)
     usages = [instances_for_id[-1] for instances_for_id in instances]
     instances = [instances_for_id[:-1] for instances_for_id in instances]
     all_appliance_windows = []
@@ -514,7 +514,7 @@ def get_use_for_active_windows(schema, tables, appliances, dataids,
         usage_windows = utils.get_trace_windows(usage.traces[0],window_length,
                 window_stride)
         appliance_windows = []
-        if instances_ is []:
+        if not appliances:
             if drop_percentile is not 0:
                 print "Warning: ignoring drop_percentile"
 
