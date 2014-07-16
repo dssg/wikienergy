@@ -272,7 +272,7 @@ class ApplianceType(object):
         self.instances = instances
         self.metadata = metadata
         try:
-            self.instance_id_index={metadata['dataid']:i for i,instance in enumerate(instances)}
+            self.instance_id_index={instance.metadata['dataid']:i for i,instance in enumerate(instances)}
         except KeyError:
             print 'Warning: no "dataid" key found in metadata.'
 
