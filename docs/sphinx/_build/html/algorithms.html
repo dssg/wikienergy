@@ -67,7 +67,7 @@
 
 <dl class="function">
 <dt id="disaggregator.fhmm.generate_FHMM_from_HMMs">
-<tt class="descclassname">disaggregator.fhmm.</tt><tt class="descname">generate_FHMM_from_HMMs</tt><big>(</big><em>model_list</em>, <em>key_for_model_name=None</em><big>)</big><a class="reference internal" href="_modules/disaggregator/fhmm.html#generate_FHMM_from_HMMs"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#disaggregator.fhmm.generate_FHMM_from_HMMs" title="Permalink to this definition">¶</a></dt>
+<tt class="descclassname">disaggregator.fhmm.</tt><tt class="descname">generate_FHMM_from_HMMs</tt><big>(</big><em>type_models</em>, <em>key_for_model_name=None</em><big>)</big><a class="reference internal" href="_modules/disaggregator/fhmm.html#generate_FHMM_from_HMMs"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#disaggregator.fhmm.generate_FHMM_from_HMMs" title="Permalink to this definition">¶</a></dt>
 <dd><p>Takes a dictionary of models, where the keys are the device type name, and
 generates an FHMM of these models.</p>
 </dd></dl>
@@ -90,15 +90,18 @@ Series must be sampled at a particular sample rate
 pi_prior is the starting probability of the HMM
 a_prior is the transition matrix of the HMM
 mean_prior is the initial mean value of each state
-cov_prior is the initial covariance of each state
-For an n-state HMM:</p>
-<blockquote>
-<div>pi_prior is a 1-D numpy array of size n
-a_prior is a 2-D numpy array of size n x n
-mean_prior is an numpy array of size n
-cov_prior is a 3-D numpy array that has been tiled into two rows,
-one column, and n third dimensional states.
-ex) np.tile(1,(2,1,n)) for uniform covariance to start with.</div></blockquote>
+cov_prior is the initial covariance of each state</p>
+<p>For an n-state HMM:</p>
+<ul class="simple">
+<li>pi_prior is a 1-D numpy array of size n</li>
+<li>a_prior is a 2-D numpy array of size n x n</li>
+<li>mean_prior is an numpy array of size n</li>
+<li>cov_prior is a 3-D numpy array that has been tiled into two rows,
+one column, and n third dimensional states.<ul>
+<li>ex) np.tile(1,(2,1,n)) for uniform covariance to start with.</li>
+</ul>
+</li>
+</ul>
 </dd></dl>
 
 <dl class="function">
