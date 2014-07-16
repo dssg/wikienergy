@@ -55,8 +55,17 @@
             
   <div class="section" id="appliances">
 <h1>Appliances<a class="headerlink" href="#appliances" title="Permalink to this headline">¶</a></h1>
-<div class="section" id="appliance-trace">
-<h2>Appliance Trace<a class="headerlink" href="#appliance-trace" title="Permalink to this headline">¶</a></h2>
+<p>The <tt class="docutils literal"><span class="pre">appliance</span></tt> module contains a few classes to standardize intraction with
+appliances. They fit together in the following way:</p>
+<p><em>[Flow diagram]</em></p>
+<div class="section" id="appliance-traces">
+<h2>Appliance Traces<a class="headerlink" href="#appliance-traces" title="Permalink to this headline">¶</a></h2>
+<p>An <tt class="docutils literal"><span class="pre">ApplianceTrace</span></tt> object represents a consecutive series of power
+measurements. It is formed from a <tt class="docutils literal"><span class="pre">pandas.Series</span></tt> object indexed by a
+<tt class="docutils literal"><span class="pre">DatetimeIndex</span></tt>, and a <tt class="docutils literal"><span class="pre">dict</span></tt> of metadata about the trace, such as its
+source.</p>
+<div class="section" id="appliancetrace-class">
+<h3>ApplianceTrace class<a class="headerlink" href="#appliancetrace-class" title="Permalink to this headline">¶</a></h3>
 <dl class="class">
 <dt id="disaggregator.appliance.ApplianceTrace">
 <em class="property">class </em><tt class="descclassname">disaggregator.appliance.</tt><tt class="descname">ApplianceTrace</tt><big>(</big><em>series</em>, <em>metadata</em><big>)</big><a class="reference internal" href="_modules/disaggregator/appliance.html#ApplianceTrace"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#disaggregator.appliance.ApplianceTrace" title="Permalink to this definition">¶</a></dt>
@@ -70,9 +79,22 @@ at a consistent rate.</p>
 </dd></dl>
 
 <dl class="method">
+<dt id="disaggregator.appliance.ApplianceTrace.get_time_of_day">
+<tt class="descname">get_time_of_day</tt><big>(</big><em>start_time</em>, <em>end_time</em><big>)</big><a class="reference internal" href="_modules/disaggregator/appliance.html#ApplianceTrace.get_time_of_day"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#disaggregator.appliance.ApplianceTrace.get_time_of_day" title="Permalink to this definition">¶</a></dt>
+<dd><p>Given a start and end datetime.time, it returns a trace
+within that time period.</p>
+</dd></dl>
+
+<dl class="method">
 <dt id="disaggregator.appliance.ApplianceTrace.get_total_usage">
 <tt class="descname">get_total_usage</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/disaggregator/appliance.html#ApplianceTrace.get_total_usage"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#disaggregator.appliance.ApplianceTrace.get_total_usage" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns the total usage of this trace</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="disaggregator.appliance.ApplianceTrace.get_windows">
+<tt class="descname">get_windows</tt><big>(</big><em>window_length</em>, <em>window_step</em><big>)</big><a class="reference internal" href="_modules/disaggregator/appliance.html#ApplianceTrace.get_windows"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#disaggregator.appliance.ApplianceTrace.get_windows" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a numpy array with stacked sliding windows of data.</p>
 </dd></dl>
 
 <dl class="method">
@@ -81,11 +103,31 @@ at a consistent rate.</p>
 <dd><p>Prints a summary of the trace</p>
 </dd></dl>
 
+<dl class="method">
+<dt id="disaggregator.appliance.ApplianceTrace.resample">
+<tt class="descname">resample</tt><big>(</big><em>sample_rate</em><big>)</big><a class="reference internal" href="_modules/disaggregator/appliance.html#ApplianceTrace.resample"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#disaggregator.appliance.ApplianceTrace.resample" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a new trace resampled to a given sample rate, defined by the
+offset aliases described in panda time series.
+<a class="reference external" href="http://pandas.pydata.org/pandas-docs/stable/timeseries.html#offset-aliases">http://pandas.pydata.org/pandas-docs/stable/timeseries.html#offset-aliases</a></p>
+</dd></dl>
+
+<dl class="method">
+<dt id="disaggregator.appliance.ApplianceTrace.split_by">
+<tt class="descname">split_by</tt><big>(</big><em>rate</em><big>)</big><a class="reference internal" href="_modules/disaggregator/appliance.html#ApplianceTrace.split_by"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#disaggregator.appliance.ApplianceTrace.split_by" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a list of traces formed by splitting this trace by day (&#8216;D&#8217;)
+or week (&#8216;W&#8217;)</p>
+</dd></dl>
+
 </dd></dl>
 
 </div>
-<div class="section" id="appliance-instance">
-<h2>Appliance Instance<a class="headerlink" href="#appliance-instance" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="appliance-instances">
+<h2>Appliance Instances<a class="headerlink" href="#appliance-instances" title="Permalink to this headline">¶</a></h2>
+<p>An <tt class="docutils literal"><span class="pre">ApplianceInstance</span></tt> object represents an ordered set of traces from a
+particular device.</p>
+<div class="section" id="applianceinstance-class">
+<h3>ApplianceInstance class<a class="headerlink" href="#applianceinstance-class" title="Permalink to this headline">¶</a></h3>
 <dl class="class">
 <dt id="disaggregator.appliance.ApplianceInstance">
 <em class="property">class </em><tt class="descclassname">disaggregator.appliance.</tt><tt class="descname">ApplianceInstance</tt><big>(</big><em>traces</em>, <em>metadata</em><big>)</big><a class="reference internal" href="_modules/disaggregator/appliance.html#ApplianceInstance"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#disaggregator.appliance.ApplianceInstance" title="Permalink to this definition">¶</a></dt>
@@ -99,11 +141,38 @@ at a consistent rate. Traces may or may not be consecutive.</p>
 <dd><p>Takes its own list of traces and attempts to concatenate them.</p>
 </dd></dl>
 
+<dl class="method">
+<dt id="disaggregator.appliance.ApplianceInstance.get_time_of_day">
+<tt class="descname">get_time_of_day</tt><big>(</big><em>start_time</em>, <em>end_time</em><big>)</big><a class="reference internal" href="_modules/disaggregator/appliance.html#ApplianceInstance.get_time_of_day"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#disaggregator.appliance.ApplianceInstance.get_time_of_day" title="Permalink to this definition">¶</a></dt>
+<dd><p>Given a start and end datetime.time, it returns an instance with traces
+within that time period.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="disaggregator.appliance.ApplianceInstance.resample">
+<tt class="descname">resample</tt><big>(</big><em>sample_rate</em><big>)</big><a class="reference internal" href="_modules/disaggregator/appliance.html#ApplianceInstance.resample"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#disaggregator.appliance.ApplianceInstance.resample" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns an instance with resampled traces.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="disaggregator.appliance.ApplianceInstance.split_by">
+<tt class="descname">split_by</tt><big>(</big><em>rate</em><big>)</big><a class="reference internal" href="_modules/disaggregator/appliance.html#ApplianceInstance.split_by"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#disaggregator.appliance.ApplianceInstance.split_by" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return a new ApplianceTrace in which each instance split into multiple
+traces split by day (&#8216;D&#8217;) or week (&#8216;W&#8217;) - (Sun-Sat?)</p>
+</dd></dl>
+
 </dd></dl>
 
 </div>
-<div class="section" id="appliance-set">
-<h2>Appliance Set<a class="headerlink" href="#appliance-set" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="appliance-sets">
+<h2>Appliance Sets<a class="headerlink" href="#appliance-sets" title="Permalink to this headline">¶</a></h2>
+<p>An <tt class="docutils literal"><span class="pre">ApplianceSet</span></tt> represents an set of instances with aligned instances and
+traces. All traces must be temporally aligned and sampled at the same rate -
+this is enforced at instantiation. It is meant to represent a single metered
+unit, such as a home, an apartment, or a building.</p>
+<div class="section" id="applianceset-class">
+<h3>ApplianceSet class<a class="headerlink" href="#applianceset-class" title="Permalink to this headline">¶</a></h3>
 <dl class="class">
 <dt id="disaggregator.appliance.ApplianceSet">
 <em class="property">class </em><tt class="descclassname">disaggregator.appliance.</tt><tt class="descname">ApplianceSet</tt><big>(</big><em>instances</em>, <em>metadata</em><big>)</big><a class="reference internal" href="_modules/disaggregator/appliance.html#ApplianceSet"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#disaggregator.appliance.ApplianceSet" title="Permalink to this definition">¶</a></dt>
@@ -111,18 +180,6 @@ at a consistent rate. Traces may or may not be consecutive.</p>
 aligned appliance instances.</p>
 <p>Appliance sets are most frequently used as ground-truth for various
 algorithms, representing a particular home, building, or metered unit.</p>
-<dl class="method">
-<dt id="disaggregator.appliance.ApplianceSet.add_instances">
-<tt class="descname">add_instances</tt><big>(</big><em>instances</em><big>)</big><a class="reference internal" href="_modules/disaggregator/appliance.html#ApplianceSet.add_instances"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#disaggregator.appliance.ApplianceSet.add_instances" title="Permalink to this definition">¶</a></dt>
-<dd><p>Adds the list of appliances to the appliance set.</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="disaggregator.appliance.ApplianceSet.add_to_dataframe">
-<tt class="descname">add_to_dataframe</tt><big>(</big><em>instances</em><big>)</big><a class="reference internal" href="_modules/disaggregator/appliance.html#ApplianceSet.add_to_dataframe"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#disaggregator.appliance.ApplianceSet.add_to_dataframe" title="Permalink to this definition">¶</a></dt>
-<dd><p>Adds a new list of appliances to the dataframe.</p>
-</dd></dl>
-
 <dl class="method">
 <dt id="disaggregator.appliance.ApplianceSet.generate_non_zero_set">
 <tt class="descname">generate_non_zero_set</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/disaggregator/appliance.html#ApplianceSet.generate_non_zero_set"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#disaggregator.appliance.ApplianceSet.generate_non_zero_set" title="Permalink to this definition">¶</a></dt>
@@ -137,24 +194,44 @@ with all zeros)</p>
 </dd></dl>
 
 <dl class="method">
-<dt id="disaggregator.appliance.ApplianceSet.make_dataframe">
-<tt class="descname">make_dataframe</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/disaggregator/appliance.html#ApplianceSet.make_dataframe"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#disaggregator.appliance.ApplianceSet.make_dataframe" title="Permalink to this definition">¶</a></dt>
+<dt id="disaggregator.appliance.ApplianceSet.get_dataframe">
+<tt class="descname">get_dataframe</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/disaggregator/appliance.html#ApplianceSet.get_dataframe"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#disaggregator.appliance.ApplianceSet.get_dataframe" title="Permalink to this definition">¶</a></dt>
 <dd><p>Makes a new dataframe of the appliance instances. Throws an exception if
 if the appliance instances have traces that don&#8217;t align.</p>
 </dd></dl>
 
 <dl class="method">
-<dt id="disaggregator.appliance.ApplianceSet.set_instances">
-<tt class="descname">set_instances</tt><big>(</big><em>instances</em><big>)</big><a class="reference internal" href="_modules/disaggregator/appliance.html#ApplianceSet.set_instances"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#disaggregator.appliance.ApplianceSet.set_instances" title="Permalink to this definition">¶</a></dt>
-<dd><p>Replaces the old instances with the new list. Makes a new dataframe
-using those instances</p>
+<dt id="disaggregator.appliance.ApplianceSet.get_time_of_day">
+<tt class="descname">get_time_of_day</tt><big>(</big><em>start_time</em>, <em>end_time</em><big>)</big><a class="reference internal" href="_modules/disaggregator/appliance.html#ApplianceSet.get_time_of_day"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#disaggregator.appliance.ApplianceSet.get_time_of_day" title="Permalink to this definition">¶</a></dt>
+<dd><p>Given a start and end datetime.time, it returns an ApplianceType with
+traces within that time period.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="disaggregator.appliance.ApplianceSet.resample">
+<tt class="descname">resample</tt><big>(</big><em>sample_rate</em><big>)</big><a class="reference internal" href="_modules/disaggregator/appliance.html#ApplianceSet.resample"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#disaggregator.appliance.ApplianceSet.resample" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a new ApplianceSet instance with resampled traces.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="disaggregator.appliance.ApplianceSet.split_by">
+<tt class="descname">split_by</tt><big>(</big><em>rate</em><big>)</big><a class="reference internal" href="_modules/disaggregator/appliance.html#ApplianceSet.split_by"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#disaggregator.appliance.ApplianceSet.split_by" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a new ApplianceSet object for which each trace in each instance
+is split into multiple traces from unique days (&#8216;D&#8217;) or weeks (&#8216;W&#8217;)</p>
 </dd></dl>
 
 </dd></dl>
 
 </div>
-<div class="section" id="appliance-type">
-<h2>Appliance Type<a class="headerlink" href="#appliance-type" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="appliance-types">
+<h2>Appliance Types<a class="headerlink" href="#appliance-types" title="Permalink to this headline">¶</a></h2>
+<p>An <tt class="docutils literal"><span class="pre">ApplianceType</span></tt> object represents a set of appliance instances which
+share particular attributes. For instance, an appliance type to model a
+refrigerator may contain traces from many different particular instances of
+refrigerators, potentially sampled at different times and rates.</p>
+<div class="section" id="appliancetype-class">
+<h3>ApplianceType class<a class="headerlink" href="#appliancetype-class" title="Permalink to this headline">¶</a></h3>
 <dl class="class">
 <dt id="disaggregator.appliance.ApplianceType">
 <em class="property">class </em><tt class="descclassname">disaggregator.appliance.</tt><tt class="descname">ApplianceType</tt><big>(</big><em>instances</em>, <em>metadata</em><big>)</big><a class="reference internal" href="_modules/disaggregator/appliance.html#ApplianceType"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#disaggregator.appliance.ApplianceType" title="Permalink to this definition">¶</a></dt>
@@ -163,8 +240,35 @@ ApplianceInstances which share particular attributes, but which are not
 necessarily temporally aligned.</p>
 <p>Appliance types are most frequently used to generate models of particular
 types of appliances.</p>
+<dl class="method">
+<dt id="disaggregator.appliance.ApplianceType.get_instance_by_id">
+<tt class="descname">get_instance_by_id</tt><big>(</big><em>instance_id</em><big>)</big><a class="reference internal" href="_modules/disaggregator/appliance.html#ApplianceType.get_instance_by_id"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#disaggregator.appliance.ApplianceType.get_instance_by_id" title="Permalink to this definition">¶</a></dt>
+<dd><p>Gets the instance of the type with a specified instance id</p>
 </dd></dl>
 
+<dl class="method">
+<dt id="disaggregator.appliance.ApplianceType.get_time_of_day">
+<tt class="descname">get_time_of_day</tt><big>(</big><em>start_time</em>, <em>end_time</em><big>)</big><a class="reference internal" href="_modules/disaggregator/appliance.html#ApplianceType.get_time_of_day"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#disaggregator.appliance.ApplianceType.get_time_of_day" title="Permalink to this definition">¶</a></dt>
+<dd><p>Given a start and end datetime.time, it returns an ApplianceSet with
+traces within that time period.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="disaggregator.appliance.ApplianceType.resample">
+<tt class="descname">resample</tt><big>(</big><em>sample_rate</em><big>)</big><a class="reference internal" href="_modules/disaggregator/appliance.html#ApplianceType.resample"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#disaggregator.appliance.ApplianceType.resample" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a new ApplianceType with resampled traces.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="disaggregator.appliance.ApplianceType.split_by">
+<tt class="descname">split_by</tt><big>(</big><em>rate</em><big>)</big><a class="reference internal" href="_modules/disaggregator/appliance.html#ApplianceType.split_by"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#disaggregator.appliance.ApplianceType.split_by" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a new ApplianceType object for which each trace in each instance
+is split into multiple traces from unique days (&#8216;D&#8217;) or weeks (&#8216;W&#8217;)</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
 </div>
 </div>
 
@@ -177,10 +281,22 @@ types of appliances.</p>
   <h3><a href="index.html">Table Of Contents</a></h3>
   <ul>
 <li><a class="reference internal" href="#">Appliances</a><ul>
-<li><a class="reference internal" href="#appliance-trace">Appliance Trace</a></li>
-<li><a class="reference internal" href="#appliance-instance">Appliance Instance</a></li>
-<li><a class="reference internal" href="#appliance-set">Appliance Set</a></li>
-<li><a class="reference internal" href="#appliance-type">Appliance Type</a></li>
+<li><a class="reference internal" href="#appliance-traces">Appliance Traces</a><ul>
+<li><a class="reference internal" href="#appliancetrace-class">ApplianceTrace class</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#appliance-instances">Appliance Instances</a><ul>
+<li><a class="reference internal" href="#applianceinstance-class">ApplianceInstance class</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#appliance-sets">Appliance Sets</a><ul>
+<li><a class="reference internal" href="#applianceset-class">ApplianceSet class</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#appliance-types">Appliance Types</a><ul>
+<li><a class="reference internal" href="#appliancetype-class">ApplianceType class</a></li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>
