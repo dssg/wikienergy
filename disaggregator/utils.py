@@ -99,20 +99,21 @@ def split_trace_into_rate(trace,rate):
     Given a single trace, a list of traces are returned that are each
     from a unique date.
     '''
-    series_list=None;
-    traces=[]
-    if rate == 'D':
-        for i,group in enumerate(trace.series.groupby(trace.series.index.date)):
-            metadata=dict.copy(trace.metadata)
-            metadata['trace_num']=i
-            traces.append(appliance.ApplianceTrace(group[1],metadata))
-    elif rate == 'W':
-        for i,group in enumerate(trace.series.groupby(trace.series.index.week)):
-            metadata=dict.copy(trace.metadata)
-            metadata['trace_num']=i
-            traces.append(appliance.ApplianceTrace(group[1],metadata))
+    print "WARNING: deprecated, "\
+          "use appliance trace.split_into_rate(rate) instead"
+    # set rate to group by
+    if rate == 'D' or rate == '1D':
+        groupby_rate = trace.series.index.date
+    elif rate == 'W' or rate == '1W':
+        groupby_rate = trace.series.index.week
     else:
-        print 'Looking for \'week\' or \'day\''
+        raise NotImplementedError('Looking for "week" or "day"')
+
+    traces=[]
+    for i, group in enumerate(trace.series.groupby(groupby_rate)):
+        metadata = dict.copy(trace.metadata)
+        metadata['trace_num'] = i
+        traces.append(appliance.ApplianceTrace(group[1],metadata))
     return traces
 
 def split_instance_traces_into_rate(device_instance,rate):
@@ -120,6 +121,8 @@ def split_instance_traces_into_rate(device_instance,rate):
     Each trace in an instance is split into multiple traces that are each
     from a unique date
     '''
+    print "WARNING: deprecated, "\
+          "use appliance_instance.split_traces_into_rate(rate) instead"
     traces=[]
     for trace in device_instance.traces:
         traces.extend(split_trace_into_rate(trace,rate))
@@ -127,9 +130,11 @@ def split_instance_traces_into_rate(device_instance,rate):
 
 def split_type_traces_into_rate(device_type, rate):
     '''
-    Each trace in each instance of a type is split into multiple traces 
+    Each trace in each instance of a type is split into multiple traces
     that are each from a unique date
     '''
+    print "WARNING: deprecated, "\
+          "use appliance_type.split_traces_into_rate(rate) instead"
     instances=[]
     for instance in device_type.instances:
         new_instance= split_instance_traces_into_rate(instance,rate)
@@ -138,9 +143,11 @@ def split_type_traces_into_rate(device_type, rate):
 
 def split_set_traces_into_rate(device_set, rate):
     '''
-    Each trace in each instance of a set is split into multiple traces 
+    Each trace in each instance of a set is split into multiple traces
     that are each from a unique date
     '''
+    print "WARNING: deprecated, "\
+          "use appliance_set.split_traces_into_rate(rate) instead"
     instances=[]
     for instance in device_set.instances:
         new_instance= split_instance_traces_into_rate(instance,rate)
@@ -185,6 +192,8 @@ def resample_trace(trace,sample_rate):
     offset aliases described in panda time series.
     http://pandas.pydata.org/pandas-docs/stable/timeseries.html#offset-aliases
     '''
+    print "WARNING: deprecated, "\
+          "use appliance_trace.resample(sample_rate) instead"
     try:
         new_series=trace.series.astype(float)
         new_series=new_series.resample(sample_rate,how='mean')
@@ -199,6 +208,8 @@ def resample_instance_traces(device_instance,sample_rate):
     '''
     Resamples all traces within a given instance.
     '''
+    print "WARNING: deprecated, "\
+          "use appliance_instance.resample(sample_rate) instead"
     new_traces=[]
     for trace in device_instance.traces:
         new_traces.append(resample_trace(trace,sample_rate))
@@ -208,6 +219,8 @@ def resample_type_traces(device_type,sample_rate):
     '''
     Resamples all traces in each instance of a given type.
     '''
+    print "WARNING: deprecated, "\
+          "use appliance_type.resample(sample_rate) instead"
     new_instances=[]
     for instance in device_type.instances:
         new_instances.append(resample_instance_traces(instance,sample_rate))
