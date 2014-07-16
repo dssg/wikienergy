@@ -480,8 +480,9 @@ def get_use_for_active_windows(schema, tables, appliances, dataids,
     Appliances should not include the 'use' column. Drops the lowest
     drop_percentile samples. Use appliances=None for unfiltered windows.
     '''
-    query_appliances = appliances[:]
-    if not appliances:
+    if appliances:
+        query_appliances = appliances[:]
+    else:
         query_appliances = []
     query_appliances.append('use')
     instances = generate_instances_for_appliances_by_dataids(
