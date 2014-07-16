@@ -69,6 +69,9 @@
 <span class="kn">import</span> <span class="nn">pickle</span>
 <span class="kn">import</span> <span class="nn">sys</span>
 <span class="kn">import</span> <span class="nn">decimal</span>
+<span class="kn">import</span> <span class="nn">datetime</span>
+<span class="kn">import</span> <span class="nn">random</span>
+<span class="kn">import</span> <span class="nn">copy</span>
 
 <div class="viewcode-block" id="aggregate_instances"><a class="viewcode-back" href="../../utils.html#disaggregator.utils.aggregate_instances">[docs]</a><span class="k">def</span> <span class="nf">aggregate_instances</span><span class="p">(</span><span class="n">instances</span><span class="p">,</span> <span class="n">metadata</span><span class="p">,</span> <span class="n">how</span><span class="o">=</span><span class="s">&quot;strict&quot;</span><span class="p">):</span>
     <span class="sd">&#39;&#39;&#39;</span>
@@ -105,6 +108,17 @@
     <span class="c"># TODO write this function.</span>
     <span class="k">pass</span>
 </div>
+<div class="viewcode-block" id="create_datetimeindex"><a class="viewcode-back" href="../../utils.html#disaggregator.utils.create_datetimeindex">[docs]</a><span class="k">def</span> <span class="nf">create_datetimeindex</span><span class="p">(</span><span class="n">df</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Modify a dataframe inplace to give it a DatetimeIndex. Must have the column</span>
+<span class="sd">    &#39;time&#39;, which will be removed and used as the index.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">no_tz</span> <span class="o">=</span> <span class="p">[</span><span class="n">t</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">tzinfo</span><span class="o">=</span><span class="bp">None</span><span class="p">)</span> <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">df</span><span class="p">[</span><span class="s">&#39;time&#39;</span><span class="p">]]</span> <span class="c"># is this efficient?</span>
+    <span class="n">df</span><span class="p">[</span><span class="s">&#39;time&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">to_datetime</span><span class="p">(</span><span class="n">no_tz</span><span class="p">,</span><span class="n">utc</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+    <span class="n">df</span><span class="o">.</span><span class="n">set_index</span><span class="p">(</span><span class="s">&#39;time&#39;</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+    <span class="n">df</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">snap</span><span class="p">()</span> <span class="c"># snap to nearest frequency</span>
+
+</div>
 <div class="viewcode-block" id="get_common_ids"><a class="viewcode-back" href="../../utils.html#disaggregator.utils.get_common_ids">[docs]</a><span class="k">def</span> <span class="nf">get_common_ids</span><span class="p">(</span><span class="n">id_lists</span><span class="p">):</span>
     <span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">    Returns a list of ids common to the supplied lists. (id set intersection)</span>
@@ -113,28 +127,44 @@
     <span class="n">common_ids</span> <span class="o">=</span> <span class="n">id_sets</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
     <span class="k">for</span> <span class="n">id_set</span> <span class="ow">in</span> <span class="n">id_sets</span><span class="p">[</span><span class="mi">1</span><span class="p">:]:</span>
         <span class="n">common_ids</span> <span class="o">&amp;=</span> <span class="n">id_set</span>
-    <span class="k">return</span> <span class="nb">list</span><span class="p">(</span><span class="n">common_ids</span><span class="p">)</span>
+    <span class="k">return</span> <span class="nb">sorted</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">common_ids</span><span class="p">))</span>
 
+</div>
+<div class="viewcode-block" id="get_train_valid_test_indices"><a class="viewcode-back" href="../../utils.html#disaggregator.utils.get_train_valid_test_indices">[docs]</a><span class="k">def</span> <span class="nf">get_train_valid_test_indices</span><span class="p">(</span><span class="n">n</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Given an number n, return three arrays of length n/2, n/4, n/4 respectively,</span>
+<span class="sd">    which collectively contain the indices [0..n-1] ordered psuedo-randomly.</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="n">indices</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">n</span><span class="p">)</span>
+    <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">shuffle</span><span class="p">(</span><span class="n">indices</span><span class="p">)</span>
+    <span class="n">n_train</span> <span class="o">=</span> <span class="n">n</span><span class="o">/</span><span class="mi">2</span>
+    <span class="n">n_valid</span> <span class="o">=</span> <span class="n">n</span><span class="o">/</span><span class="mi">4</span>
+    <span class="n">n_test</span> <span class="o">=</span> <span class="n">n</span> <span class="o">-</span> <span class="n">n_train</span> <span class="o">-</span> <span class="n">n_valid</span>
+    <span class="k">assert</span><span class="p">(</span><span class="n">n</span> <span class="o">==</span> <span class="n">n_train</span> <span class="o">+</span> <span class="n">n_valid</span> <span class="o">+</span> <span class="n">n_test</span><span class="p">)</span>
+    <span class="k">return</span> <span class="p">(</span><span class="nb">sorted</span><span class="p">(</span><span class="n">indices</span><span class="p">[:</span><span class="n">n_train</span><span class="p">]),</span>
+            <span class="nb">sorted</span><span class="p">(</span><span class="n">indices</span><span class="p">[</span><span class="n">n_train</span><span class="p">:</span><span class="n">n_train</span><span class="o">+</span><span class="n">n_valid</span><span class="p">]),</span>
+            <span class="nb">sorted</span><span class="p">(</span><span class="n">indices</span><span class="p">[</span><span class="n">n_train</span><span class="o">+</span><span class="n">n_valid</span><span class="p">:]))</span>
 </div>
 <div class="viewcode-block" id="split_trace_into_rate"><a class="viewcode-back" href="../../utils.html#disaggregator.utils.split_trace_into_rate">[docs]</a><span class="k">def</span> <span class="nf">split_trace_into_rate</span><span class="p">(</span><span class="n">trace</span><span class="p">,</span><span class="n">rate</span><span class="p">):</span>
     <span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">    Given a single trace, a list of traces are returned that are each</span>
 <span class="sd">    from a unique date.</span>
 <span class="sd">    &#39;&#39;&#39;</span>
-    <span class="n">series_list</span><span class="o">=</span><span class="bp">None</span><span class="p">;</span>
-    <span class="n">traces</span><span class="o">=</span><span class="p">[]</span>
-    <span class="k">if</span> <span class="n">rate</span> <span class="o">==</span> <span class="s">&#39;D&#39;</span><span class="p">:</span>
-        <span class="k">for</span> <span class="n">i</span><span class="p">,</span><span class="n">group</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">trace</span><span class="o">.</span><span class="n">series</span><span class="o">.</span><span class="n">groupby</span><span class="p">(</span><span class="n">trace</span><span class="o">.</span><span class="n">series</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">date</span><span class="p">)):</span>
-            <span class="n">metadata</span><span class="o">=</span><span class="nb">dict</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">trace</span><span class="o">.</span><span class="n">metadata</span><span class="p">)</span>
-            <span class="n">metadata</span><span class="p">[</span><span class="s">&#39;trace_num&#39;</span><span class="p">]</span><span class="o">=</span><span class="n">i</span>
-            <span class="n">traces</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">appliance</span><span class="o">.</span><span class="n">ApplianceTrace</span><span class="p">(</span><span class="n">group</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span><span class="n">metadata</span><span class="p">))</span>
-    <span class="k">elif</span> <span class="n">rate</span> <span class="o">==</span> <span class="s">&#39;W&#39;</span><span class="p">:</span>
-        <span class="k">for</span> <span class="n">i</span><span class="p">,</span><span class="n">group</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">trace</span><span class="o">.</span><span class="n">series</span><span class="o">.</span><span class="n">groupby</span><span class="p">(</span><span class="n">trace</span><span class="o">.</span><span class="n">series</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">week</span><span class="p">)):</span>
-            <span class="n">metadata</span><span class="o">=</span><span class="nb">dict</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">trace</span><span class="o">.</span><span class="n">metadata</span><span class="p">)</span>
-            <span class="n">metadata</span><span class="p">[</span><span class="s">&#39;trace_num&#39;</span><span class="p">]</span><span class="o">=</span><span class="n">i</span>
-            <span class="n">traces</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">appliance</span><span class="o">.</span><span class="n">ApplianceTrace</span><span class="p">(</span><span class="n">group</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span><span class="n">metadata</span><span class="p">))</span>
+    <span class="k">print</span> <span class="s">&quot;WARNING: deprecated, &quot;</span>\
+          <span class="s">&quot;use appliance trace.split_into_rate(rate) instead&quot;</span>
+    <span class="c"># set rate to group by</span>
+    <span class="k">if</span> <span class="n">rate</span> <span class="o">==</span> <span class="s">&#39;D&#39;</span> <span class="ow">or</span> <span class="n">rate</span> <span class="o">==</span> <span class="s">&#39;1D&#39;</span><span class="p">:</span>
+        <span class="n">groupby_rate</span> <span class="o">=</span> <span class="n">trace</span><span class="o">.</span><span class="n">series</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">date</span>
+    <span class="k">elif</span> <span class="n">rate</span> <span class="o">==</span> <span class="s">&#39;W&#39;</span> <span class="ow">or</span> <span class="n">rate</span> <span class="o">==</span> <span class="s">&#39;1W&#39;</span><span class="p">:</span>
+        <span class="n">groupby_rate</span> <span class="o">=</span> <span class="n">trace</span><span class="o">.</span><span class="n">series</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">week</span>
     <span class="k">else</span><span class="p">:</span>
-        <span class="k">print</span> <span class="s">&#39;Looking for </span><span class="se">\&#39;</span><span class="s">week</span><span class="se">\&#39;</span><span class="s"> or </span><span class="se">\&#39;</span><span class="s">day</span><span class="se">\&#39;</span><span class="s">&#39;</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s">&#39;Looking for &quot;week&quot; or &quot;day&quot;&#39;</span><span class="p">)</span>
+
+    <span class="n">traces</span><span class="o">=</span><span class="p">[]</span>
+    <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">group</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">trace</span><span class="o">.</span><span class="n">series</span><span class="o">.</span><span class="n">groupby</span><span class="p">(</span><span class="n">groupby_rate</span><span class="p">)):</span>
+        <span class="n">metadata</span> <span class="o">=</span> <span class="nb">dict</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">trace</span><span class="o">.</span><span class="n">metadata</span><span class="p">)</span>
+        <span class="n">metadata</span><span class="p">[</span><span class="s">&#39;trace_num&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">i</span>
+        <span class="n">traces</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">appliance</span><span class="o">.</span><span class="n">ApplianceTrace</span><span class="p">(</span><span class="n">group</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span><span class="n">metadata</span><span class="p">))</span>
     <span class="k">return</span> <span class="n">traces</span>
 </div>
 <div class="viewcode-block" id="split_instance_traces_into_rate"><a class="viewcode-back" href="../../utils.html#disaggregator.utils.split_instance_traces_into_rate">[docs]</a><span class="k">def</span> <span class="nf">split_instance_traces_into_rate</span><span class="p">(</span><span class="n">device_instance</span><span class="p">,</span><span class="n">rate</span><span class="p">):</span>
@@ -142,28 +172,38 @@
 <span class="sd">    Each trace in an instance is split into multiple traces that are each</span>
 <span class="sd">    from a unique date</span>
 <span class="sd">    &#39;&#39;&#39;</span>
+    <span class="k">print</span> <span class="s">&quot;WARNING: deprecated, &quot;</span>\
+          <span class="s">&quot;use appliance_instance.split_traces_into_rate(rate) instead&quot;</span>
     <span class="n">traces</span><span class="o">=</span><span class="p">[]</span>
     <span class="k">for</span> <span class="n">trace</span> <span class="ow">in</span> <span class="n">device_instance</span><span class="o">.</span><span class="n">traces</span><span class="p">:</span>
         <span class="n">traces</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">split_trace_into_rate</span><span class="p">(</span><span class="n">trace</span><span class="p">,</span><span class="n">rate</span><span class="p">))</span>
-    <span class="k">print</span>
-    <span class="k">for</span> <span class="n">trace</span> <span class="ow">in</span> <span class="n">traces</span><span class="p">:</span>
-        <span class="k">print</span> <span class="n">trace</span><span class="o">.</span><span class="n">series</span><span class="o">.</span><span class="n">index</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-    <span class="k">print</span>
     <span class="k">return</span> <span class="n">appliance</span><span class="o">.</span><span class="n">ApplianceInstance</span><span class="p">(</span><span class="n">traces</span><span class="p">,</span><span class="n">device_instance</span><span class="o">.</span><span class="n">metadata</span><span class="p">)</span>
 </div>
 <div class="viewcode-block" id="split_type_traces_into_rate"><a class="viewcode-back" href="../../utils.html#disaggregator.utils.split_type_traces_into_rate">[docs]</a><span class="k">def</span> <span class="nf">split_type_traces_into_rate</span><span class="p">(</span><span class="n">device_type</span><span class="p">,</span> <span class="n">rate</span><span class="p">):</span>
     <span class="sd">&#39;&#39;&#39;</span>
-<span class="sd">    Each trace in each instance of a type is split into multiple traces </span>
+<span class="sd">    Each trace in each instance of a type is split into multiple traces</span>
 <span class="sd">    that are each from a unique date</span>
 <span class="sd">    &#39;&#39;&#39;</span>
+    <span class="k">print</span> <span class="s">&quot;WARNING: deprecated, &quot;</span>\
+          <span class="s">&quot;use appliance_type.split_traces_into_rate(rate) instead&quot;</span>
     <span class="n">instances</span><span class="o">=</span><span class="p">[]</span>
     <span class="k">for</span> <span class="n">instance</span> <span class="ow">in</span> <span class="n">device_type</span><span class="o">.</span><span class="n">instances</span><span class="p">:</span>
         <span class="n">new_instance</span><span class="o">=</span> <span class="n">split_instance_traces_into_rate</span><span class="p">(</span><span class="n">instance</span><span class="p">,</span><span class="n">rate</span><span class="p">)</span>
         <span class="n">instances</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">new_instance</span><span class="p">)</span>
-        <span class="k">for</span> <span class="n">trace</span> <span class="ow">in</span> <span class="n">new_instance</span><span class="o">.</span><span class="n">traces</span><span class="p">:</span>
-            <span class="k">print</span> <span class="n">trace</span><span class="o">.</span><span class="n">series</span><span class="o">.</span><span class="n">index</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
     <span class="k">return</span> <span class="n">appliance</span><span class="o">.</span><span class="n">ApplianceType</span><span class="p">(</span><span class="n">instances</span><span class="p">,</span><span class="n">device_type</span><span class="o">.</span><span class="n">metadata</span><span class="p">)</span>
-
+</div>
+<div class="viewcode-block" id="split_set_traces_into_rate"><a class="viewcode-back" href="../../utils.html#disaggregator.utils.split_set_traces_into_rate">[docs]</a><span class="k">def</span> <span class="nf">split_set_traces_into_rate</span><span class="p">(</span><span class="n">device_set</span><span class="p">,</span> <span class="n">rate</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Each trace in each instance of a set is split into multiple traces</span>
+<span class="sd">    that are each from a unique date</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="k">print</span> <span class="s">&quot;WARNING: deprecated, &quot;</span>\
+          <span class="s">&quot;use appliance_set.split_traces_into_rate(rate) instead&quot;</span>
+    <span class="n">instances</span><span class="o">=</span><span class="p">[]</span>
+    <span class="k">for</span> <span class="n">instance</span> <span class="ow">in</span> <span class="n">device_set</span><span class="o">.</span><span class="n">instances</span><span class="p">:</span>
+        <span class="n">new_instance</span><span class="o">=</span> <span class="n">split_instance_traces_into_rate</span><span class="p">(</span><span class="n">instance</span><span class="p">,</span><span class="n">rate</span><span class="p">)</span>
+        <span class="n">instances</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">new_instance</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">appliance</span><span class="o">.</span><span class="n">ApplianceSet</span><span class="p">(</span><span class="n">instances</span><span class="p">,</span><span class="n">device_set</span><span class="o">.</span><span class="n">metadata</span><span class="p">)</span>
 </div>
 <div class="viewcode-block" id="concatenate_traces"><a class="viewcode-back" href="../../utils.html#disaggregator.utils.concatenate_traces">[docs]</a><span class="k">def</span> <span class="nf">concatenate_traces</span><span class="p">(</span><span class="n">traces</span><span class="p">,</span> <span class="n">metadata</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">how</span><span class="o">=</span><span class="s">&quot;strict&quot;</span><span class="p">):</span>
     <span class="sd">&#39;&#39;&#39;</span>
@@ -203,6 +243,8 @@
 <span class="sd">    offset aliases described in panda time series.</span>
 <span class="sd">    http://pandas.pydata.org/pandas-docs/stable/timeseries.html#offset-aliases</span>
 <span class="sd">    &#39;&#39;&#39;</span>
+    <span class="k">print</span> <span class="s">&quot;WARNING: deprecated, &quot;</span>\
+          <span class="s">&quot;use appliance_trace.resample(sample_rate) instead&quot;</span>
     <span class="k">try</span><span class="p">:</span>
         <span class="n">new_series</span><span class="o">=</span><span class="n">trace</span><span class="o">.</span><span class="n">series</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">float</span><span class="p">)</span>
         <span class="n">new_series</span><span class="o">=</span><span class="n">new_series</span><span class="o">.</span><span class="n">resample</span><span class="p">(</span><span class="n">sample_rate</span><span class="p">,</span><span class="n">how</span><span class="o">=</span><span class="s">&#39;mean&#39;</span><span class="p">)</span>
@@ -217,6 +259,8 @@
     <span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">    Resamples all traces within a given instance.</span>
 <span class="sd">    &#39;&#39;&#39;</span>
+    <span class="k">print</span> <span class="s">&quot;WARNING: deprecated, &quot;</span>\
+          <span class="s">&quot;use appliance_instance.resample(sample_rate) instead&quot;</span>
     <span class="n">new_traces</span><span class="o">=</span><span class="p">[]</span>
     <span class="k">for</span> <span class="n">trace</span> <span class="ow">in</span> <span class="n">device_instance</span><span class="o">.</span><span class="n">traces</span><span class="p">:</span>
         <span class="n">new_traces</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">resample_trace</span><span class="p">(</span><span class="n">trace</span><span class="p">,</span><span class="n">sample_rate</span><span class="p">))</span>
@@ -226,10 +270,21 @@
     <span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">    Resamples all traces in each instance of a given type.</span>
 <span class="sd">    &#39;&#39;&#39;</span>
+    <span class="k">print</span> <span class="s">&quot;WARNING: deprecated, &quot;</span>\
+          <span class="s">&quot;use appliance_type.resample(sample_rate) instead&quot;</span>
     <span class="n">new_instances</span><span class="o">=</span><span class="p">[]</span>
     <span class="k">for</span> <span class="n">instance</span> <span class="ow">in</span> <span class="n">device_type</span><span class="o">.</span><span class="n">instances</span><span class="p">:</span>
         <span class="n">new_instances</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">resample_instance_traces</span><span class="p">(</span><span class="n">instance</span><span class="p">,</span><span class="n">sample_rate</span><span class="p">))</span>
     <span class="k">return</span> <span class="n">appliance</span><span class="o">.</span><span class="n">ApplianceType</span><span class="p">(</span><span class="n">new_instances</span><span class="p">,</span><span class="n">device_type</span><span class="o">.</span><span class="n">metadata</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="resample_set_traces"><a class="viewcode-back" href="../../utils.html#disaggregator.utils.resample_set_traces">[docs]</a><span class="k">def</span> <span class="nf">resample_set_traces</span><span class="p">(</span><span class="n">device_set</span><span class="p">,</span><span class="n">sample_rate</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Resamples all traces in each instance of a given type.</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="n">new_instances</span><span class="o">=</span><span class="p">[]</span>
+    <span class="k">for</span> <span class="n">instance</span> <span class="ow">in</span> <span class="n">device_set</span><span class="o">.</span><span class="n">instances</span><span class="p">:</span>
+        <span class="n">new_instances</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">resample_instance_traces</span><span class="p">(</span><span class="n">instance</span><span class="p">,</span><span class="n">sample_rate</span><span class="p">))</span>
+    <span class="k">return</span> <span class="n">appliance</span><span class="o">.</span><span class="n">ApplianceSet</span><span class="p">(</span><span class="n">new_instances</span><span class="p">,</span><span class="n">device_set</span><span class="o">.</span><span class="n">metadata</span><span class="p">)</span>
 </div>
 <div class="viewcode-block" id="order_traces"><a class="viewcode-back" href="../../utils.html#disaggregator.utils.order_traces">[docs]</a><span class="k">def</span> <span class="nf">order_traces</span><span class="p">(</span><span class="n">traces</span><span class="p">):</span>
     <span class="sd">&#39;&#39;&#39;</span>
@@ -244,16 +299,189 @@
     <span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">    Given an object and a filename saves the object in pickled format to the data directory.</span>
 <span class="sd">    &#39;&#39;&#39;</span>
-
-    <span class="c">#sys.path.append(&#39;../../&#39;)</span>
-    <span class="c">#silly_path = os.path.abspath(os.path.join(os.path.dirname( &#39;&#39; ), &#39;../..&#39;,&#39;data/&#39;))</span>
     <span class="n">rel_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">relpath</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">getcwd</span><span class="p">(),</span><span class="s">&#39;data&#39;</span><span class="p">)</span>
     <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">rel_path</span><span class="p">,</span><span class="s">&#39;data/{}.p&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">title</span><span class="p">)),</span><span class="s">&#39;wb&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
-        <span class="n">pickle</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="nb">object</span><span class="p">,</span> <span class="n">f</span><span class="p">)</span>
+        <span class="n">pickle</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">f</span><span class="p">)</span>
 </div>
-<span class="k">def</span> <span class="nf">shuffle_appliance_sets</span><span class="p">(</span><span class="n">sets</span><span class="p">,</span><span class="n">other_params</span><span class="p">):</span>
-    <span class="k">pass</span>
-</pre></div>
+<div class="viewcode-block" id="generate_random_appliance_sets"><a class="viewcode-back" href="../../utils.html#disaggregator.utils.generate_random_appliance_sets">[docs]</a><span class="k">def</span> <span class="nf">generate_random_appliance_sets</span><span class="p">(</span><span class="n">appliance_sets</span><span class="p">,</span><span class="n">k</span><span class="p">,</span><span class="n">n</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Given a list of appliance sets, returns n randomly</span>
+<span class="sd">    sets, whose instances have been sampled</span>
+<span class="sd">    (w/replacement) from the instances of the given appliance_sets.</span>
+
+<span class="sd">    ApplianceSets must be aligned.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">all_instances</span> <span class="o">=</span> <span class="p">[</span><span class="n">instance</span> <span class="k">for</span> <span class="n">appliance_set</span> <span class="ow">in</span> <span class="n">appliance_sets</span>
+                     <span class="k">for</span> <span class="n">instance</span> <span class="ow">in</span> <span class="n">appliance_set</span><span class="o">.</span><span class="n">instances</span><span class="p">]</span>
+    <span class="n">n_instances</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">all_instances</span><span class="p">)</span>
+    <span class="n">all_sets</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">xrange</span><span class="p">(</span><span class="n">n</span><span class="p">):</span>
+        <span class="n">instances</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">xrange</span><span class="p">(</span><span class="n">k</span><span class="p">):</span>
+            <span class="n">instance</span> <span class="o">=</span> <span class="n">all_instances</span><span class="p">[</span><span class="n">random</span><span class="o">.</span><span class="n">randrange</span><span class="p">(</span><span class="n">n_instances</span><span class="p">)]</span>
+            <span class="n">instances</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">instance</span><span class="p">)</span>
+        <span class="n">metadata</span> <span class="o">=</span> <span class="p">{</span><span class="s">&#39;name&#39;</span><span class="p">:</span> <span class="bp">None</span><span class="p">,</span> <span class="s">&#39;source&#39;</span><span class="p">:</span> <span class="s">&quot;random sample&quot;</span><span class="p">}</span>
+        <span class="n">appliance_set</span> <span class="o">=</span> <span class="n">appliance</span><span class="o">.</span><span class="n">ApplianceSet</span><span class="p">(</span><span class="n">instances</span><span class="p">,</span> <span class="n">metadata</span><span class="p">)</span>
+        <span class="n">all_sets</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">appliance_set</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">all_sets</span>
+
+</div>
+<div class="viewcode-block" id="trace_series_to_numpy_array"><a class="viewcode-back" href="../../utils.html#disaggregator.utils.trace_series_to_numpy_array">[docs]</a><span class="k">def</span> <span class="nf">trace_series_to_numpy_array</span><span class="p">(</span><span class="n">values</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    This takes the series from a trace and converts it to a numpy array for</span>
+<span class="sd">    ingestion into HMMs and certain plots. It also removes the NaNs.</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="n">a</span><span class="o">=</span><span class="p">[]</span>
+    <span class="n">X</span><span class="o">=</span><span class="p">[]</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">values</span><span class="p">:</span>
+        <span class="n">a</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="n">i</span><span class="p">))</span>
+        <span class="n">X</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
+        <span class="n">a</span><span class="o">=</span><span class="p">[]</span>
+    <span class="n">array</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
+    <span class="n">whereAreNaNs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">isnan</span><span class="p">(</span><span class="n">array</span><span class="p">);</span>
+    <span class="n">array</span><span class="p">[</span><span class="n">whereAreNaNs</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+    <span class="k">return</span> <span class="n">array</span>
+</div>
+<div class="viewcode-block" id="get_trace_in_time_of_day"><a class="viewcode-back" href="../../utils.html#disaggregator.utils.get_trace_in_time_of_day">[docs]</a><span class="k">def</span> <span class="nf">get_trace_in_time_of_day</span><span class="p">(</span><span class="n">device_trace</span><span class="p">,</span><span class="n">start_time</span><span class="p">,</span><span class="n">end_time</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Given a trace and a start and end datetime.time, it returns a trace</span>
+<span class="sd">    within that time period.</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="k">print</span> <span class="s">&quot;WARNING: deprecated, &quot;</span>\
+          <span class="s">&quot;use trace.get_time_of_day(start_time,end_time) instead&quot;</span>
+    <span class="n">new_series</span><span class="o">=</span><span class="n">device_trace</span><span class="o">.</span><span class="n">series</span><span class="o">.</span><span class="n">ix</span><span class="p">[</span><span class="n">start_time</span><span class="p">:</span><span class="n">end_time</span><span class="p">]</span>
+    <span class="k">return</span> <span class="n">appliance</span><span class="o">.</span><span class="n">ApplianceTrace</span><span class="p">(</span><span class="n">new_series</span><span class="p">,</span><span class="n">device_trace</span><span class="o">.</span><span class="n">metadata</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="get_instance_in_time_of_day"><a class="viewcode-back" href="../../utils.html#disaggregator.utils.get_instance_in_time_of_day">[docs]</a><span class="k">def</span> <span class="nf">get_instance_in_time_of_day</span><span class="p">(</span><span class="n">device_instance</span><span class="p">,</span><span class="n">start_time</span><span class="p">,</span><span class="n">end_time</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Given an instance and a start and end datetime.time, it returns a trace within that time period.</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="k">print</span> <span class="s">&quot;WARNING: deprecated, &quot;</span>\
+          <span class="s">&quot;use instance.get_time_of_day(start_time,end_time) instead&quot;</span>
+    <span class="n">new_traces</span><span class="o">=</span><span class="p">[]</span>
+    <span class="k">for</span> <span class="n">trace</span> <span class="ow">in</span> <span class="n">device_instance</span><span class="o">.</span><span class="n">traces</span><span class="p">:</span>
+        <span class="n">new_traces</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">get_trace_in_time_of_day</span><span class="p">(</span><span class="n">trace</span><span class="p">,</span><span class="n">start_time</span><span class="p">,</span><span class="n">end_time</span><span class="p">))</span>
+    <span class="k">return</span> <span class="n">appliance</span><span class="o">.</span><span class="n">ApplianceInstance</span><span class="p">(</span><span class="n">new_traces</span><span class="p">,</span><span class="n">device_instance</span><span class="o">.</span><span class="n">metadata</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="get_type_in_time_of_day"><a class="viewcode-back" href="../../utils.html#disaggregator.utils.get_type_in_time_of_day">[docs]</a><span class="k">def</span> <span class="nf">get_type_in_time_of_day</span><span class="p">(</span><span class="n">device_type</span><span class="p">,</span><span class="n">start_time</span><span class="p">,</span><span class="n">end_time</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Resamples all traces in each instance of a given type.</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="k">print</span> <span class="s">&quot;WARNING: deprecated, &quot;</span>\
+          <span class="s">&quot;use type.get_time_of_day(start_time,end_time) instead&quot;</span>
+    <span class="n">new_instances</span><span class="o">=</span><span class="p">[]</span>
+    <span class="k">for</span> <span class="n">instance</span> <span class="ow">in</span> <span class="n">device_type</span><span class="o">.</span><span class="n">instances</span><span class="p">:</span>
+        <span class="n">new_instances</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">get_instance_in_time_of_day</span><span class="p">(</span><span class="n">instance</span><span class="p">,</span><span class="n">start_time</span><span class="p">,</span><span class="n">end_time</span><span class="p">))</span>
+    <span class="k">return</span> <span class="n">appliance</span><span class="o">.</span><span class="n">ApplianceType</span><span class="p">(</span><span class="n">new_instances</span><span class="p">,</span><span class="n">device_type</span><span class="o">.</span><span class="n">metadata</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="get_set_in_time_of_day"><a class="viewcode-back" href="../../utils.html#disaggregator.utils.get_set_in_time_of_day">[docs]</a><span class="k">def</span> <span class="nf">get_set_in_time_of_day</span><span class="p">(</span><span class="n">device_set</span><span class="p">,</span><span class="n">start_time</span><span class="p">,</span><span class="n">end_time</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Resamples all traces in each instance of a given set.</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="k">print</span> <span class="s">&quot;WARNING: deprecated, &quot;</span>\
+          <span class="s">&quot;use set.get_time_of_day(start_time,end_time) instead&quot;</span>
+    <span class="n">new_instances</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">instance</span> <span class="ow">in</span> <span class="n">device_set</span><span class="o">.</span><span class="n">instances</span><span class="p">:</span>
+        <span class="n">new_instances</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">get_instance_in_time_of_day</span><span class="p">(</span><span class="n">instance</span><span class="p">,</span><span class="n">start_time</span><span class="p">,</span><span class="n">end_time</span><span class="p">))</span>
+    <span class="k">return</span> <span class="n">appliance</span><span class="o">.</span><span class="n">ApplianceSet</span><span class="p">(</span><span class="n">new_instances</span><span class="p">,</span><span class="n">device_set</span><span class="o">.</span><span class="n">metadata</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="get_trace_windows"><a class="viewcode-back" href="../../utils.html#disaggregator.utils.get_trace_windows">[docs]</a><span class="k">def</span> <span class="nf">get_trace_windows</span><span class="p">(</span><span class="n">trace</span><span class="p">,</span><span class="n">window_length</span><span class="p">,</span><span class="n">window_step</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Returns a numpy array with stacked sliding windows of data from a trace.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">print</span> <span class="s">&quot;WARNING: deprecated, &quot;</span>\
+          <span class="s">&quot;use trace.get_windows(window_length,window_step) instead&quot;</span>
+    <span class="n">total_length</span> <span class="o">=</span> <span class="n">trace</span><span class="o">.</span><span class="n">series</span><span class="o">.</span><span class="n">size</span>
+    <span class="n">n_steps</span> <span class="o">=</span> <span class="nb">int</span><span class="p">((</span><span class="n">total_length</span> <span class="o">-</span> <span class="n">window_length</span><span class="p">)</span> <span class="o">/</span> <span class="n">window_step</span><span class="p">)</span>
+    <span class="n">windows</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">step</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_steps</span><span class="p">):</span>
+        <span class="n">start</span> <span class="o">=</span> <span class="n">step</span> <span class="o">*</span> <span class="n">window_step</span>
+        <span class="n">window</span> <span class="o">=</span> <span class="n">trace</span><span class="o">.</span><span class="n">series</span><span class="p">[</span><span class="n">start</span><span class="p">:</span><span class="n">start</span> <span class="o">+</span> <span class="n">window_length</span><span class="p">]</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
+        <span class="n">windows</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">window</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">windows</span><span class="p">,</span><span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="traces_aligned"><a class="viewcode-back" href="../../utils.html#disaggregator.utils.traces_aligned">[docs]</a><span class="k">def</span> <span class="nf">traces_aligned</span><span class="p">(</span><span class="n">traces</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Returns True if traces are temporally aligned</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">indices</span> <span class="o">=</span> <span class="p">[</span><span class="n">trace</span><span class="o">.</span><span class="n">series</span><span class="o">.</span><span class="n">index</span> <span class="k">for</span> <span class="n">trace</span> <span class="ow">in</span> <span class="n">traces</span><span class="p">]</span>
+    <span class="k">for</span> <span class="n">index</span> <span class="ow">in</span> <span class="n">indices</span><span class="p">[</span><span class="mi">1</span><span class="p">:]:</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">indices</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">equals</span><span class="p">(</span><span class="n">index</span><span class="p">):</span>
+            <span class="k">return</span> <span class="bp">False</span>
+    <span class="k">return</span> <span class="bp">True</span>
+</div>
+<div class="viewcode-block" id="instances_aligned"><a class="viewcode-back" href="../../utils.html#disaggregator.utils.instances_aligned">[docs]</a><span class="k">def</span> <span class="nf">instances_aligned</span><span class="p">(</span><span class="n">instances</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Returns True iff instances and their traces are temporally aligned.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">instances</span> <span class="o">&lt;</span> <span class="mi">2</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">True</span>
+    <span class="k">for</span> <span class="n">instance</span> <span class="ow">in</span> <span class="n">instances</span><span class="p">[</span><span class="mi">1</span><span class="p">:]:</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">len</span><span class="p">(</span><span class="n">instance</span><span class="o">.</span><span class="n">traces</span><span class="p">)</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="n">instances</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">traces</span><span class="p">):</span>
+            <span class="k">return</span> <span class="bp">False</span>
+    <span class="n">traces</span> <span class="o">=</span> <span class="nb">map</span><span class="p">(</span><span class="nb">list</span><span class="p">,</span><span class="nb">zip</span><span class="p">(</span><span class="o">*</span><span class="p">[</span><span class="n">instance</span><span class="o">.</span><span class="n">traces</span> <span class="k">for</span> <span class="n">instance</span> <span class="ow">in</span> <span class="n">instances</span><span class="p">]))</span>
+    <span class="k">for</span> <span class="n">traces_</span> <span class="ow">in</span> <span class="n">traces</span><span class="p">:</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">traces_aligned</span><span class="p">(</span><span class="n">traces_</span><span class="p">):</span>
+            <span class="k">return</span> <span class="bp">False</span>
+    <span class="k">return</span> <span class="bp">True</span>
+</div>
+<div class="viewcode-block" id="align_traces"><a class="viewcode-back" href="../../utils.html#disaggregator.utils.align_traces">[docs]</a><span class="k">def</span> <span class="nf">align_traces</span><span class="p">(</span><span class="n">traces</span><span class="p">,</span><span class="n">to</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span><span class="n">how</span><span class="o">=</span><span class="s">&quot;front&quot;</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Temporally aligns the traces. `how`=&quot;front&quot; means to align to the front of</span>
+<span class="sd">    the `to` trace. If no `to` trace is given, the first shortest trace is used.</span>
+<span class="sd">    Traces are all downsampled to match the lowest sampling rate</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c"># make copies</span>
+    <span class="n">traces</span><span class="o">=</span><span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="n">traces</span><span class="p">)</span>
+
+    <span class="c"># if already aligned, don&#39;t do extra work.</span>
+    <span class="k">if</span> <span class="n">traces_aligned</span><span class="p">(</span><span class="n">traces</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">traces</span>
+
+    <span class="c"># resample to the same frequency</span>
+    <span class="n">frequencies</span> <span class="o">=</span> <span class="p">[</span><span class="n">pd</span><span class="o">.</span><span class="n">tseries</span><span class="o">.</span><span class="n">frequencies</span><span class="o">.</span><span class="n">to_offset</span><span class="p">(</span><span class="n">trace</span><span class="o">.</span><span class="n">series</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">freq</span><span class="p">)</span>
+                   <span class="k">for</span> <span class="n">trace</span> <span class="ow">in</span> <span class="n">traces</span> <span class="k">if</span> <span class="n">trace</span><span class="o">.</span><span class="n">series</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">freq</span><span class="p">]</span>
+    <span class="n">new_freq</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">frequencies</span><span class="p">,</span><span class="n">reverse</span><span class="o">=</span><span class="bp">True</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="k">for</span> <span class="n">trace</span> <span class="ow">in</span> <span class="n">traces</span><span class="p">:</span>
+        <span class="n">trace</span><span class="o">.</span><span class="n">resample</span><span class="p">(</span><span class="n">new_freq</span><span class="p">)</span>
+
+    <span class="c"># determine where to shift to and how much to cut off</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">to</span><span class="p">:</span>
+        <span class="n">shortest_i</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">argsort</span><span class="p">([</span><span class="n">trace</span><span class="o">.</span><span class="n">series</span><span class="o">.</span><span class="n">size</span> <span class="k">for</span> <span class="n">trace</span> <span class="ow">in</span> <span class="n">traces</span><span class="p">])[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">to</span> <span class="o">=</span> <span class="n">traces</span><span class="p">[</span><span class="n">shortest_i</span><span class="p">]</span>
+        <span class="n">cutoff</span> <span class="o">=</span> <span class="n">to</span><span class="o">.</span><span class="n">series</span><span class="o">.</span><span class="n">size</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">all_traces</span> <span class="o">=</span> <span class="n">traces</span><span class="p">[:]</span>
+        <span class="n">all_traces</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">to</span><span class="p">)</span>
+        <span class="n">shortest_i</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">argsort</span><span class="p">([</span><span class="n">trace</span><span class="o">.</span><span class="n">series</span><span class="o">.</span><span class="n">size</span> <span class="k">for</span> <span class="n">trace</span> <span class="ow">in</span> <span class="n">all_traces</span><span class="p">])[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">cutoff</span> <span class="o">=</span> <span class="n">all_traces</span><span class="p">[</span><span class="n">shortest_i</span><span class="p">]</span><span class="o">.</span><span class="n">series</span><span class="o">.</span><span class="n">size</span>
+
+    <span class="c"># shift</span>
+    <span class="k">if</span> <span class="n">how</span> <span class="o">==</span> <span class="s">&#39;front&#39;</span><span class="p">:</span>
+        <span class="n">offsets</span> <span class="o">=</span> <span class="p">[</span><span class="n">to</span><span class="o">.</span><span class="n">series</span><span class="o">.</span><span class="n">index</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="n">trace</span><span class="o">.</span><span class="n">series</span><span class="o">.</span><span class="n">index</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">for</span> <span class="n">trace</span> <span class="ow">in</span> <span class="n">traces</span><span class="p">]</span>
+        <span class="k">for</span> <span class="n">trace</span><span class="p">,</span><span class="n">offset</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">traces</span><span class="p">,</span><span class="n">offsets</span><span class="p">):</span>
+            <span class="n">trace</span><span class="o">.</span><span class="n">series</span><span class="o">.</span><span class="n">index</span> <span class="o">=</span> <span class="n">trace</span><span class="o">.</span><span class="n">series</span><span class="o">.</span><span class="n">index</span> <span class="o">+</span> <span class="n">offset</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span>
+
+    <span class="c"># cut off extra:</span>
+    <span class="k">for</span> <span class="n">trace</span> <span class="ow">in</span> <span class="n">traces</span><span class="p">:</span>
+        <span class="n">trace</span><span class="o">.</span><span class="n">series</span> <span class="o">=</span> <span class="n">trace</span><span class="o">.</span><span class="n">series</span><span class="p">[:</span><span class="n">cutoff</span><span class="p">]</span>
+
+    <span class="k">return</span> <span class="n">traces</span>
+</div>
+<div class="viewcode-block" id="align_instances"><a class="viewcode-back" href="../../utils.html#disaggregator.utils.align_instances">[docs]</a><span class="k">def</span> <span class="nf">align_instances</span><span class="p">(</span><span class="n">instances</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Aligns all traces in a list of instances. Removes traces that don&#39;t fit.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">traces</span> <span class="o">=</span> <span class="nb">map</span><span class="p">(</span><span class="nb">list</span><span class="p">,</span><span class="nb">zip</span><span class="p">(</span><span class="o">*</span><span class="p">[</span><span class="n">instance</span><span class="o">.</span><span class="n">traces</span> <span class="k">for</span> <span class="n">instance</span> <span class="ow">in</span> <span class="n">instances</span><span class="p">]))</span>
+    <span class="n">aligned_traces</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">traces_</span> <span class="ow">in</span> <span class="n">traces</span><span class="p">:</span>
+        <span class="n">aligned_traces</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">align_traces</span><span class="p">(</span><span class="n">traces_</span><span class="p">))</span>
+    <span class="n">traces</span> <span class="o">=</span> <span class="nb">map</span><span class="p">(</span><span class="nb">list</span><span class="p">,</span><span class="nb">zip</span><span class="p">(</span><span class="o">*</span><span class="n">aligned_traces</span><span class="p">))</span>
+    <span class="k">return</span> <span class="p">[</span><span class="n">ApplianceInstance</span><span class="p">(</span><span class="n">traces_</span><span class="p">,</span><span class="n">instance</span><span class="o">.</span><span class="n">metadata</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">traces_</span><span class="p">,</span><span class="n">instance</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">traces</span><span class="p">,</span><span class="n">instances</span><span class="p">)]</span>
+</pre></div></div>
 
           </div>
         </div>

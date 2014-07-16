@@ -1,5 +1,5 @@
 !obj:pylearn2.train.Train {
-    dataset: &train !pkl: "%(data_dir)s/train_car.pkl",
+    dataset: &train !pkl: "%(data_dir)s/train_car_all.pkl",
     model: !obj:pylearn2.models.mlp.MLP {
         batch_size: 100,
         input_space: !obj:pylearn2.space.Conv2DSpace {
@@ -7,13 +7,25 @@
             num_channels: 1
         },
         layers: [ !obj:pylearn2.models.mlp.ConvRectifiedLinear {
-                     layer_name: 'h2',
-                     output_channels: 64,
+                     layer_name: 'h0',
+                     output_channels: 32,
                      irange: .05,
                      kernel_shape: [10, 1],
-                     pool_shape: [4, 1],
-                     pool_stride: [2, 1],
+                     pool_shape: [1, 1],
+                     pool_stride: [1, 1],
                      max_kernel_norm: 1.9365
+                 }, !obj:pylearn2.models.mlp.ConvRectifiedLinear {
+                     layer_name: 'h1',
+                     output_channels: 32,
+                     irange: .05,
+                     kernel_shape: [5, 1],
+                     pool_shape: [1, 1],
+                     pool_stride: [1, 1],
+                     max_kernel_norm: 1.9365
+                 }, !obj:pylearn2.models.mlp.RectifiedLinear {
+                     layer_name: 'h2',
+                     dim: 32,
+                     sparse_init: 15
                  }, !obj:pylearn2.models.mlp.Softmax {
                      max_col_norm: 1.9365,
                      layer_name: 'y',
@@ -29,8 +41,8 @@
         monitoring_dataset:
         {
             'train' : *train,
-            'valid' : !pkl: "%(data_dir)s/valid_car.pkl",
-            'test'  : !pkl: "%(data_dir)s/test_car.pkl",
+            'valid' : !pkl: "%(data_dir)s/valid_car_all.pkl",
+            'test'  : !pkl: "%(data_dir)s/test_car_all.pkl",
         },
         termination_criterion: !obj:pylearn2.termination_criteria.MonitorBased {
             channel_name: "valid_y_misclass"
