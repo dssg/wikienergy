@@ -542,7 +542,7 @@ def get_appliance_detection_arrays(schema,tables,appliance,window_length,
 
     set_indices = [("Training",app_i_train,no_app_i_train),
                    ("Validation",app_i_valid,no_app_i_valid),
-                   ("Testing",app_i_train,no_app_i_test)]
+                   ("Testing",app_i_test,no_app_i_test)]
 
     training_sets = []
 
@@ -560,7 +560,7 @@ def get_appliance_detection_arrays(schema,tables,appliance,window_length,
                 schema,tables,[appliance],appliance_ids,
                 window_length,window_stride,drop_percentile)
         if verbose:
-            print "Fetching smaples for key = 0"
+            print "Fetching samples for key = 0"
         other_windows = get_use_for_active_windows(
                 schema,tables,None,no_appliance_ids,
                 window_length,window_stride,drop_percentile=0)
