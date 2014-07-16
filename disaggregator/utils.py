@@ -211,6 +211,15 @@ def resample_type_traces(device_type,sample_rate):
         new_instances.append(resample_instance_traces(instance,sample_rate))
     return appliance.ApplianceType(new_instances,device_type.metadata)
 
+def resample_set_traces(device_set,sample_rate):
+    '''
+    Resamples all traces in each instance of a given type.
+    '''
+    new_instances=[]
+    for instance in device_set.instances:
+        new_instances.append(resample_instance_traces(instance,sample_rate))
+    return appliance.ApplianceSet(new_instances,device_set.metadata)
+
 def order_traces(traces):
     '''
     Given a set of traces, orders them chronologically and catches
