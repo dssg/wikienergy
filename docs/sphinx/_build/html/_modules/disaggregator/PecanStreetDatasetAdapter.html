@@ -69,6 +69,7 @@
 
 <span class="kn">import</span> <span class="nn">sqlalchemy</span>
 <span class="kn">import</span> <span class="nn">pandas</span> <span class="kn">as</span> <span class="nn">pd</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
 <span class="kn">import</span> <span class="nn">decimal</span>
 
 <span class="n">url</span> <span class="o">=</span> <span class="s">&#39;&#39;</span>
@@ -178,13 +179,6 @@
         <span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">schema_names</span><span class="p">[</span><span class="n">schema</span><span class="p">])]</span>
     <span class="k">return</span> <span class="n">table_names</span>
 </div>
-<div class="viewcode-block" id="verify_same_range"><a class="viewcode-back" href="../../dataset_adapters.html#disaggregator.PecanStreetDatasetAdapter.verify_same_range">[docs]</a><span class="k">def</span> <span class="nf">verify_same_range</span><span class="p">(</span><span class="n">pair</span><span class="p">,</span><span class="n">pairs</span><span class="p">):</span>
-    <span class="sd">&#39;&#39;&#39;</span>
-<span class="sd">    Check that all data points have the same range</span>
-<span class="sd">    &#39;&#39;&#39;</span>
-    <span class="c">#TODO this should go into utils</span>
-    <span class="k">pass</span>
-</div>
 <div class="viewcode-block" id="get_table_dataids"><a class="viewcode-back" href="../../dataset_adapters.html#disaggregator.PecanStreetDatasetAdapter.get_table_dataids">[docs]</a><span class="k">def</span> <span class="nf">get_table_dataids</span><span class="p">(</span><span class="n">schema</span><span class="p">,</span><span class="n">table</span><span class="p">):</span>
     <span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">    Returns a list of dataids for this schema and table</span>
@@ -237,23 +231,13 @@
     <span class="k">else</span><span class="p">:</span>
         <span class="k">raise</span> <span class="n">SchemaError</span><span class="p">(</span><span class="n">schema</span><span class="p">)</span>
 </div>
-<div class="viewcode-block" id="time_align"><a class="viewcode-back" href="../../dataset_adapters.html#disaggregator.PecanStreetDatasetAdapter.time_align">[docs]</a><span class="k">def</span> <span class="nf">time_align</span><span class="p">():</span>
-    <span class="sd">&#39;&#39;&#39;</span>
-<span class="sd">    Checks that for all traces in a home the total time lengths are the</span>
-<span class="sd">    same</span>
-<span class="sd">    &#39;&#39;&#39;</span>
-    <span class="c"># TODO this should go into utils</span>
-    <span class="k">pass</span>
-</div>
 <div class="viewcode-block" id="clean_dataframe"><a class="viewcode-back" href="../../dataset_adapters.html#disaggregator.PecanStreetDatasetAdapter.clean_dataframe">[docs]</a><span class="k">def</span> <span class="nf">clean_dataframe</span><span class="p">(</span><span class="n">df</span><span class="p">,</span><span class="n">schema</span><span class="p">,</span><span class="n">drop_cols</span><span class="p">):</span>
-    <span class="c"># TODO update this to use &quot;curated&quot; &quot;shared&quot; or &quot;raw&quot;</span>
-    <span class="c">#   instead of full frame name</span>
     <span class="sd">&#39;&#39;&#39;</span>
-<span class="sd">    Cleans a dataframe queried directly from the database by renaming the db </span>
+<span class="sd">    Cleans a dataframe queried directly from the database by renaming the db</span>
 <span class="sd">    time column (ex. UTC_15MIN) to a column name &#39;time&#39;. It then converts the</span>
 <span class="sd">    time column to datetime objects and reindexes the dataframe to the time</span>
 <span class="sd">    column before dropping that column from the dataframe. It also drops any</span>
-<span class="sd">    columns included in the list drop_cols. The columns &#39;id&#39; and &#39;dataid&#39; are </span>
+<span class="sd">    columns included in the list drop_cols. The columns &#39;id&#39; and &#39;dataid&#39; are</span>
 <span class="sd">    also dropped.</span>
 <span class="sd">    &#39;&#39;&#39;</span>
     <span class="c"># change the time column name</span>
@@ -261,8 +245,7 @@
     <span class="n">df</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">rename</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="p">{</span><span class="n">time_columns</span><span class="p">[</span><span class="n">schema</span><span class="p">]:</span> <span class="s">&#39;time&#39;</span><span class="p">})</span>
 
     <span class="c"># use a DatetimeIndex</span>
-    <span class="n">df</span><span class="p">[</span><span class="s">&#39;time&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">to_datetime</span><span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="s">&#39;time&#39;</span><span class="p">],</span><span class="n">utc</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
-    <span class="n">df</span><span class="o">.</span><span class="n">set_index</span><span class="p">(</span><span class="s">&#39;time&#39;</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+    <span class="n">utils</span><span class="o">.</span><span class="n">create_datetimeindex</span><span class="p">(</span><span class="n">df</span><span class="p">)</span>
 
     <span class="c"># drop unnecessary columns</span>
     <span class="n">df</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">drop</span><span class="p">([</span><span class="s">&#39;dataid&#39;</span><span class="p">],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
@@ -274,10 +257,6 @@
     <span class="k">return</span> <span class="n">df</span>
 
 </div>
-<span class="k">def</span> <span class="nf">check_sample_rate</span><span class="p">(</span><span class="n">schema</span><span class="p">,</span><span class="n">sampling_rate</span><span class="p">):</span>
-    <span class="c"># TODO get from the data directly not like this</span>
-    <span class="n">accepted_rates</span> <span class="o">=</span> <span class="p">{</span><span class="s">&#39;curated&#39;</span><span class="p">:</span><span class="s">&#39;15T&#39;</span> <span class="p">,</span><span class="s">&#39;raw&#39;</span><span class="p">:</span><span class="s">&#39;15&#39;</span> <span class="p">,</span><span class="s">&#39;shared&#39;</span><span class="p">:</span><span class="s">&#39;1T&#39;</span> <span class="p">}</span>
-
 <div class="viewcode-block" id="generate_traces_by_table_and_dataid"><a class="viewcode-back" href="../../dataset_adapters.html#disaggregator.PecanStreetDatasetAdapter.generate_traces_by_table_and_dataid">[docs]</a><span class="k">def</span> <span class="nf">generate_traces_by_table_and_dataid</span><span class="p">(</span><span class="n">schema</span><span class="p">,</span><span class="n">table</span><span class="p">,</span><span class="n">dataid</span><span class="p">,</span><span class="n">sample_rate</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
     <span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">    Returns a list of traces for one house and one month</span>
@@ -305,7 +284,7 @@
                 <span class="p">}</span>
             <span class="n">trace</span> <span class="o">=</span> <span class="n">ApplianceTrace</span><span class="p">(</span><span class="n">s</span><span class="p">,</span><span class="n">meta</span><span class="p">)</span>
             <span class="k">if</span> <span class="n">sample_rate</span><span class="p">:</span>
-                <span class="n">utils</span><span class="o">.</span><span class="n">resample_trace</span><span class="p">(</span><span class="n">trace</span><span class="p">,</span><span class="n">sample_rate</span><span class="p">)</span>
+                <span class="n">trace</span> <span class="o">=</span> <span class="n">trace</span><span class="o">.</span><span class="n">resample</span><span class="p">(</span><span class="n">sample_rate</span><span class="p">)</span>
             <span class="n">traces</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ApplianceTrace</span><span class="p">(</span><span class="n">s</span><span class="p">,</span><span class="n">meta</span><span class="p">))</span>
     <span class="k">return</span> <span class="n">traces</span>
 </div>
@@ -315,8 +294,12 @@
 <span class="sd">    &#39;&#39;&#39;</span>
     <span class="n">traces</span> <span class="o">=</span> <span class="n">generate_traces_by_table_and_dataid</span><span class="p">(</span><span class="n">schema</span><span class="p">,</span><span class="n">table</span><span class="p">,</span><span class="n">dataid</span><span class="p">,</span><span class="n">sample_rate</span><span class="p">)</span>
     <span class="n">instances</span> <span class="o">=</span> <span class="p">[</span><span class="n">ApplianceInstance</span><span class="p">([</span><span class="n">t</span><span class="p">],</span><span class="n">t</span><span class="o">.</span><span class="n">metadata</span><span class="p">)</span> <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">traces</span><span class="p">]</span>
-    <span class="n">metadata</span> <span class="o">=</span> <span class="n">instances</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">metadata</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s">&quot;device_name&quot;</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">ApplianceSet</span><span class="p">(</span><span class="n">instances</span><span class="p">,</span><span class="n">metadata</span><span class="p">)</span>
+    <span class="n">metadata_set</span><span class="o">=</span> <span class="p">{</span><span class="s">&#39;source&#39;</span><span class="p">:</span><span class="n">source</span><span class="p">,</span>
+                <span class="s">&#39;schema&#39;</span><span class="p">:</span><span class="n">schema</span><span class="p">,</span>
+                <span class="s">&#39;table&#39;</span><span class="p">:</span><span class="n">table</span> <span class="p">,</span>
+                <span class="s">&#39;dataid&#39;</span><span class="p">:</span><span class="n">instances</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">metadata</span><span class="p">[</span><span class="s">&#39;dataid&#39;</span><span class="p">]</span>
+                <span class="p">}</span>
+    <span class="k">return</span> <span class="n">ApplianceSet</span><span class="p">(</span><span class="n">instances</span><span class="p">,</span><span class="n">metadata_set</span><span class="p">)</span>
 </div>
 <div class="viewcode-block" id="get_table_name"><a class="viewcode-back" href="../../dataset_adapters.html#disaggregator.PecanStreetDatasetAdapter.get_table_name">[docs]</a><span class="k">def</span> <span class="nf">get_table_name</span><span class="p">(</span><span class="n">schema</span><span class="p">,</span><span class="n">year</span><span class="p">,</span><span class="n">month</span><span class="p">,</span><span class="n">group</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">rate</span> <span class="o">=</span> <span class="bp">None</span><span class="p">):</span>
     <span class="sd">&#39;&#39;&#39;</span>
@@ -350,26 +333,25 @@
 <span class="sd">    Returns a list of traces from a given month. It first finds the table</span>
 <span class="sd">    name associated with that month.</span>
 <span class="sd">    &#39;&#39;&#39;</span>
-    <span class="n">table</span> <span class="o">=</span> <span class="n">get_table_name</span><span class="p">(</span><span class="n">schema</span><span class="p">,</span> <span class="n">year</span><span class="p">,</span> <span class="n">month</span><span class="p">,</span><span class="n">group</span><span class="p">,</span><span class="n">rate</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">get_month_traces_from_table_name</span><span class="p">(</span><span class="n">schema</span><span class="p">,</span><span class="n">table</span><span class="p">,</span><span class="n">dataid</span><span class="p">)</span>
+    <span class="n">table</span> <span class="o">=</span> <span class="n">get_table_name</span><span class="p">(</span><span class="n">schema</span><span class="p">,</span> <span class="n">year</span><span class="p">,</span> <span class="n">month</span><span class="p">,</span> <span class="n">group</span><span class="p">,</span> <span class="n">rate</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">get_month_traces_from_table_name</span><span class="p">(</span><span class="n">schema</span><span class="p">,</span> <span class="n">table</span><span class="p">,</span> <span class="n">dataid</span><span class="p">)</span>
 
 </div>
-<div class="viewcode-block" id="generate_appliance_trace"><a class="viewcode-back" href="../../dataset_adapters.html#disaggregator.PecanStreetDatasetAdapter.generate_appliance_trace">[docs]</a><span class="k">def</span> <span class="nf">generate_appliance_trace</span><span class="p">(</span><span class="n">schema</span><span class="p">,</span><span class="n">table</span><span class="p">,</span><span class="n">appliance</span><span class="p">,</span><span class="n">dataid</span><span class="p">,</span><span class="n">sample_rate</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+<div class="viewcode-block" id="generate_appliance_trace"><a class="viewcode-back" href="../../dataset_adapters.html#disaggregator.PecanStreetDatasetAdapter.generate_appliance_trace">[docs]</a><span class="k">def</span> <span class="nf">generate_appliance_trace</span><span class="p">(</span><span class="n">schema</span><span class="p">,</span> <span class="n">table</span><span class="p">,</span> <span class="n">appliance</span><span class="p">,</span> <span class="n">dataid</span><span class="p">,</span>
+                             <span class="n">sample_rate</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="bp">True</span><span class="p">):</span>
     <span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">    Return an appliance trace by dataid. The trace is in decimal form and in</span>
-<span class="sd">    average Watts.</span>
+<span class="sd">    average kiloWatts.</span>
 <span class="sd">    &#39;&#39;&#39;</span>
     <span class="k">global</span> <span class="n">schema_names</span><span class="p">,</span> <span class="n">source</span>
     <span class="n">schema_name</span> <span class="o">=</span> <span class="n">schema_names</span><span class="p">[</span><span class="n">schema</span><span class="p">]</span>
-    <span class="n">query</span><span class="o">=</span> <span class="s">&#39;select {0}, {1} from &quot;{2}&quot;.{3} where dataid={4}&#39;</span>\
+    <span class="n">query</span><span class="o">=</span> <span class="s">&#39;select {0},{1} from &quot;{2}&quot;.{3} where dataid={4}&#39;</span>\
         <span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">appliance</span><span class="p">,</span><span class="n">time_columns</span><span class="p">[</span><span class="n">schema</span><span class="p">],</span><span class="n">schema_name</span><span class="p">,</span><span class="n">table</span><span class="p">,</span><span class="n">dataid</span><span class="p">)</span>
     <span class="k">print</span> <span class="n">query</span>
     <span class="n">df</span> <span class="o">=</span> <span class="n">get_dataframe</span><span class="p">(</span><span class="n">query</span><span class="p">)</span>
     <span class="n">df</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">rename</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="p">{</span><span class="n">time_columns</span><span class="p">[</span><span class="n">schema</span><span class="p">]:</span> <span class="s">&#39;time&#39;</span><span class="p">})</span>
-    <span class="n">df</span><span class="p">[</span><span class="s">&#39;time&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">to_datetime</span><span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="s">&#39;time&#39;</span><span class="p">],</span><span class="n">utc</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
-    <span class="n">df</span><span class="o">.</span><span class="n">set_index</span><span class="p">(</span><span class="s">&#39;time&#39;</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
-    <span class="n">series</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="n">appliance</span><span class="p">],</span><span class="n">name</span> <span class="o">=</span> <span class="n">appliance</span><span class="p">)</span><span class="o">.</span><span class="n">fillna</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span> <span class="o">*</span>\
-        <span class="n">decimal</span><span class="o">.</span><span class="n">Decimal</span><span class="p">(</span><span class="mf">1000.0</span><span class="p">)</span>
+    <span class="n">utils</span><span class="o">.</span><span class="n">create_datetimeindex</span><span class="p">(</span><span class="n">df</span><span class="p">)</span>
+    <span class="n">series</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="n">appliance</span><span class="p">],</span><span class="n">name</span> <span class="o">=</span> <span class="n">appliance</span><span class="p">)</span><span class="o">.</span><span class="n">fillna</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
     <span class="n">metadata</span> <span class="o">=</span> <span class="p">{</span><span class="s">&#39;source&#39;</span><span class="p">:</span><span class="n">source</span><span class="p">,</span>
             <span class="s">&#39;schema&#39;</span><span class="p">:</span><span class="n">schema</span><span class="p">,</span>
             <span class="s">&#39;table&#39;</span><span class="p">:</span><span class="n">table</span> <span class="p">,</span>
@@ -378,8 +360,74 @@
             <span class="p">}</span>
     <span class="n">trace</span> <span class="o">=</span> <span class="n">ApplianceTrace</span><span class="p">(</span><span class="n">series</span><span class="p">,</span><span class="n">metadata</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">sample_rate</span><span class="p">:</span>
-        <span class="n">trace</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">resample_trace</span><span class="p">(</span><span class="n">trace</span><span class="p">,</span><span class="n">sample_rate</span><span class="p">)</span>
+        <span class="n">trace</span> <span class="o">=</span> <span class="n">trace</span><span class="o">.</span><span class="n">resample</span><span class="p">(</span><span class="n">sample_rate</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">trace</span>
+</div>
+<div class="viewcode-block" id="generate_appliances_traces"><a class="viewcode-back" href="../../dataset_adapters.html#disaggregator.PecanStreetDatasetAdapter.generate_appliances_traces">[docs]</a><span class="k">def</span> <span class="nf">generate_appliances_traces</span><span class="p">(</span>
+        <span class="n">schema</span><span class="p">,</span><span class="n">table</span><span class="p">,</span><span class="n">appliances</span><span class="p">,</span><span class="n">dataid</span><span class="p">,</span><span class="n">sample_rate</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span><span class="n">verbose</span><span class="o">=</span><span class="bp">True</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Return a list of appliance traces by dataid. Each trace is in decimal form</span>
+<span class="sd">    and in average Watts.</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="k">global</span> <span class="n">schema_names</span><span class="p">,</span> <span class="n">source</span>
+    <span class="n">schema_name</span> <span class="o">=</span> <span class="n">schema_names</span><span class="p">[</span><span class="n">schema</span><span class="p">]</span>
+    <span class="n">query</span><span class="o">=</span> <span class="s">&#39;select {0},{1} from &quot;{2}&quot;.{3} where dataid={4}&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+        <span class="s">&#39;,&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">appliances</span><span class="p">),</span> <span class="n">time_columns</span><span class="p">[</span><span class="n">schema</span><span class="p">],</span> <span class="n">schema_name</span><span class="p">,</span> <span class="n">table</span><span class="p">,</span> <span class="n">dataid</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">verbose</span><span class="p">:</span>
+        <span class="k">print</span> <span class="n">query</span>
+    <span class="n">df</span> <span class="o">=</span> <span class="n">get_dataframe</span><span class="p">(</span><span class="n">query</span><span class="p">)</span>
+    <span class="n">df</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">rename</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="p">{</span><span class="n">time_columns</span><span class="p">[</span><span class="n">schema</span><span class="p">]:</span> <span class="s">&#39;time&#39;</span><span class="p">})</span>
+    <span class="n">utils</span><span class="o">.</span><span class="n">create_datetimeindex</span><span class="p">(</span><span class="n">df</span><span class="p">)</span>
+    <span class="n">traces</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">appliance</span> <span class="ow">in</span> <span class="n">appliances</span><span class="p">:</span>
+        <span class="n">series</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="n">appliance</span><span class="p">],</span><span class="n">name</span> <span class="o">=</span> <span class="n">appliance</span><span class="p">)</span><span class="o">.</span><span class="n">fillna</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+        <span class="n">metadata</span> <span class="o">=</span> <span class="p">{</span><span class="s">&#39;source&#39;</span><span class="p">:</span><span class="n">source</span><span class="p">,</span>
+                    <span class="s">&#39;schema&#39;</span><span class="p">:</span><span class="n">schema</span><span class="p">,</span>
+                    <span class="s">&#39;table&#39;</span><span class="p">:</span><span class="n">table</span> <span class="p">,</span>
+                    <span class="s">&#39;dataid&#39;</span><span class="p">:</span><span class="n">dataid</span><span class="p">,</span>
+                    <span class="s">&#39;device_name&#39;</span><span class="p">:</span><span class="n">series</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
+                    <span class="p">}</span>
+        <span class="n">trace</span> <span class="o">=</span> <span class="n">ApplianceTrace</span><span class="p">(</span><span class="n">series</span><span class="p">,</span><span class="n">metadata</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">sample_rate</span><span class="p">:</span>
+            <span class="n">trace</span> <span class="o">=</span> <span class="n">trace</span><span class="o">.</span><span class="n">resample</span><span class="p">(</span><span class="n">sample_rate</span><span class="p">)</span>
+        <span class="n">traces</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">trace</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">traces</span>
+</div>
+<div class="viewcode-block" id="generate_appliance_instance"><a class="viewcode-back" href="../../dataset_adapters.html#disaggregator.PecanStreetDatasetAdapter.generate_appliance_instance">[docs]</a><span class="k">def</span> <span class="nf">generate_appliance_instance</span><span class="p">(</span>
+        <span class="n">schema</span><span class="p">,</span><span class="n">tables</span><span class="p">,</span><span class="n">appliances</span><span class="p">,</span><span class="n">dataid</span><span class="p">,</span><span class="n">sample_rate</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span><span class="n">verbose</span><span class="o">=</span><span class="bp">True</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Return an appliance instance from consecutive tables. Concatenates traces.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">traces</span> <span class="o">=</span> <span class="p">[</span><span class="n">generate_appliance_trace</span><span class="p">(</span><span class="n">schema</span><span class="p">,</span><span class="n">table</span><span class="p">,</span><span class="n">appliances</span><span class="p">,</span><span class="n">dataid</span><span class="p">,</span>
+                  <span class="n">sample_rate</span><span class="p">,</span><span class="n">verbose</span><span class="p">)</span> <span class="k">for</span> <span class="n">table</span> <span class="ow">in</span> <span class="n">tables</span><span class="p">]</span>
+    <span class="n">traces</span> <span class="o">=</span> <span class="p">[</span><span class="n">utils</span><span class="o">.</span><span class="n">concatenate_trace</span><span class="p">(</span><span class="n">traces</span><span class="p">)]</span>
+    <span class="k">return</span> <span class="n">ApplianceInstance</span><span class="p">(</span><span class="n">traces</span><span class="p">,</span><span class="n">traces</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">metadata</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="generate_appliances_instances"><a class="viewcode-back" href="../../dataset_adapters.html#disaggregator.PecanStreetDatasetAdapter.generate_appliances_instances">[docs]</a><span class="k">def</span> <span class="nf">generate_appliances_instances</span><span class="p">(</span>
+        <span class="n">schema</span><span class="p">,</span><span class="n">tables</span><span class="p">,</span><span class="n">appliances</span><span class="p">,</span><span class="n">dataid</span><span class="p">,</span><span class="n">sample_rate</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span><span class="n">verbose</span><span class="o">=</span><span class="bp">True</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Return an appliance instances from consecutive tables. Concatenates traces.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">all_traces</span> <span class="o">=</span> <span class="p">[</span><span class="n">generate_appliances_traces</span><span class="p">(</span><span class="n">schema</span><span class="p">,</span><span class="n">table</span><span class="p">,</span><span class="n">appliances</span><span class="p">,</span><span class="n">dataid</span><span class="p">,</span>
+                      <span class="n">sample_rate</span><span class="p">,</span><span class="n">verbose</span><span class="p">)</span> <span class="k">for</span> <span class="n">table</span> <span class="ow">in</span> <span class="n">tables</span><span class="p">]</span>
+
+    <span class="c"># transpose</span>
+    <span class="n">appliance_traces</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="o">*</span><span class="n">all_traces</span><span class="p">))</span>
+
+    <span class="c"># concatenate by appliance</span>
+    <span class="n">appliance_traces</span> <span class="o">=</span> <span class="p">[</span><span class="n">utils</span><span class="o">.</span><span class="n">concatenate_traces</span><span class="p">(</span><span class="n">traces</span><span class="p">)</span>
+                        <span class="k">for</span> <span class="n">traces</span> <span class="ow">in</span> <span class="n">appliance_traces</span><span class="p">]</span>
+    <span class="k">return</span> <span class="p">[</span><span class="n">ApplianceInstance</span><span class="p">([</span><span class="n">trace</span><span class="p">],</span><span class="n">trace</span><span class="o">.</span><span class="n">metadata</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">trace</span> <span class="ow">in</span> <span class="n">appliance_traces</span><span class="p">]</span>
+</div>
+<div class="viewcode-block" id="generate_instances_for_appliance_by_dataids"><a class="viewcode-back" href="../../dataset_adapters.html#disaggregator.PecanStreetDatasetAdapter.generate_instances_for_appliance_by_dataids">[docs]</a><span class="k">def</span> <span class="nf">generate_instances_for_appliance_by_dataids</span><span class="p">(</span>
+        <span class="n">schema</span><span class="p">,</span> <span class="n">tables</span><span class="p">,</span> <span class="n">appliance</span><span class="p">,</span> <span class="n">dataids</span><span class="p">,</span> <span class="n">sample_rate</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Returns instances for a single appliance type across a set of dataids</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">instances</span> <span class="o">=</span> <span class="p">[</span><span class="n">generate_appliance_instance</span><span class="p">(</span><span class="n">schema</span><span class="p">,</span> <span class="n">tables</span><span class="p">,</span> <span class="n">appliance</span><span class="p">,</span> <span class="n">dataid</span><span class="p">,</span>
+                 <span class="n">sample_rate</span><span class="p">)</span> <span class="k">for</span> <span class="n">dataid</span> <span class="ow">in</span> <span class="n">dataids</span><span class="p">]</span>
+    <span class="k">return</span> <span class="n">instances</span>
 </div>
 <div class="viewcode-block" id="generate_traces_for_appliance_by_dataids"><a class="viewcode-back" href="../../dataset_adapters.html#disaggregator.PecanStreetDatasetAdapter.generate_traces_for_appliance_by_dataids">[docs]</a><span class="k">def</span> <span class="nf">generate_traces_for_appliance_by_dataids</span><span class="p">(</span>
         <span class="n">schema</span><span class="p">,</span> <span class="n">table</span><span class="p">,</span> <span class="n">appliance</span><span class="p">,</span> <span class="n">ids</span><span class="p">,</span> <span class="n">sample_rate</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
@@ -388,6 +436,38 @@
 <span class="sd">    &#39;&#39;&#39;</span>
     <span class="n">traces</span> <span class="o">=</span> <span class="p">[</span><span class="n">generate_appliance_trace</span><span class="p">(</span><span class="n">schema</span><span class="p">,</span><span class="n">table</span><span class="p">,</span><span class="n">appliance</span><span class="p">,</span><span class="n">id_</span><span class="p">,</span><span class="n">sample_rate</span><span class="p">)</span>\
               <span class="k">for</span> <span class="n">id_</span> <span class="ow">in</span> <span class="n">ids</span><span class="p">]</span>
+    <span class="k">return</span> <span class="n">traces</span>
+</div>
+<div class="viewcode-block" id="generate_traces_for_appliances_by_dataid"><a class="viewcode-back" href="../../dataset_adapters.html#disaggregator.PecanStreetDatasetAdapter.generate_traces_for_appliances_by_dataid">[docs]</a><span class="k">def</span> <span class="nf">generate_traces_for_appliances_by_dataid</span><span class="p">(</span>
+        <span class="n">schema</span><span class="p">,</span> <span class="n">table</span><span class="p">,</span> <span class="n">appliances</span><span class="p">,</span> <span class="n">dataid</span><span class="p">,</span> <span class="n">sample_rate</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Returns traces for a list of appliance types across a set of dataids.</span>
+<span class="sd">    Wrapper for `generate_appliances_traces` function</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="n">traces</span> <span class="o">=</span> <span class="n">generate_appliances_traces</span><span class="p">(</span><span class="n">schema</span><span class="p">,</span> <span class="n">table</span><span class="p">,</span> <span class="n">appliances</span><span class="p">,</span> <span class="n">dataid</span><span class="p">,</span>
+                                        <span class="n">sample_rate</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">traces</span>
+</div>
+<div class="viewcode-block" id="generate_instances_for_appliances_by_dataids"><a class="viewcode-back" href="../../dataset_adapters.html#disaggregator.PecanStreetDatasetAdapter.generate_instances_for_appliances_by_dataids">[docs]</a><span class="k">def</span> <span class="nf">generate_instances_for_appliances_by_dataids</span><span class="p">(</span>
+        <span class="n">schema</span><span class="p">,</span> <span class="n">tables</span><span class="p">,</span> <span class="n">appliances</span><span class="p">,</span> <span class="n">dataids</span><span class="p">,</span> <span class="n">sample_rate</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Returns instances for a list of appliances across a set of dataids</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c">#TODO probably a more efficient way to do this</span>
+    <span class="n">instances</span> <span class="o">=</span> <span class="p">[</span><span class="n">generate_appliances_instances</span><span class="p">(</span><span class="n">schema</span><span class="p">,</span> <span class="n">tables</span><span class="p">,</span> <span class="n">appliances</span><span class="p">,</span>
+                 <span class="n">dataid</span><span class="p">,</span> <span class="n">sample_rate</span><span class="p">)</span> <span class="k">for</span> <span class="n">dataid</span> <span class="ow">in</span> <span class="n">dataids</span><span class="p">]</span>
+    <span class="k">return</span> <span class="n">instances</span>
+
+</div>
+<div class="viewcode-block" id="generate_traces_for_appliances_by_dataids"><a class="viewcode-back" href="../../dataset_adapters.html#disaggregator.PecanStreetDatasetAdapter.generate_traces_for_appliances_by_dataids">[docs]</a><span class="k">def</span> <span class="nf">generate_traces_for_appliances_by_dataids</span><span class="p">(</span>
+        <span class="n">schema</span><span class="p">,</span> <span class="n">table</span><span class="p">,</span> <span class="n">appliances</span><span class="p">,</span> <span class="n">dataids</span><span class="p">,</span> <span class="n">sample_rate</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Returns a list of lists of traces for appliance types for a list of dataids.</span>
+<span class="sd">    Ex. `traces[0][3]` gets the fourth appliance trace for the first dataid.</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="n">traces</span> <span class="o">=</span> <span class="p">[</span><span class="n">generate_traces_for_appliances_by_dataid</span><span class="p">(</span>
+                  <span class="n">schema</span><span class="p">,</span> <span class="n">table</span><span class="p">,</span> <span class="n">appliances</span><span class="p">,</span> <span class="n">dataid</span><span class="p">,</span> <span class="n">sample_rate</span><span class="p">)</span>
+              <span class="k">for</span> <span class="n">dataid</span> <span class="ow">in</span> <span class="n">dataids</span><span class="p">]</span>
     <span class="k">return</span> <span class="n">traces</span>
 </div>
 <div class="viewcode-block" id="get_dataids_with_real_values"><a class="viewcode-back" href="../../dataset_adapters.html#disaggregator.PecanStreetDatasetAdapter.get_dataids_with_real_values">[docs]</a><span class="k">def</span> <span class="nf">get_dataids_with_real_values</span><span class="p">(</span><span class="n">schema</span><span class="p">,</span><span class="n">table</span><span class="p">,</span><span class="n">appliance</span><span class="p">):</span>
@@ -441,6 +521,120 @@
     <span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="o">.</span><span class="n">from_records</span><span class="p">(</span><span class="n">eng_object</span><span class="o">.</span><span class="n">fetchall</span><span class="p">())</span>
     <span class="n">df</span><span class="o">.</span><span class="n">columns</span> <span class="o">=</span> <span class="n">eng_object</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span>
     <span class="k">return</span> <span class="n">df</span>
+</div>
+<div class="viewcode-block" id="get_use_for_active_windows"><a class="viewcode-back" href="../../dataset_adapters.html#disaggregator.PecanStreetDatasetAdapter.get_use_for_active_windows">[docs]</a><span class="k">def</span> <span class="nf">get_use_for_active_windows</span><span class="p">(</span><span class="n">schema</span><span class="p">,</span> <span class="n">tables</span><span class="p">,</span> <span class="n">appliances</span><span class="p">,</span> <span class="n">dataids</span><span class="p">,</span>
+                               <span class="n">window_length</span><span class="p">,</span> <span class="n">window_stride</span><span class="p">,</span>
+                               <span class="n">drop_percentile</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">sample_rate</span><span class="o">=</span><span class="s">&#39;15T&#39;</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;Given a list of consecutive tables, returns windows of total use data</span>
+<span class="sd">    for which the appliance waas active.</span>
+
+<span class="sd">    Appliances should not include the &#39;use&#39; column. Drops the lowest</span>
+<span class="sd">    drop_percentile samples. Use appliances=None for unfiltered windows.</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="k">if</span> <span class="n">appliances</span><span class="p">:</span>
+        <span class="n">query_appliances</span> <span class="o">=</span> <span class="n">appliances</span><span class="p">[:]</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">query_appliances</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">query_appliances</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s">&#39;use&#39;</span><span class="p">)</span>
+    <span class="n">instances</span> <span class="o">=</span> <span class="n">generate_instances_for_appliances_by_dataids</span><span class="p">(</span>
+            <span class="n">schema</span><span class="p">,</span><span class="n">tables</span><span class="p">,</span><span class="n">query_appliances</span><span class="p">,</span><span class="n">dataids</span><span class="p">,</span><span class="n">sample_rate</span><span class="p">)</span>
+    <span class="n">usages</span> <span class="o">=</span> <span class="p">[</span><span class="n">instances_for_id</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="k">for</span> <span class="n">instances_for_id</span> <span class="ow">in</span> <span class="n">instances</span><span class="p">]</span>
+    <span class="n">instances</span> <span class="o">=</span> <span class="p">[</span><span class="n">instances_for_id</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="k">for</span> <span class="n">instances_for_id</span> <span class="ow">in</span> <span class="n">instances</span><span class="p">]</span>
+    <span class="n">all_appliance_windows</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">usage</span><span class="p">,</span> <span class="n">instances_</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">usages</span><span class="p">,</span><span class="n">instances</span><span class="p">):</span> <span class="c"># iterate over dataids</span>
+        <span class="k">assert</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">usage</span><span class="o">.</span><span class="n">traces</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="n">usage_windows</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">get_trace_windows</span><span class="p">(</span><span class="n">usage</span><span class="o">.</span><span class="n">traces</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="n">window_length</span><span class="p">,</span>
+                <span class="n">window_stride</span><span class="p">)</span>
+        <span class="n">appliance_windows</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">appliances</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">drop_percentile</span> <span class="ow">is</span> <span class="ow">not</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="k">print</span> <span class="s">&quot;Warning: ignoring drop_percentile&quot;</span>
+
+            <span class="c"># remove nans</span>
+            <span class="n">windows</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nan_to_num</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">usage_windows</span><span class="p">))</span>
+            <span class="n">appliance_windows</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">windows</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">instance</span> <span class="ow">in</span> <span class="n">instances_</span><span class="p">:</span> <span class="c"># iterate over appliances</span>
+                <span class="k">assert</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">instance</span><span class="o">.</span><span class="n">traces</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">)</span>
+                <span class="n">appliance_window_array</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">get_trace_windows</span><span class="p">(</span>
+                        <span class="n">instance</span><span class="o">.</span><span class="n">traces</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="n">window_length</span><span class="p">,</span><span class="n">window_stride</span><span class="p">)</span>
+                <span class="n">window_totals</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">appliance_window_array</span><span class="p">,</span><span class="n">axis</span> <span class="o">=</span> <span class="mi">1</span><span class="p">)</span>
+                <span class="c"># drop usage windows for which the appliance totals are in the</span>
+                <span class="c"># bottom few percentiles</span>
+                <span class="n">n_keep</span> <span class="o">=</span> <span class="n">window_totals</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">*</span><span class="p">(</span><span class="mi">100</span><span class="o">-</span><span class="n">drop_percentile</span><span class="p">)</span><span class="o">/</span><span class="mi">100</span>
+                <span class="n">keep_indices</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">argsort</span><span class="p">(</span><span class="n">window_totals</span><span class="p">)[::</span><span class="o">-</span><span class="mi">1</span><span class="p">][:</span><span class="n">n_keep</span><span class="p">])</span>
+                <span class="c"># remove nans</span>
+                <span class="n">windows</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">usage_windows</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">keep_indices</span><span class="p">])</span>
+                <span class="n">windows</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nan_to_num</span><span class="p">(</span><span class="n">windows</span><span class="p">)</span>
+                <span class="n">appliance_windows</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">windows</span><span class="p">)</span>
+        <span class="n">all_appliance_windows</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">appliance_windows</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">all_appliance_windows</span>
+</div>
+<div class="viewcode-block" id="get_appliance_detection_arrays"><a class="viewcode-back" href="../../dataset_adapters.html#disaggregator.PecanStreetDatasetAdapter.get_appliance_detection_arrays">[docs]</a><span class="k">def</span> <span class="nf">get_appliance_detection_arrays</span><span class="p">(</span><span class="n">schema</span><span class="p">,</span><span class="n">tables</span><span class="p">,</span><span class="n">appliance</span><span class="p">,</span><span class="n">window_length</span><span class="p">,</span>
+                                   <span class="n">window_stride</span><span class="p">,</span><span class="n">drop_percentile</span><span class="p">,</span><span class="n">verbose</span><span class="o">=</span><span class="bp">True</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Given an appliance, get all information from a schema in the database</span>
+<span class="sd">    about what usage looks like when the appliance is present.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">verbose</span><span class="p">:</span>
+        <span class="k">print</span> <span class="s">&quot;Fetching dataids&quot;</span>
+    <span class="n">all_ids</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">get_common_ids</span><span class="p">(</span>
+            <span class="p">[</span><span class="n">get_dataids_with_real_values</span><span class="p">(</span><span class="n">schema</span><span class="p">,</span><span class="n">table</span><span class="p">,</span><span class="s">&#39;use&#39;</span><span class="p">)</span>
+                <span class="k">for</span> <span class="n">table</span> <span class="ow">in</span> <span class="n">tables</span><span class="p">])</span>
+    <span class="n">appliance_ids</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">get_common_ids</span><span class="p">(</span>
+            <span class="p">[</span><span class="n">get_dataids_with_real_values</span><span class="p">(</span><span class="n">schema</span><span class="p">,</span><span class="n">table</span><span class="p">,</span><span class="n">appliance</span><span class="p">)</span>
+                <span class="k">for</span> <span class="n">table</span> <span class="ow">in</span> <span class="n">tables</span><span class="p">])</span>
+    <span class="n">no_appliance_ids</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">all_ids</span><span class="p">)</span> <span class="o">-</span> <span class="nb">set</span><span class="p">(</span><span class="n">appliance_ids</span><span class="p">)))</span>
+
+    <span class="c"># generate random dataid indices</span>
+    <span class="n">app_i_train</span><span class="p">,</span> <span class="n">app_i_valid</span><span class="p">,</span> <span class="n">app_i_test</span> <span class="o">=</span> \
+        <span class="n">utils</span><span class="o">.</span><span class="n">get_train_valid_test_indices</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">appliance_ids</span><span class="p">))</span>
+    <span class="n">no_app_i_train</span><span class="p">,</span> <span class="n">no_app_i_valid</span><span class="p">,</span> <span class="n">no_app_i_test</span> <span class="o">=</span> \
+        <span class="n">utils</span><span class="o">.</span><span class="n">get_train_valid_test_indices</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">no_appliance_ids</span><span class="p">))</span>
+
+    <span class="n">set_indices</span> <span class="o">=</span> <span class="p">[(</span><span class="s">&quot;Training&quot;</span><span class="p">,</span><span class="n">app_i_train</span><span class="p">,</span><span class="n">no_app_i_train</span><span class="p">),</span>
+                   <span class="p">(</span><span class="s">&quot;Validation&quot;</span><span class="p">,</span><span class="n">app_i_valid</span><span class="p">,</span><span class="n">no_app_i_valid</span><span class="p">),</span>
+                   <span class="p">(</span><span class="s">&quot;Testing&quot;</span><span class="p">,</span><span class="n">app_i_test</span><span class="p">,</span><span class="n">no_app_i_test</span><span class="p">)]</span>
+
+    <span class="n">training_sets</span> <span class="o">=</span> <span class="p">[]</span>
+
+    <span class="k">for</span> <span class="n">set_name</span><span class="p">,</span><span class="n">app_i</span><span class="p">,</span><span class="n">no_app_i</span> <span class="ow">in</span> <span class="n">set_indices</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">verbose</span><span class="p">:</span>
+            <span class="k">print</span> <span class="n">set_name</span>
+        <span class="c"># get dataids</span>
+        <span class="n">appliance_ids</span> <span class="o">=</span> <span class="p">[</span><span class="n">appliance_ids</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">app_i</span><span class="p">]</span>
+        <span class="n">no_appliance_ids</span> <span class="o">=</span> <span class="p">[</span><span class="n">no_appliance_ids</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">no_app_i</span><span class="p">]</span>
+
+        <span class="c"># get windows for each dataid</span>
+        <span class="k">if</span> <span class="n">verbose</span><span class="p">:</span>
+            <span class="k">print</span> <span class="s">&quot;Fetching samples for key = 1&quot;</span>
+        <span class="n">active_appliance_windows</span> <span class="o">=</span> <span class="n">get_use_for_active_windows</span><span class="p">(</span>
+                <span class="n">schema</span><span class="p">,</span><span class="n">tables</span><span class="p">,[</span><span class="n">appliance</span><span class="p">],</span><span class="n">appliance_ids</span><span class="p">,</span>
+                <span class="n">window_length</span><span class="p">,</span><span class="n">window_stride</span><span class="p">,</span><span class="n">drop_percentile</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">verbose</span><span class="p">:</span>
+            <span class="k">print</span> <span class="s">&quot;Fetching samples for key = 0&quot;</span>
+        <span class="n">other_windows</span> <span class="o">=</span> <span class="n">get_use_for_active_windows</span><span class="p">(</span>
+                <span class="n">schema</span><span class="p">,</span><span class="n">tables</span><span class="p">,</span><span class="bp">None</span><span class="p">,</span><span class="n">no_appliance_ids</span><span class="p">,</span>
+                <span class="n">window_length</span><span class="p">,</span><span class="n">window_stride</span><span class="p">,</span><span class="n">drop_percentile</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+
+        <span class="c"># concatenate results for different dataids</span>
+	<span class="k">try</span><span class="p">:</span>
+            <span class="n">all_appliance_windows</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">(</span>
+                    <span class="p">[</span><span class="n">windows</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">for</span> <span class="n">windows</span> <span class="ow">in</span> <span class="n">active_appliance_windows</span><span class="p">],</span><span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+            <span class="n">all_other_windows</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">(</span>
+                    <span class="p">[</span><span class="n">windows</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">for</span> <span class="n">windows</span> <span class="ow">in</span> <span class="n">other_windows</span><span class="p">],</span><span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">IndexError</span><span class="p">:</span>
+            <span class="kn">import</span> <span class="nn">pdb</span><span class="p">;</span> <span class="n">pdb</span><span class="o">.</span><span class="n">set_trace</span><span class="p">()</span>
+        <span class="c"># make one-hot answer-key arrays</span>
+        <span class="n">appliance_keys</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">]</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="n">all_appliance_windows</span><span class="p">])</span>
+        <span class="n">no_appliance_keys</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">]</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="n">all_other_windows</span><span class="p">])</span>
+
+        <span class="c"># concatenate all training examples</span>
+        <span class="n">X</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">([</span><span class="n">all_appliance_windows</span><span class="p">,</span><span class="n">all_other_windows</span><span class="p">],</span><span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+        <span class="n">y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">([</span><span class="n">appliance_keys</span><span class="p">,</span><span class="n">no_appliance_keys</span><span class="p">],</span><span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+
+        <span class="n">training_sets</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">X</span><span class="p">,</span><span class="n">y</span><span class="p">))</span>
+    <span class="n">train</span><span class="p">,</span> <span class="n">valid</span><span class="p">,</span> <span class="n">test</span> <span class="o">=</span> <span class="n">training_sets</span>
+    <span class="k">return</span> <span class="n">train</span><span class="p">,</span> <span class="n">valid</span><span class="p">,</span> <span class="n">test</span>
 </div>
 <div class="viewcode-block" id="SchemaError"><a class="viewcode-back" href="../../dataset_adapters.html#disaggregator.PecanStreetDatasetAdapter.SchemaError">[docs]</a><span class="k">class</span> <span class="nc">SchemaError</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
     <span class="sd">&#39;&#39;&#39;Exception raised for errors in the schema.</span>

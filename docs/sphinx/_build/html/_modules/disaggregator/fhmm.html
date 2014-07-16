@@ -1,0 +1,261 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>disaggregator.fhmm &mdash; disaggregator 0.1.0 documentation</title>
+    
+    <link rel="stylesheet" href="../../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '0.1.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="top" title="disaggregator 0.1.0 documentation" href="../../index.html" />
+    <link rel="up" title="disaggregator" href="../disaggregator.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../index.html">disaggregator 0.1.0 documentation</a> &raquo;</li>
+          <li><a href="../index.html" >Module code</a> &raquo;</li>
+          <li><a href="../disaggregator.html" accesskey="U">disaggregator</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <h1>Source code for disaggregator.fhmm</h1><div class="highlight"><pre>
+<span class="kn">from</span> <span class="nn">sklearn</span> <span class="kn">import</span> <span class="n">hmm</span>
+<span class="kn">import</span> <span class="nn">utils</span>
+<span class="kn">from</span> <span class="nn">copy</span> <span class="kn">import</span> <span class="n">deepcopy</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="kn">as</span> <span class="nn">pd</span>
+<span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">OrderedDict</span>
+
+
+<div class="viewcode-block" id="init_HMM"><a class="viewcode-back" href="../../algorithms.html#disaggregator.fhmm.init_HMM">[docs]</a><span class="k">def</span> <span class="nf">init_HMM</span><span class="p">(</span><span class="n">pi_prior</span><span class="p">,</span><span class="n">a_prior</span><span class="p">,</span><span class="n">mean_prior</span><span class="p">,</span><span class="n">cov_prior</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Initializes a trace object from a series and a metadata dictionary.</span>
+<span class="sd">    Series must be sampled at a particular sample rate</span>
+<span class="sd">    pi_prior is the starting probability of the HMM</span>
+<span class="sd">    a_prior is the transition matrix of the HMM</span>
+<span class="sd">    mean_prior is the initial mean value of each state</span>
+<span class="sd">    cov_prior is the initial covariance of each state</span>
+
+<span class="sd">    For an n-state HMM:</span>
+
+<span class="sd">    * pi_prior is a 1-D numpy array of size n</span>
+<span class="sd">    * a_prior is a 2-D numpy array of size n x n</span>
+<span class="sd">    * mean_prior is an numpy array of size n</span>
+<span class="sd">    * cov_prior is a 3-D numpy array that has been tiled into two rows,</span>
+<span class="sd">      one column, and n third dimensional states.</span>
+
+<span class="sd">      * ex) np.tile(1,(2,1,n)) for uniform covariance to start with.</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="n">model</span> <span class="o">=</span> <span class="n">hmm</span><span class="o">.</span><span class="n">GaussianHMM</span><span class="p">(</span><span class="n">pi_prior</span><span class="o">.</span><span class="n">size</span><span class="p">,</span><span class="s">&#39;full&#39;</span><span class="p">,</span><span class="n">pi_prior</span><span class="p">,</span><span class="n">a_prior</span><span class="p">)</span>
+    <span class="n">model</span><span class="o">.</span><span class="n">means_</span> <span class="o">=</span> <span class="n">mean_prior</span>
+    <span class="n">model</span><span class="o">.</span><span class="n">covars_</span> <span class="o">=</span> <span class="n">cov_prior</span>
+    <span class="k">return</span> <span class="n">model</span>
+</div>
+<div class="viewcode-block" id="fit_trace_to_HMM"><a class="viewcode-back" href="../../algorithms.html#disaggregator.fhmm.fit_trace_to_HMM">[docs]</a><span class="k">def</span> <span class="nf">fit_trace_to_HMM</span><span class="p">(</span><span class="n">model</span><span class="p">,</span><span class="n">trace</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Fits the given trace to the model. NaNs are turned into zeroes.</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="n">trace_values</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">trace_series_to_numpy_array</span><span class="p">(</span><span class="n">trace</span><span class="o">.</span><span class="n">series</span><span class="p">)</span>
+    <span class="n">model</span><span class="o">.</span><span class="n">fit</span><span class="p">([</span><span class="n">trace_values</span><span class="p">])</span>
+    <span class="n">startprob</span><span class="p">,</span> <span class="n">means</span><span class="p">,</span> <span class="n">covars</span><span class="p">,</span> <span class="n">transmat</span> <span class="o">=</span> <span class="n">sort_learnt_parameters</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">startprob_</span><span class="p">,</span>
+            <span class="n">model</span><span class="o">.</span><span class="n">means_</span><span class="p">,</span> <span class="n">model</span><span class="o">.</span><span class="n">covars_</span> <span class="p">,</span> <span class="n">model</span><span class="o">.</span><span class="n">transmat_</span><span class="p">)</span>
+    <span class="n">model</span><span class="o">=</span><span class="n">hmm</span><span class="o">.</span><span class="n">GaussianHMM</span><span class="p">(</span><span class="n">startprob</span><span class="o">.</span><span class="n">size</span><span class="p">,</span> <span class="s">&#39;full&#39;</span><span class="p">,</span> <span class="n">startprob</span><span class="p">,</span> <span class="n">transmat</span><span class="p">)</span>
+    <span class="n">model</span><span class="o">.</span><span class="n">means_</span> <span class="o">=</span> <span class="n">means</span>
+    <span class="n">model</span><span class="o">.</span><span class="n">covars_</span> <span class="o">=</span> <span class="n">covars</span>
+    <span class="k">return</span> <span class="n">model</span>
+</div>
+<div class="viewcode-block" id="fit_instance_to_HMM"><a class="viewcode-back" href="../../algorithms.html#disaggregator.fhmm.fit_instance_to_HMM">[docs]</a><span class="k">def</span> <span class="nf">fit_instance_to_HMM</span><span class="p">(</span><span class="n">model</span><span class="p">,</span><span class="n">instance</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Fits the given instance to the model. NaNs are turned into zeroes.</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="k">for</span> <span class="n">trace</span> <span class="ow">in</span> <span class="n">instance</span><span class="o">.</span><span class="n">traces</span><span class="p">:</span>
+        <span class="n">model</span><span class="o">=</span><span class="n">fit_trace_to_HMM</span><span class="p">(</span><span class="n">model</span><span class="p">,</span><span class="n">trace</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">model</span>
+</div>
+<div class="viewcode-block" id="generate_HMMs_from_type"><a class="viewcode-back" href="../../algorithms.html#disaggregator.fhmm.generate_HMMs_from_type">[docs]</a><span class="k">def</span> <span class="nf">generate_HMMs_from_type</span><span class="p">(</span><span class="nb">type</span><span class="p">,</span><span class="n">pi_prior</span><span class="p">,</span><span class="n">a_prior</span><span class="p">,</span>
+        <span class="n">mean_prior</span><span class="p">,</span><span class="n">cov_prior</span><span class="p">,</span><span class="n">key_for_model_name</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Generates a dictionary of HMMs using each instance of given type.</span>
+<span class="sd">    The key to the dictionary is defined by the parameter &#39;key_for_model_name&#39;</span>
+<span class="sd">    which looks at each instances metadata and uses the value from that key</span>
+<span class="sd">    in order to name the model. If no key is given, the model is named based on</span>
+<span class="sd">    its index.</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="n">instance_models</span><span class="o">=</span><span class="n">OrderedDict</span><span class="p">()</span>
+    <span class="k">for</span> <span class="n">i</span><span class="p">,</span><span class="n">instance</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="nb">type</span><span class="o">.</span><span class="n">instances</span><span class="p">):</span>
+        <span class="k">if</span><span class="p">(</span><span class="n">key_for_model_name</span><span class="p">):</span>
+            <span class="n">instance_name</span><span class="o">=</span><span class="n">instance</span><span class="o">.</span><span class="n">traces</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">metadata</span><span class="p">[</span><span class="n">key_for_model_name</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">instance_name</span><span class="o">=</span><span class="n">i</span>
+        <span class="n">instance_models</span><span class="p">[</span><span class="n">instance_name</span><span class="p">]</span><span class="o">=</span><span class="n">init_HMM</span><span class="p">(</span><span class="n">pi_prior</span><span class="p">,</span><span class="n">a_prior</span><span class="p">,</span><span class="n">mean_prior</span><span class="p">,</span><span class="n">cov_prior</span><span class="p">)</span>
+        <span class="n">instance_models</span><span class="p">[</span><span class="n">instance_name</span><span class="p">]</span><span class="o">=</span><span class="n">fit_instance_to_HMM</span><span class="p">(</span><span class="n">instance_models</span><span class="p">[</span><span class="n">instance_name</span><span class="p">],</span><span class="n">instance</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">instance_models</span>
+</div>
+<div class="viewcode-block" id="generate_FHMM_from_HMMs"><a class="viewcode-back" href="../../algorithms.html#disaggregator.fhmm.generate_FHMM_from_HMMs">[docs]</a><span class="k">def</span> <span class="nf">generate_FHMM_from_HMMs</span><span class="p">(</span><span class="n">type_models</span><span class="p">,</span><span class="n">key_for_model_name</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Takes a dictionary of models, where the keys are the device type name, and</span>
+<span class="sd">    generates an FHMM of these models.</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="k">pass</span>
+</div>
+<span class="k">def</span> <span class="nf">get_best_instance_model</span><span class="p">(</span><span class="n">instance_models</span><span class="p">,</span><span class="n">device_type</span><span class="p">,</span><span class="n">key_for_model_name</span><span class="p">):</span>
+    <span class="n">dfs_model</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="n">best_model_score</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="k">for</span> <span class="n">model_name</span> <span class="ow">in</span> <span class="n">instance_models</span><span class="p">:</span>
+        <span class="n">instances_of_model</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">instance</span> <span class="ow">in</span> <span class="n">device_type</span><span class="o">.</span><span class="n">instances</span><span class="p">:</span>
+            <span class="n">test_trace</span> <span class="o">=</span> <span class="n">instance</span><span class="o">.</span><span class="n">traces</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="n">instance_name</span> <span class="o">=</span> <span class="n">test_trace</span><span class="o">.</span><span class="n">metadata</span><span class="p">[</span><span class="n">key_for_model_name</span><span class="p">]</span>
+            <span class="n">test</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">trace_series_to_numpy_array</span><span class="p">(</span><span class="n">test_trace</span><span class="o">.</span><span class="n">series</span><span class="p">)</span>
+            <span class="n">model_score</span> <span class="o">=</span> <span class="n">instance_models</span><span class="p">[</span><span class="n">model_name</span><span class="p">]</span><span class="o">.</span><span class="n">score</span><span class="p">(</span><span class="n">test</span><span class="p">)</span>
+            <span class="n">instances_of_model</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="n">model_name</span><span class="p">,</span><span class="n">instance_name</span><span class="p">,</span><span class="n">model_score</span><span class="p">])</span>
+            <span class="k">if</span><span class="p">(</span><span class="n">model_score</span> <span class="o">&gt;</span> <span class="n">best_model_score</span><span class="p">):</span>
+                <span class="n">best_model</span> <span class="o">=</span> <span class="n">instance_models</span><span class="p">[</span><span class="n">model_name</span><span class="p">]</span>
+        <span class="n">dfs_model</span><span class="p">[</span><span class="n">model_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">instances_of_model</span><span class="p">,</span><span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s">&#39;Model_Instance&#39;</span><span class="p">,</span><span class="s">&#39;Test_Instance&#39;</span><span class="p">,</span><span class="s">&#39;Value&#39;</span><span class="p">])</span>
+    <span class="n">model_averages</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">dfs_model</span><span class="p">:</span>
+        <span class="nb">sum</span><span class="o">=</span><span class="mi">0</span>
+        <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">dfs_model</span><span class="p">[</span><span class="n">key</span><span class="p">]</span><span class="o">.</span><span class="n">iterrows</span><span class="p">():</span>
+            <span class="nb">sum</span> <span class="o">=</span> <span class="nb">sum</span><span class="o">+</span><span class="n">row</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="s">&#39;Value&#39;</span><span class="p">]</span>
+        <span class="n">model_averages</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="n">key</span><span class="p">,</span><span class="nb">sum</span><span class="o">/</span><span class="nb">len</span><span class="p">(</span><span class="n">dfs_model</span><span class="p">[</span><span class="n">key</span><span class="p">]</span><span class="o">.</span><span class="n">index</span><span class="p">)])</span>
+    <span class="k">print</span>
+    <span class="n">avg_model_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">model_averages</span><span class="p">,</span><span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s">&#39;Model_Instance&#39;</span><span class="p">,</span><span class="s">&#39;Avg Probability&#39;</span><span class="p">])</span>
+    <span class="k">print</span> <span class="n">avg_model_df</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="s">&#39;Avg Probability&#39;</span><span class="p">,</span><span class="n">ascending</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
+    <span class="n">bestModel</span> <span class="o">=</span> <span class="n">avg_model_df</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="s">&#39;Avg Probability&#39;</span><span class="p">,</span><span class="n">ascending</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="s">&#39;Avg Probability&#39;</span><span class="p">,</span><span class="n">ascending</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span><span class="o">.</span><span class="n">head</span><span class="p">(</span><span class="mi">1</span><span class="p">)[</span><span class="s">&#39;Model_Instance&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="k">print</span> <span class="nb">str</span><span class="p">(</span><span class="n">bestModel</span><span class="p">)</span> <span class="o">+</span> <span class="s">&#39; is best.&#39;</span>
+    <span class="k">return</span> <span class="n">bestModel</span>
+
+<div class="viewcode-block" id="sort_startprob"><a class="viewcode-back" href="../../algorithms.html#disaggregator.fhmm.sort_startprob">[docs]</a><span class="k">def</span> <span class="nf">sort_startprob</span><span class="p">(</span><span class="n">mapping</span><span class="p">,</span> <span class="n">startprob</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Sort the startprob of the HMM according to power means; as returned by mapping</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+
+    <span class="n">num_elements</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">startprob</span><span class="p">)</span>
+    <span class="n">new_startprob</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">num_elements</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">xrange</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">startprob</span><span class="p">)):</span>
+        <span class="n">new_startprob</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">startprob</span><span class="p">[</span><span class="n">mapping</span><span class="p">[</span><span class="n">i</span><span class="p">]]</span>
+    <span class="k">return</span> <span class="n">new_startprob</span>
+</div>
+<span class="k">def</span> <span class="nf">sort_covars</span><span class="p">(</span><span class="n">mapping</span><span class="p">,</span> <span class="n">covars</span><span class="p">):</span>
+    <span class="n">num_elements</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">covars</span><span class="p">)</span>
+    <span class="n">new_covars</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">covars</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">xrange</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">covars</span><span class="p">)):</span>
+        <span class="n">new_covars</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">covars</span><span class="p">[</span><span class="n">mapping</span><span class="p">[</span><span class="n">i</span><span class="p">]]</span>
+    <span class="k">return</span> <span class="n">new_covars</span>
+
+<div class="viewcode-block" id="sort_transition_matrix"><a class="viewcode-back" href="../../algorithms.html#disaggregator.fhmm.sort_transition_matrix">[docs]</a><span class="k">def</span> <span class="nf">sort_transition_matrix</span><span class="p">(</span><span class="n">mapping</span><span class="p">,</span> <span class="n">A</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Sorts the transition matrix of the HMM according to power means; as returned by mapping</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="n">num_elements</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">A</span><span class="p">)</span>
+    <span class="n">A_new</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">num_elements</span><span class="p">,</span> <span class="n">num_elements</span><span class="p">))</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">num_elements</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">num_elements</span><span class="p">):</span>
+            <span class="n">A_new</span><span class="p">[</span><span class="n">i</span><span class="p">,</span><span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="n">A</span><span class="p">[</span><span class="n">mapping</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">mapping</span><span class="p">[</span><span class="n">j</span><span class="p">]]</span>
+    <span class="k">return</span> <span class="n">A_new</span>
+</div>
+<span class="k">def</span> <span class="nf">return_sorting_mapping</span><span class="p">(</span><span class="n">means</span><span class="p">):</span>
+    <span class="n">means_copy</span> <span class="o">=</span> <span class="n">deepcopy</span><span class="p">(</span><span class="n">means</span><span class="p">)</span>
+    <span class="c"># Sorting</span>
+    <span class="n">means_copy</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="n">means_copy</span><span class="p">,</span> <span class="n">axis</span> <span class="o">=</span> <span class="mi">0</span><span class="p">)</span>
+    <span class="c"># Finding mapping</span>
+    <span class="n">mapping</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="n">mapping_set</span><span class="o">=</span><span class="nb">set</span><span class="p">()</span>
+    <span class="n">x</span><span class="o">=</span><span class="mi">0</span>
+    <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">val</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">means_copy</span><span class="p">):</span>
+        <span class="n">x</span><span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">val</span><span class="o">==</span><span class="n">means</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="k">for</span> <span class="n">val</span> <span class="ow">in</span> <span class="n">x</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">val</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">mapping_set</span><span class="p">:</span>
+                <span class="n">mapping_set</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">val</span><span class="p">)</span>
+                <span class="n">mapping</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">=</span><span class="n">val</span>
+                <span class="k">break</span>
+    <span class="k">return</span> <span class="n">mapping</span>
+
+<div class="viewcode-block" id="sort_learnt_parameters"><a class="viewcode-back" href="../../algorithms.html#disaggregator.fhmm.sort_learnt_parameters">[docs]</a><span class="k">def</span> <span class="nf">sort_learnt_parameters</span><span class="p">(</span><span class="n">startprob</span><span class="p">,</span> <span class="n">means</span><span class="p">,</span> <span class="n">covars</span><span class="p">,</span> <span class="n">transmat</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Sorts the learnt parameters for the HMM</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="n">mapping</span> <span class="o">=</span> <span class="n">return_sorting_mapping</span><span class="p">(</span><span class="n">means</span><span class="p">)</span>
+    <span class="n">means_new</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="n">means</span><span class="p">,</span> <span class="n">axis</span> <span class="o">=</span> <span class="mi">0</span><span class="p">)</span>
+
+    <span class="n">startprob_new</span> <span class="o">=</span> <span class="n">sort_startprob</span><span class="p">(</span><span class="n">mapping</span><span class="p">,</span> <span class="n">startprob</span><span class="p">)</span>
+    <span class="n">covars_new</span> <span class="o">=</span> <span class="n">sort_covars</span><span class="p">(</span><span class="n">mapping</span><span class="p">,</span> <span class="n">covars</span><span class="p">)</span>
+    <span class="n">transmat_new</span> <span class="o">=</span> <span class="n">sort_transition_matrix</span><span class="p">(</span><span class="n">mapping</span><span class="p">,</span> <span class="n">transmat</span><span class="p">)</span>
+    <span class="k">assert</span> <span class="n">np</span><span class="o">.</span><span class="n">shape</span><span class="p">(</span><span class="n">means_new</span><span class="p">)</span> <span class="o">==</span> <span class="n">np</span><span class="o">.</span><span class="n">shape</span><span class="p">(</span><span class="n">means</span><span class="p">)</span>
+    <span class="k">assert</span> <span class="n">np</span><span class="o">.</span><span class="n">shape</span><span class="p">(</span><span class="n">startprob_new</span><span class="p">)</span> <span class="o">==</span> <span class="n">np</span><span class="o">.</span><span class="n">shape</span><span class="p">(</span><span class="n">startprob</span><span class="p">)</span>
+    <span class="k">assert</span> <span class="n">np</span><span class="o">.</span><span class="n">shape</span><span class="p">(</span><span class="n">transmat_new</span><span class="p">)</span> <span class="o">==</span> <span class="n">np</span><span class="o">.</span><span class="n">shape</span><span class="p">(</span><span class="n">transmat</span><span class="p">)</span>
+    <span class="k">return</span> <span class="p">[</span><span class="n">startprob_new</span><span class="p">,</span> <span class="n">means_new</span><span class="p">,</span> <span class="n">covars_new</span><span class="p">,</span> <span class="n">transmat_new</span><span class="p">]</span></div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../index.html">disaggregator 0.1.0 documentation</a> &raquo;</li>
+          <li><a href="../index.html" >Module code</a> &raquo;</li>
+          <li><a href="../disaggregator.html" >disaggregator</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2014, Phil Ngo, Miguel Perez, Stephen Suffian, Sabina Tomkins.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.
+    </div>
+  </body>
+</html>
