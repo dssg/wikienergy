@@ -128,13 +128,6 @@ def get_table_names(schema):
         .format(schema_names[schema])]
     return table_names
 
-def verify_same_range(pair,pairs):
-    '''
-    Check that all data points have the same range
-    '''
-    #TODO this should go into utils
-    pass
-
 def get_table_dataids(schema,table):
     '''
     Returns a list of dataids for this schema and table
@@ -187,23 +180,13 @@ def get_unique_dataids(schema,year,month,group=None):
     else:
         raise SchemaError(schema)
 
-def time_align():
-    '''
-    Checks that for all traces in a home the total time lengths are the
-    same
-    '''
-    # TODO this should go into utils
-    pass
-
 def clean_dataframe(df,schema,drop_cols):
-    # TODO update this to use "curated" "shared" or "raw"
-    #   instead of full frame name
     '''
-    Cleans a dataframe queried directly from the database by renaming the db 
+    Cleans a dataframe queried directly from the database by renaming the db
     time column (ex. UTC_15MIN) to a column name 'time'. It then converts the
     time column to datetime objects and reindexes the dataframe to the time
     column before dropping that column from the dataframe. It also drops any
-    columns included in the list drop_cols. The columns 'id' and 'dataid' are 
+    columns included in the list drop_cols. The columns 'id' and 'dataid' are
     also dropped.
     '''
     # change the time column name
@@ -222,10 +205,6 @@ def clean_dataframe(df,schema,drop_cols):
 
     return df
 
-
-def check_sample_rate(schema,sampling_rate):
-    # TODO get from the data directly not like this
-    accepted_rates = {'curated':'15T' ,'raw':'15' ,'shared':'1T' }
 
 def generate_traces_by_table_and_dataid(schema,table,dataid,sample_rate=None):
     '''
