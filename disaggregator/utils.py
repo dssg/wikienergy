@@ -20,6 +20,7 @@ import sys
 import decimal
 import datetime
 import random
+import copy
 
 def aggregate_instances(instances, metadata, how="strict"):
     '''
@@ -64,6 +65,7 @@ def create_datetimeindex(df):
     no_tz = [t.replace(tzinfo=None) for t in df['time']] # is this efficient?
     df['time'] = pd.to_datetime(no_tz,utc=True)
     df.set_index('time', inplace=True)
+    df.index.snap() # snap to nearest frequency
 
 
 def get_common_ids(id_lists):
@@ -297,14 +299,14 @@ def get_set_in_time_of_day(device_set,start_time,end_time):
     '''
     Resamples all traces in each instance of a given set.
     '''
-    new_instances=[]
+    new_instances = []
     for instance in device_set.instances:
         new_instances.append(get_instance_in_time_of_day(instance,start_time,end_time))
     return appliance.ApplianceSet(new_instances,device_set.metadata)
 
 def get_trace_windows(trace,window_length,window_step):
     """
-    Returns a nump array with stacked sliding windows of data from a trace.
+    Returns a numpy array with stacked sliding windows of data from a trace.
     """
     total_length = trace.series.size
     n_steps = int((total_length - window_length) / window_step)
@@ -319,11 +321,54 @@ def traces_aligned(traces):
     """
     Returns True if traces are temporally aligned
     """
-    pass
+    indices = [trace.series.index for trace in traces]
+    for index in indices[1:]:
+        if not indices[0].equals(index):
+            return False
+    return True
 
-def align_traces(traces,how="front",to=None):
+def align_traces(traces,to=None,how="front"):
     """
     Temporally aligns the traces. `how`="front" means to align to the front of
-    the `to` trace. If no `to` trace is given, the first trace is used.
+    the `to` trace. If no `to` trace is given, the first shortest trace is used.
+    Traces are all downsampled to match the lowest sampling rate
     """
-    pass
+    # make copies
+    traces=copy.deepcopy(traces)
+
+    # if already aligned, don't do extra work.
+    if traces_aligned(traces):
+        return traces
+
+    # resample to the same frequency
+    frequencies = [pd.tseries.frequencies.to_offset(trace.series.index.freq)
+                   for trace in traces if trace.series.index.freq]
+    new_freq = sorted(frequencies,reverse=True)[0]
+    for trace in traces:
+        trace.resample(new_freq)
+
+    # determine where to shift to and how much to cut off
+    if not to:
+        shortest_i = np.argsort([trace.series.size for trace in traces])[0]
+        to = traces[shortest_i]
+        cutoff = to.series.size
+    else:
+        all_traces = traces[:]
+        all_traces.append(to)
+        shortest_i = np.argsort([trace.series.size for trace in all_traces])[0]
+        cutoff = all_traces[shortest_i].series.size
+
+    # shift
+    if how == 'front':
+        offsets = [to.series.index[0] - trace.series.index[0] for trace in traces]
+        for trace,offset in zip(traces,offsets):
+            trace.series.index = trace.series.index + offset
+    else:
+        raise NotImplementedError
+
+    # cut off extra:
+    for trace in traces:
+        trace.series = trace.series[:cutoff]
+
+    return traces
+
