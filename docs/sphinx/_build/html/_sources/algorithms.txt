@@ -4,6 +4,8 @@ Algorithms
 FHMM
 ----
 
+.. automodule:: disaggregator.fhmm
+   :members:
 
 Neural Networks
 ---------------
