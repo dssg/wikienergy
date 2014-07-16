@@ -163,7 +163,7 @@ class ApplianceInstance(object):
         traces=[]
         for trace in self.traces:
             traces.extend(trace.split_by(rate))
-        return ApplianceInstance(traces,device_instance.metadata)
+        return ApplianceInstance(traces,self.metadata)
 
 
 class ApplianceSet(object):
@@ -309,7 +309,7 @@ class ApplianceType(object):
         '''
         instances=[]
         for instance in self.instances:
-            new_instance= split_instance_traces_into_rate(instance,rate)
+            new_instance= instance.split_by(rate)
             instances.append(new_instance)
         return ApplianceType(instances,self.metadata)
 
