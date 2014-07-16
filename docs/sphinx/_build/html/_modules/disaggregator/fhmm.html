@@ -53,6 +53,7 @@
 <span class="kn">import</span> <span class="nn">utils</span>
 <span class="kn">from</span> <span class="nn">copy</span> <span class="kn">import</span> <span class="n">deepcopy</span>
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="kn">as</span> <span class="nn">pd</span>
 <span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">OrderedDict</span>
 
 
@@ -64,13 +65,16 @@
 <span class="sd">    a_prior is the transition matrix of the HMM</span>
 <span class="sd">    mean_prior is the initial mean value of each state</span>
 <span class="sd">    cov_prior is the initial covariance of each state</span>
+
 <span class="sd">    For an n-state HMM:</span>
-<span class="sd">        pi_prior is a 1-D numpy array of size n</span>
-<span class="sd">        a_prior is a 2-D numpy array of size n x n</span>
-<span class="sd">        mean_prior is an numpy array of size n</span>
-<span class="sd">        cov_prior is a 3-D numpy array that has been tiled into two rows,</span>
-<span class="sd">        one column, and n third dimensional states.</span>
-<span class="sd">        ex) np.tile(1,(2,1,n)) for uniform covariance to start with.</span>
+
+<span class="sd">    * pi_prior is a 1-D numpy array of size n</span>
+<span class="sd">    * a_prior is a 2-D numpy array of size n x n</span>
+<span class="sd">    * mean_prior is an numpy array of size n</span>
+<span class="sd">    * cov_prior is a 3-D numpy array that has been tiled into two rows,</span>
+<span class="sd">      one column, and n third dimensional states.</span>
+
+<span class="sd">      * ex) np.tile(1,(2,1,n)) for uniform covariance to start with.</span>
 <span class="sd">    &#39;&#39;&#39;</span>
     <span class="n">model</span> <span class="o">=</span> <span class="n">hmm</span><span class="o">.</span><span class="n">GaussianHMM</span><span class="p">(</span><span class="n">pi_prior</span><span class="o">.</span><span class="n">size</span><span class="p">,</span><span class="s">&#39;full&#39;</span><span class="p">,</span><span class="n">pi_prior</span><span class="p">,</span><span class="n">a_prior</span><span class="p">)</span>
     <span class="n">model</span><span class="o">.</span><span class="n">means_</span> <span class="o">=</span> <span class="n">mean_prior</span>
@@ -107,36 +111,36 @@
 <span class="sd">    in order to name the model. If no key is given, the model is named based on</span>
 <span class="sd">    its index.</span>
 <span class="sd">    &#39;&#39;&#39;</span>
-    <span class="n">model_list</span><span class="o">=</span><span class="n">OrderedDict</span><span class="p">()</span>
+    <span class="n">instance_models</span><span class="o">=</span><span class="n">OrderedDict</span><span class="p">()</span>
     <span class="k">for</span> <span class="n">i</span><span class="p">,</span><span class="n">instance</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="nb">type</span><span class="o">.</span><span class="n">instances</span><span class="p">):</span>
         <span class="k">if</span><span class="p">(</span><span class="n">key_for_model_name</span><span class="p">):</span>
             <span class="n">instance_name</span><span class="o">=</span><span class="n">instance</span><span class="o">.</span><span class="n">traces</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">metadata</span><span class="p">[</span><span class="n">key_for_model_name</span><span class="p">]</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">instance_name</span><span class="o">=</span><span class="n">i</span>
-        <span class="n">model_list</span><span class="p">[</span><span class="n">instance_name</span><span class="p">]</span><span class="o">=</span><span class="n">init_HMM</span><span class="p">(</span><span class="n">pi_prior</span><span class="p">,</span><span class="n">a_prior</span><span class="p">,</span><span class="n">mean_prior</span><span class="p">,</span><span class="n">cov_prior</span><span class="p">)</span>
-        <span class="n">model_list</span><span class="p">[</span><span class="n">instance_name</span><span class="p">]</span><span class="o">=</span><span class="n">fit_instance_to_HMM</span><span class="p">(</span><span class="n">model_list</span><span class="p">[</span><span class="n">instance_name</span><span class="p">],</span><span class="n">instance</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">model_list</span>
+        <span class="n">instance_models</span><span class="p">[</span><span class="n">instance_name</span><span class="p">]</span><span class="o">=</span><span class="n">init_HMM</span><span class="p">(</span><span class="n">pi_prior</span><span class="p">,</span><span class="n">a_prior</span><span class="p">,</span><span class="n">mean_prior</span><span class="p">,</span><span class="n">cov_prior</span><span class="p">)</span>
+        <span class="n">instance_models</span><span class="p">[</span><span class="n">instance_name</span><span class="p">]</span><span class="o">=</span><span class="n">fit_instance_to_HMM</span><span class="p">(</span><span class="n">instance_models</span><span class="p">[</span><span class="n">instance_name</span><span class="p">],</span><span class="n">instance</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">instance_models</span>
 </div>
-<div class="viewcode-block" id="generate_FHMM_from_HMMs"><a class="viewcode-back" href="../../algorithms.html#disaggregator.fhmm.generate_FHMM_from_HMMs">[docs]</a><span class="k">def</span> <span class="nf">generate_FHMM_from_HMMs</span><span class="p">(</span><span class="n">model_list</span><span class="p">,</span><span class="n">key_for_model_name</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+<div class="viewcode-block" id="generate_FHMM_from_HMMs"><a class="viewcode-back" href="../../algorithms.html#disaggregator.fhmm.generate_FHMM_from_HMMs">[docs]</a><span class="k">def</span> <span class="nf">generate_FHMM_from_HMMs</span><span class="p">(</span><span class="n">type_models</span><span class="p">,</span><span class="n">key_for_model_name</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
     <span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">    Takes a dictionary of models, where the keys are the device type name, and</span>
 <span class="sd">    generates an FHMM of these models.</span>
 <span class="sd">    &#39;&#39;&#39;</span>
     <span class="k">pass</span>
 </div>
-<span class="k">def</span> <span class="nf">get_best_instance_model</span><span class="p">(</span><span class="n">model_list</span><span class="p">,</span><span class="n">device_type</span><span class="p">,</span><span class="n">key_for_model_name</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">get_best_instance_model</span><span class="p">(</span><span class="n">instance_models</span><span class="p">,</span><span class="n">device_type</span><span class="p">,</span><span class="n">key_for_model_name</span><span class="p">):</span>
     <span class="n">dfs_model</span> <span class="o">=</span> <span class="p">{}</span>
     <span class="n">best_model_score</span> <span class="o">=</span> <span class="mi">0</span>
-    <span class="k">for</span> <span class="n">model_name</span> <span class="ow">in</span> <span class="n">model_list</span><span class="p">:</span>
+    <span class="k">for</span> <span class="n">model_name</span> <span class="ow">in</span> <span class="n">instance_models</span><span class="p">:</span>
         <span class="n">instances_of_model</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="k">for</span> <span class="n">instance</span> <span class="ow">in</span> <span class="n">device_type</span><span class="o">.</span><span class="n">instances</span><span class="p">:</span>
             <span class="n">test_trace</span> <span class="o">=</span> <span class="n">instance</span><span class="o">.</span><span class="n">traces</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
             <span class="n">instance_name</span> <span class="o">=</span> <span class="n">test_trace</span><span class="o">.</span><span class="n">metadata</span><span class="p">[</span><span class="n">key_for_model_name</span><span class="p">]</span>
-            <span class="n">test</span> <span class="o">=</span> <span class="n">values_to_array</span><span class="p">(</span><span class="n">test_trace</span><span class="o">.</span><span class="n">series</span><span class="p">)</span>
-            <span class="n">model_score</span> <span class="o">=</span> <span class="n">models</span><span class="p">[</span><span class="n">model_name</span><span class="p">]</span><span class="o">.</span><span class="n">score</span><span class="p">(</span><span class="n">test</span><span class="p">)</span>
+            <span class="n">test</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">trace_series_to_numpy_array</span><span class="p">(</span><span class="n">test_trace</span><span class="o">.</span><span class="n">series</span><span class="p">)</span>
+            <span class="n">model_score</span> <span class="o">=</span> <span class="n">instance_models</span><span class="p">[</span><span class="n">model_name</span><span class="p">]</span><span class="o">.</span><span class="n">score</span><span class="p">(</span><span class="n">test</span><span class="p">)</span>
             <span class="n">instances_of_model</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="n">model_name</span><span class="p">,</span><span class="n">instance_name</span><span class="p">,</span><span class="n">model_score</span><span class="p">])</span>
             <span class="k">if</span><span class="p">(</span><span class="n">model_score</span> <span class="o">&gt;</span> <span class="n">best_model_score</span><span class="p">):</span>
-                <span class="n">best_model</span> <span class="o">=</span> <span class="n">models</span><span class="p">[</span><span class="n">model_name</span><span class="p">]</span>
+                <span class="n">best_model</span> <span class="o">=</span> <span class="n">instance_models</span><span class="p">[</span><span class="n">model_name</span><span class="p">]</span>
         <span class="n">dfs_model</span><span class="p">[</span><span class="n">model_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">instances_of_model</span><span class="p">,</span><span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s">&#39;Model_Instance&#39;</span><span class="p">,</span><span class="s">&#39;Test_Instance&#39;</span><span class="p">,</span><span class="s">&#39;Value&#39;</span><span class="p">])</span>
     <span class="n">model_averages</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">dfs_model</span><span class="p">:</span>
