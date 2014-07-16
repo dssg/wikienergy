@@ -13,6 +13,7 @@ import numpy as np
 import pandas as pd
 import pprint
 from utils import order_traces
+import decimal
 
 class ApplianceTrace(object):
     """This class represents appliance traces.
@@ -51,6 +52,22 @@ class ApplianceTrace(object):
         print 'Metadata: '
         pprint.pprint(self.metadata)
 
+    def resample(self,sample_rate):
+        '''
+        Takes a trace and resamples it to a given sample rate, defined by the
+        offset aliases described in panda time series.
+        http://pandas.pydata.org/pandas-docs/stable/timeseries.html#offset-aliases
+
+        See also utils.resample_trace(trace,sample_rate)
+        '''
+        try:
+            new_series = self.series.astype(float)
+            new_series = new_series.resample(sample_rate,how='mean')
+            new_series = new_series.map(decimal.Decimal)
+            new_series.name = self.series.name
+            self.series = new_series
+        except ValueError:
+            raise utils.SampleError(sample_rate)
 
 
 class ApplianceInstance(object):
