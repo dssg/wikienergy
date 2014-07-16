@@ -51,8 +51,74 @@
             
   <div class="section" id="algorithms">
 <h1>Algorithms<a class="headerlink" href="#algorithms" title="Permalink to this headline">¶</a></h1>
-<div class="section" id="fhmm">
-<h2>FHMM<a class="headerlink" href="#fhmm" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="module-disaggregator.fhmm">
+<span id="fhmm"></span><h2>FHMM<a class="headerlink" href="#module-disaggregator.fhmm" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="disaggregator.fhmm.fit_instance_to_HMM">
+<tt class="descclassname">disaggregator.fhmm.</tt><tt class="descname">fit_instance_to_HMM</tt><big>(</big><em>model</em>, <em>instance</em><big>)</big><a class="reference internal" href="_modules/disaggregator/fhmm.html#fit_instance_to_HMM"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#disaggregator.fhmm.fit_instance_to_HMM" title="Permalink to this definition">¶</a></dt>
+<dd><p>Fits the given instance to the model. NaNs are turned into zeroes.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="disaggregator.fhmm.fit_trace_to_HMM">
+<tt class="descclassname">disaggregator.fhmm.</tt><tt class="descname">fit_trace_to_HMM</tt><big>(</big><em>model</em>, <em>trace</em><big>)</big><a class="reference internal" href="_modules/disaggregator/fhmm.html#fit_trace_to_HMM"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#disaggregator.fhmm.fit_trace_to_HMM" title="Permalink to this definition">¶</a></dt>
+<dd><p>Fits the given trace to the model. NaNs are turned into zeroes.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="disaggregator.fhmm.generate_FHMM_from_HMMs">
+<tt class="descclassname">disaggregator.fhmm.</tt><tt class="descname">generate_FHMM_from_HMMs</tt><big>(</big><em>model_list</em>, <em>key_for_model_name=None</em><big>)</big><a class="reference internal" href="_modules/disaggregator/fhmm.html#generate_FHMM_from_HMMs"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#disaggregator.fhmm.generate_FHMM_from_HMMs" title="Permalink to this definition">¶</a></dt>
+<dd><p>Takes a dictionary of models, where the keys are the device type name, and
+generates an FHMM of these models.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="disaggregator.fhmm.generate_HMMs_from_type">
+<tt class="descclassname">disaggregator.fhmm.</tt><tt class="descname">generate_HMMs_from_type</tt><big>(</big><em>type</em>, <em>pi_prior</em>, <em>a_prior</em>, <em>mean_prior</em>, <em>cov_prior</em>, <em>key_for_model_name=None</em><big>)</big><a class="reference internal" href="_modules/disaggregator/fhmm.html#generate_HMMs_from_type"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#disaggregator.fhmm.generate_HMMs_from_type" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generates a dictionary of HMMs using each instance of given type.
+The key to the dictionary is defined by the parameter &#8216;key_for_model_name&#8217;
+which looks at each instances metadata and uses the value from that key
+in order to name the model. If no key is given, the model is named based on
+its index.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="disaggregator.fhmm.init_HMM">
+<tt class="descclassname">disaggregator.fhmm.</tt><tt class="descname">init_HMM</tt><big>(</big><em>pi_prior</em>, <em>a_prior</em>, <em>mean_prior</em>, <em>cov_prior</em><big>)</big><a class="reference internal" href="_modules/disaggregator/fhmm.html#init_HMM"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#disaggregator.fhmm.init_HMM" title="Permalink to this definition">¶</a></dt>
+<dd><p>Initializes a trace object from a series and a metadata dictionary.
+Series must be sampled at a particular sample rate
+pi_prior is the starting probability of the HMM
+a_prior is the transition matrix of the HMM
+mean_prior is the initial mean value of each state
+cov_prior is the initial covariance of each state
+For an n-state HMM:</p>
+<blockquote>
+<div>pi_prior is a 1-D numpy array of size n
+a_prior is a 2-D numpy array of size n x n
+mean_prior is an numpy array of size n
+cov_prior is a 3-D numpy array that has been tiled into two rows,
+one column, and n third dimensional states.
+ex) np.tile(1,(2,1,n)) for uniform covariance to start with.</div></blockquote>
+</dd></dl>
+
+<dl class="function">
+<dt id="disaggregator.fhmm.sort_learnt_parameters">
+<tt class="descclassname">disaggregator.fhmm.</tt><tt class="descname">sort_learnt_parameters</tt><big>(</big><em>startprob</em>, <em>means</em>, <em>covars</em>, <em>transmat</em><big>)</big><a class="reference internal" href="_modules/disaggregator/fhmm.html#sort_learnt_parameters"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#disaggregator.fhmm.sort_learnt_parameters" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sorts the learnt parameters for the HMM</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="disaggregator.fhmm.sort_startprob">
+<tt class="descclassname">disaggregator.fhmm.</tt><tt class="descname">sort_startprob</tt><big>(</big><em>mapping</em>, <em>startprob</em><big>)</big><a class="reference internal" href="_modules/disaggregator/fhmm.html#sort_startprob"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#disaggregator.fhmm.sort_startprob" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sort the startprob of the HMM according to power means; as returned by mapping</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="disaggregator.fhmm.sort_transition_matrix">
+<tt class="descclassname">disaggregator.fhmm.</tt><tt class="descname">sort_transition_matrix</tt><big>(</big><em>mapping</em>, <em>A</em><big>)</big><a class="reference internal" href="_modules/disaggregator/fhmm.html#sort_transition_matrix"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#disaggregator.fhmm.sort_transition_matrix" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sorts the transition matrix of the HMM according to power means; as returned by mapping</p>
+</dd></dl>
+
 </div>
 <div class="section" id="neural-networks">
 <h2>Neural Networks<a class="headerlink" href="#neural-networks" title="Permalink to this headline">¶</a></h2>
@@ -74,7 +140,7 @@
   <h3><a href="index.html">Table Of Contents</a></h3>
   <ul>
 <li><a class="reference internal" href="#">Algorithms</a><ul>
-<li><a class="reference internal" href="#fhmm">FHMM</a></li>
+<li><a class="reference internal" href="#module-disaggregator.fhmm">FHMM</a></li>
 <li><a class="reference internal" href="#neural-networks">Neural Networks</a></li>
 <li><a class="reference internal" href="#sparse-coding">Sparse Coding</a></li>
 <li><a class="reference internal" href="#ensemble">Ensemble</a></li>
