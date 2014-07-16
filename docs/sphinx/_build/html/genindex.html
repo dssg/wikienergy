@@ -57,33 +57,32 @@
  | <a href="#E"><strong>E</strong></a>
  | <a href="#F"><strong>F</strong></a>
  | <a href="#G"><strong>G</strong></a>
- | <a href="#M"><strong>M</strong></a>
+ | <a href="#I"><strong>I</strong></a>
  | <a href="#O"><strong>O</strong></a>
  | <a href="#P"><strong>P</strong></a>
  | <a href="#R"><strong>R</strong></a>
  | <a href="#S"><strong>S</strong></a>
  | <a href="#T"><strong>T</strong></a>
  | <a href="#U"><strong>U</strong></a>
- | <a href="#V"><strong>V</strong></a>
  
 </div>
 <h2 id="A">A</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%" valign="top"><dl>
       
-  <dt><a href="appliances.html#disaggregator.appliance.ApplianceSet.add_instances">add_instances() (disaggregator.appliance.ApplianceSet method)</a>
-  </dt>
-
-      
-  <dt><a href="appliances.html#disaggregator.appliance.ApplianceSet.add_to_dataframe">add_to_dataframe() (disaggregator.appliance.ApplianceSet method)</a>
-  </dt>
-
-      
   <dt><a href="utils.html#disaggregator.utils.aggregate_instances">aggregate_instances() (in module disaggregator.utils)</a>
   </dt>
 
       
   <dt><a href="utils.html#disaggregator.utils.aggregate_traces">aggregate_traces() (in module disaggregator.utils)</a>
+  </dt>
+
+      
+  <dt><a href="utils.html#disaggregator.utils.align_instances">align_instances() (in module disaggregator.utils)</a>
+  </dt>
+
+      
+  <dt><a href="utils.html#disaggregator.utils.align_traces">align_traces() (in module disaggregator.utils)</a>
   </dt>
 
   </dl></td>
@@ -155,11 +154,15 @@
   </dt>
 
       
-  <dt><a href="dataset_adapters.html#module-disaggregator.PecanStreetDatasetAdapter">disaggregator.PecanStreetDatasetAdapter (module)</a>
+  <dt><a href="algorithms.html#module-disaggregator.fhmm">disaggregator.fhmm (module)</a>
   </dt>
 
   </dl></td>
   <td style="width: 33%" valign="top"><dl>
+      
+  <dt><a href="dataset_adapters.html#module-disaggregator.PecanStreetDatasetAdapter">disaggregator.PecanStreetDatasetAdapter (module)</a>
+  </dt>
+
       
   <dt><a href="utils.html#module-disaggregator.utils">disaggregator.utils (module)</a>
   </dt>
@@ -179,6 +182,16 @@
 
 <h2 id="F">F</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%" valign="top"><dl>
+      
+  <dt><a href="algorithms.html#disaggregator.fhmm.fit_instance_to_HMM">fit_instance_to_HMM() (in module disaggregator.fhmm)</a>
+  </dt>
+
+      
+  <dt><a href="algorithms.html#disaggregator.fhmm.fit_trace_to_HMM">fit_trace_to_HMM() (in module disaggregator.fhmm)</a>
+  </dt>
+
+  </dl></td>
   <td style="width: 33%" valign="top"><dl>
       
   <dt><a href="evaluation_metrics.html#disaggregator.evaluation_metrics.fraction_energy_assigned_correctly">fraction_energy_assigned_correctly() (in module disaggregator.evaluation_metrics)</a>
@@ -207,6 +220,14 @@
   </dt>
 
       
+  <dt><a href="algorithms.html#disaggregator.fhmm.generate_FHMM_from_HMMs">generate_FHMM_from_HMMs() (in module disaggregator.fhmm)</a>
+  </dt>
+
+      
+  <dt><a href="algorithms.html#disaggregator.fhmm.generate_HMMs_from_type">generate_HMMs_from_type() (in module disaggregator.fhmm)</a>
+  </dt>
+
+      
   <dt><a href="dataset_adapters.html#disaggregator.TracebaseDatasetAdapter.generate_instance">generate_instance() (disaggregator.TracebaseDatasetAdapter method)</a>
   </dt>
 
@@ -224,6 +245,10 @@
 
       
   <dt><a href="appliances.html#disaggregator.appliance.ApplianceSet.generate_non_zero_set">generate_non_zero_set() (disaggregator.appliance.ApplianceSet method)</a>
+  </dt>
+
+      
+  <dt><a href="utils.html#disaggregator.utils.generate_random_appliance_sets">generate_random_appliance_sets() (in module disaggregator.utils)</a>
   </dt>
 
       
@@ -270,18 +295,32 @@
   <dt><a href="dataset_adapters.html#disaggregator.PecanStreetDatasetAdapter.get_appliance_detection_arrays">get_appliance_detection_arrays() (in module disaggregator.PecanStreetDatasetAdapter)</a>
   </dt>
 
-  </dl></td>
-  <td style="width: 33%" valign="top"><dl>
       
   <dt><a href="utils.html#disaggregator.utils.get_common_ids">get_common_ids() (in module disaggregator.utils)</a>
   </dt>
 
       
-  <dt><a href="dataset_adapters.html#disaggregator.PecanStreetDatasetAdapter.get_dataframe">get_dataframe() (in module disaggregator.PecanStreetDatasetAdapter)</a>
+  <dt><a href="appliances.html#disaggregator.appliance.ApplianceSet.get_dataframe">get_dataframe() (disaggregator.appliance.ApplianceSet method)</a>
+  </dt>
+
+      <dd><dl>
+        
+  <dt><a href="dataset_adapters.html#disaggregator.PecanStreetDatasetAdapter.get_dataframe">(in module disaggregator.PecanStreetDatasetAdapter)</a>
+  </dt>
+
+      </dl></dd>
+      
+  <dt><a href="dataset_adapters.html#disaggregator.PecanStreetDatasetAdapter.get_dataids_with_real_values">get_dataids_with_real_values() (in module disaggregator.PecanStreetDatasetAdapter)</a>
+  </dt>
+
+  </dl></td>
+  <td style="width: 33%" valign="top"><dl>
+      
+  <dt><a href="appliances.html#disaggregator.appliance.ApplianceType.get_instance_by_id">get_instance_by_id() (disaggregator.appliance.ApplianceType method)</a>
   </dt>
 
       
-  <dt><a href="dataset_adapters.html#disaggregator.PecanStreetDatasetAdapter.get_dataids_with_real_values">get_dataids_with_real_values() (in module disaggregator.PecanStreetDatasetAdapter)</a>
+  <dt><a href="utils.html#disaggregator.utils.get_instance_in_time_of_day">get_instance_in_time_of_day() (in module disaggregator.utils)</a>
   </dt>
 
       
@@ -298,6 +337,10 @@
 
       
   <dt><a href="evaluation_metrics.html#disaggregator.evaluation_metrics.get_sensitivity">get_sensitivity() (in module disaggregator.evaluation_metrics)</a>
+  </dt>
+
+      
+  <dt><a href="utils.html#disaggregator.utils.get_set_in_time_of_day">get_set_in_time_of_day() (in module disaggregator.utils)</a>
   </dt>
 
       
@@ -325,6 +368,24 @@
   </dt>
 
       
+  <dt><a href="appliances.html#disaggregator.appliance.ApplianceInstance.get_time_of_day">get_time_of_day() (disaggregator.appliance.ApplianceInstance method)</a>
+  </dt>
+
+      <dd><dl>
+        
+  <dt><a href="appliances.html#disaggregator.appliance.ApplianceSet.get_time_of_day">(disaggregator.appliance.ApplianceSet method)</a>
+  </dt>
+
+        
+  <dt><a href="appliances.html#disaggregator.appliance.ApplianceTrace.get_time_of_day">(disaggregator.appliance.ApplianceTrace method)</a>
+  </dt>
+
+        
+  <dt><a href="appliances.html#disaggregator.appliance.ApplianceType.get_time_of_day">(disaggregator.appliance.ApplianceType method)</a>
+  </dt>
+
+      </dl></dd>
+      
   <dt><a href="appliances.html#disaggregator.appliance.ApplianceTrace.get_total_usage">get_total_usage() (disaggregator.appliance.ApplianceTrace method)</a>
   </dt>
 
@@ -333,7 +394,19 @@
   </dt>
 
       
+  <dt><a href="utils.html#disaggregator.utils.get_trace_in_time_of_day">get_trace_in_time_of_day() (in module disaggregator.utils)</a>
+  </dt>
+
+      
+  <dt><a href="utils.html#disaggregator.utils.get_trace_windows">get_trace_windows() (in module disaggregator.utils)</a>
+  </dt>
+
+      
   <dt><a href="utils.html#disaggregator.utils.get_train_valid_test_indices">get_train_valid_test_indices() (in module disaggregator.utils)</a>
+  </dt>
+
+      
+  <dt><a href="utils.html#disaggregator.utils.get_type_in_time_of_day">get_type_in_time_of_day() (in module disaggregator.utils)</a>
   </dt>
 
       
@@ -349,17 +422,27 @@
   </dt>
 
       
+  <dt><a href="appliances.html#disaggregator.appliance.ApplianceTrace.get_windows">get_windows() (disaggregator.appliance.ApplianceTrace method)</a>
+  </dt>
+
+      
   <dt><a href="evaluation_metrics.html#disaggregator.evaluation_metrics.guess_truth_from_power">guess_truth_from_power() (in module disaggregator.evaluation_metrics)</a>
   </dt>
 
   </dl></td>
 </tr></table>
 
-<h2 id="M">M</h2>
+<h2 id="I">I</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%" valign="top"><dl>
       
-  <dt><a href="appliances.html#disaggregator.appliance.ApplianceSet.make_dataframe">make_dataframe() (disaggregator.appliance.ApplianceSet method)</a>
+  <dt><a href="algorithms.html#disaggregator.fhmm.init_HMM">init_HMM() (in module disaggregator.fhmm)</a>
+  </dt>
+
+  </dl></td>
+  <td style="width: 33%" valign="top"><dl>
+      
+  <dt><a href="utils.html#disaggregator.utils.instances_aligned">instances_aligned() (in module disaggregator.utils)</a>
   </dt>
 
   </dl></td>
@@ -399,15 +482,37 @@
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%" valign="top"><dl>
       
+  <dt><a href="appliances.html#disaggregator.appliance.ApplianceInstance.resample">resample() (disaggregator.appliance.ApplianceInstance method)</a>
+  </dt>
+
+      <dd><dl>
+        
+  <dt><a href="appliances.html#disaggregator.appliance.ApplianceSet.resample">(disaggregator.appliance.ApplianceSet method)</a>
+  </dt>
+
+        
+  <dt><a href="appliances.html#disaggregator.appliance.ApplianceTrace.resample">(disaggregator.appliance.ApplianceTrace method)</a>
+  </dt>
+
+        
+  <dt><a href="appliances.html#disaggregator.appliance.ApplianceType.resample">(disaggregator.appliance.ApplianceType method)</a>
+  </dt>
+
+      </dl></dd>
+      
   <dt><a href="utils.html#disaggregator.utils.resample_instance_traces">resample_instance_traces() (in module disaggregator.utils)</a>
   </dt>
 
       
-  <dt><a href="utils.html#disaggregator.utils.resample_trace">resample_trace() (in module disaggregator.utils)</a>
+  <dt><a href="utils.html#disaggregator.utils.resample_set_traces">resample_set_traces() (in module disaggregator.utils)</a>
   </dt>
 
   </dl></td>
   <td style="width: 33%" valign="top"><dl>
+      
+  <dt><a href="utils.html#disaggregator.utils.resample_trace">resample_trace() (in module disaggregator.utils)</a>
+  </dt>
+
       
   <dt><a href="utils.html#disaggregator.utils.resample_type_traces">resample_type_traces() (in module disaggregator.utils)</a>
   </dt>
@@ -427,21 +532,51 @@
   </dt>
 
       
-  <dt><a href="appliances.html#disaggregator.appliance.ApplianceSet.set_instances">set_instances() (disaggregator.appliance.ApplianceSet method)</a>
-  </dt>
-
-      
   <dt><a href="dataset_adapters.html#disaggregator.PecanStreetDatasetAdapter.set_url">set_url() (in module disaggregator.PecanStreetDatasetAdapter)</a>
   </dt>
 
       
-  <dt><a href="utils.html#disaggregator.utils.split_instance_traces_into_rate">split_instance_traces_into_rate() (in module disaggregator.utils)</a>
+  <dt><a href="algorithms.html#disaggregator.fhmm.sort_learnt_parameters">sort_learnt_parameters() (in module disaggregator.fhmm)</a>
   </dt>
 
+      
+  <dt><a href="algorithms.html#disaggregator.fhmm.sort_startprob">sort_startprob() (in module disaggregator.fhmm)</a>
+  </dt>
+
+      
+  <dt><a href="algorithms.html#disaggregator.fhmm.sort_transition_matrix">sort_transition_matrix() (in module disaggregator.fhmm)</a>
+  </dt>
+
+      
+  <dt><a href="appliances.html#disaggregator.appliance.ApplianceInstance.split_by">split_by() (disaggregator.appliance.ApplianceInstance method)</a>
+  </dt>
+
+      <dd><dl>
+        
+  <dt><a href="appliances.html#disaggregator.appliance.ApplianceSet.split_by">(disaggregator.appliance.ApplianceSet method)</a>
+  </dt>
+
+        
+  <dt><a href="appliances.html#disaggregator.appliance.ApplianceTrace.split_by">(disaggregator.appliance.ApplianceTrace method)</a>
+  </dt>
+
+        
+  <dt><a href="appliances.html#disaggregator.appliance.ApplianceType.split_by">(disaggregator.appliance.ApplianceType method)</a>
+  </dt>
+
+      </dl></dd>
   </dl></td>
   <td style="width: 33%" valign="top"><dl>
       
+  <dt><a href="utils.html#disaggregator.utils.split_instance_traces_into_rate">split_instance_traces_into_rate() (in module disaggregator.utils)</a>
+  </dt>
+
+      
   <dt><a href="dataset_adapters.html#disaggregator.TracebaseDatasetAdapter.split_on_NANs">split_on_NANs() (disaggregator.TracebaseDatasetAdapter method)</a>
+  </dt>
+
+      
+  <dt><a href="utils.html#disaggregator.utils.split_set_traces_into_rate">split_set_traces_into_rate() (in module disaggregator.utils)</a>
   </dt>
 
       
@@ -463,13 +598,17 @@
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%" valign="top"><dl>
       
-  <dt><a href="dataset_adapters.html#disaggregator.PecanStreetDatasetAdapter.time_align">time_align() (in module disaggregator.PecanStreetDatasetAdapter)</a>
+  <dt><a href="utils.html#disaggregator.utils.trace_series_to_numpy_array">trace_series_to_numpy_array() (in module disaggregator.utils)</a>
+  </dt>
+
+      
+  <dt><a href="dataset_adapters.html#disaggregator.TracebaseDatasetAdapter">TracebaseDatasetAdapter (class in disaggregator)</a>
   </dt>
 
   </dl></td>
   <td style="width: 33%" valign="top"><dl>
       
-  <dt><a href="dataset_adapters.html#disaggregator.TracebaseDatasetAdapter">TracebaseDatasetAdapter (class in disaggregator)</a>
+  <dt><a href="utils.html#disaggregator.utils.traces_aligned">traces_aligned() (in module disaggregator.utils)</a>
   </dt>
 
   </dl></td>
@@ -480,16 +619,6 @@
   <td style="width: 33%" valign="top"><dl>
       
   <dt><a href="utils.html#module-utils">utils (module)</a>
-  </dt>
-
-  </dl></td>
-</tr></table>
-
-<h2 id="V">V</h2>
-<table style="width: 100%" class="indextable genindextable"><tr>
-  <td style="width: 33%" valign="top"><dl>
-      
-  <dt><a href="dataset_adapters.html#disaggregator.PecanStreetDatasetAdapter.verify_same_range">verify_same_range() (in module disaggregator.PecanStreetDatasetAdapter)</a>
   </dt>
 
   </dl></td>
