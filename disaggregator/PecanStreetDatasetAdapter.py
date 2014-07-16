@@ -233,7 +233,7 @@ def generate_traces_by_table_and_dataid(schema,table,dataid,sample_rate=None):
                 }
             trace = ApplianceTrace(s,meta)
             if sample_rate:
-                utils.resample_trace(trace,sample_rate)
+                trace = trace.resample(sample_rate)
             traces.append(ApplianceTrace(s,meta))
     return traces
 
@@ -309,7 +309,7 @@ def generate_appliance_trace(schema, table, appliance, dataid,
             }
     trace = ApplianceTrace(series,metadata)
     if sample_rate:
-        trace = utils.resample_trace(trace,sample_rate)
+        trace = trace.resample(sample_rate)
     return trace
 
 def generate_appliances_traces(
@@ -338,7 +338,7 @@ def generate_appliances_traces(
                     }
         trace = ApplianceTrace(series,metadata)
         if sample_rate:
-            trace = utils.resample_trace(trace,sample_rate)
+            trace = trace.resample(sample_rate)
         traces.append(trace)
     return traces
 
