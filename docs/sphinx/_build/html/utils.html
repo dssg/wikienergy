@@ -70,6 +70,20 @@ signal.</p>
 </dd></dl>
 
 <dl class="function">
+<dt id="disaggregator.utils.align_instances">
+<tt class="descclassname">disaggregator.utils.</tt><tt class="descname">align_instances</tt><big>(</big><em>instances</em><big>)</big><a class="reference internal" href="_modules/disaggregator/utils.html#align_instances"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#disaggregator.utils.align_instances" title="Permalink to this definition">¶</a></dt>
+<dd><p>Aligns all traces in a list of instances. Removes traces that don&#8217;t fit.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="disaggregator.utils.align_traces">
+<tt class="descclassname">disaggregator.utils.</tt><tt class="descname">align_traces</tt><big>(</big><em>traces</em>, <em>to=None</em>, <em>how='front'</em><big>)</big><a class="reference internal" href="_modules/disaggregator/utils.html#align_traces"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#disaggregator.utils.align_traces" title="Permalink to this definition">¶</a></dt>
+<dd><p>Temporally aligns the traces. <cite>how`=&#8221;front&#8221; means to align to the front of
+the `to</cite> trace. If no <cite>to</cite> trace is given, the first shortest trace is used.
+Traces are all downsampled to match the lowest sampling rate</p>
+</dd></dl>
+
+<dl class="function">
 <dt id="disaggregator.utils.bootstrap_appliance_set">
 <tt class="descclassname">disaggregator.utils.</tt><tt class="descname">bootstrap_appliance_set</tt><big>(</big><em>appliance_sets</em>, <em>k</em>, <em>n</em>, <em>how='strict'</em><big>)</big><a class="reference internal" href="_modules/disaggregator/utils.html#bootstrap_appliance_set"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#disaggregator.utils.bootstrap_appliance_set" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns a list of n bootstrapped appliance sets (each with k appliances).
@@ -99,9 +113,43 @@ list of n traces.</p>
 </dd></dl>
 
 <dl class="function">
+<dt id="disaggregator.utils.generate_random_appliance_sets">
+<tt class="descclassname">disaggregator.utils.</tt><tt class="descname">generate_random_appliance_sets</tt><big>(</big><em>appliance_sets</em>, <em>k</em>, <em>n</em><big>)</big><a class="reference internal" href="_modules/disaggregator/utils.html#generate_random_appliance_sets"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#disaggregator.utils.generate_random_appliance_sets" title="Permalink to this definition">¶</a></dt>
+<dd><p>Given a list of appliance sets, returns n randomly
+sets, whose instances have been sampled
+(w/replacement) from the instances of the given appliance_sets.</p>
+<p>ApplianceSets must be aligned.</p>
+</dd></dl>
+
+<dl class="function">
 <dt id="disaggregator.utils.get_common_ids">
 <tt class="descclassname">disaggregator.utils.</tt><tt class="descname">get_common_ids</tt><big>(</big><em>id_lists</em><big>)</big><a class="reference internal" href="_modules/disaggregator/utils.html#get_common_ids"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#disaggregator.utils.get_common_ids" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns a list of ids common to the supplied lists. (id set intersection)</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="disaggregator.utils.get_instance_in_time_of_day">
+<tt class="descclassname">disaggregator.utils.</tt><tt class="descname">get_instance_in_time_of_day</tt><big>(</big><em>device_instance</em>, <em>start_time</em>, <em>end_time</em><big>)</big><a class="reference internal" href="_modules/disaggregator/utils.html#get_instance_in_time_of_day"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#disaggregator.utils.get_instance_in_time_of_day" title="Permalink to this definition">¶</a></dt>
+<dd><p>Given an instance and a start and end datetime.time, it returns a trace within that time period.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="disaggregator.utils.get_set_in_time_of_day">
+<tt class="descclassname">disaggregator.utils.</tt><tt class="descname">get_set_in_time_of_day</tt><big>(</big><em>device_set</em>, <em>start_time</em>, <em>end_time</em><big>)</big><a class="reference internal" href="_modules/disaggregator/utils.html#get_set_in_time_of_day"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#disaggregator.utils.get_set_in_time_of_day" title="Permalink to this definition">¶</a></dt>
+<dd><p>Resamples all traces in each instance of a given set.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="disaggregator.utils.get_trace_in_time_of_day">
+<tt class="descclassname">disaggregator.utils.</tt><tt class="descname">get_trace_in_time_of_day</tt><big>(</big><em>device_trace</em>, <em>start_time</em>, <em>end_time</em><big>)</big><a class="reference internal" href="_modules/disaggregator/utils.html#get_trace_in_time_of_day"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#disaggregator.utils.get_trace_in_time_of_day" title="Permalink to this definition">¶</a></dt>
+<dd><p>Given a trace and a start and end datetime.time, it returns a trace
+within that time period.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="disaggregator.utils.get_trace_windows">
+<tt class="descclassname">disaggregator.utils.</tt><tt class="descname">get_trace_windows</tt><big>(</big><em>trace</em>, <em>window_length</em>, <em>window_step</em><big>)</big><a class="reference internal" href="_modules/disaggregator/utils.html#get_trace_windows"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#disaggregator.utils.get_trace_windows" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a numpy array with stacked sliding windows of data from a trace.</p>
 </dd></dl>
 
 <dl class="function">
@@ -109,6 +157,18 @@ list of n traces.</p>
 <tt class="descclassname">disaggregator.utils.</tt><tt class="descname">get_train_valid_test_indices</tt><big>(</big><em>n</em><big>)</big><a class="reference internal" href="_modules/disaggregator/utils.html#get_train_valid_test_indices"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#disaggregator.utils.get_train_valid_test_indices" title="Permalink to this definition">¶</a></dt>
 <dd><p>Given an number n, return three arrays of length n/2, n/4, n/4 respectively,
 which collectively contain the indices [0..n-1] ordered psuedo-randomly.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="disaggregator.utils.get_type_in_time_of_day">
+<tt class="descclassname">disaggregator.utils.</tt><tt class="descname">get_type_in_time_of_day</tt><big>(</big><em>device_type</em>, <em>start_time</em>, <em>end_time</em><big>)</big><a class="reference internal" href="_modules/disaggregator/utils.html#get_type_in_time_of_day"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#disaggregator.utils.get_type_in_time_of_day" title="Permalink to this definition">¶</a></dt>
+<dd><p>Resamples all traces in each instance of a given type.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="disaggregator.utils.instances_aligned">
+<tt class="descclassname">disaggregator.utils.</tt><tt class="descname">instances_aligned</tt><big>(</big><em>instances</em><big>)</big><a class="reference internal" href="_modules/disaggregator/utils.html#instances_aligned"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#disaggregator.utils.instances_aligned" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns True iff instances and their traces are temporally aligned.</p>
 </dd></dl>
 
 <dl class="function">
@@ -128,6 +188,12 @@ overlapping traces.</p>
 <dt id="disaggregator.utils.resample_instance_traces">
 <tt class="descclassname">disaggregator.utils.</tt><tt class="descname">resample_instance_traces</tt><big>(</big><em>device_instance</em>, <em>sample_rate</em><big>)</big><a class="reference internal" href="_modules/disaggregator/utils.html#resample_instance_traces"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#disaggregator.utils.resample_instance_traces" title="Permalink to this definition">¶</a></dt>
 <dd><p>Resamples all traces within a given instance.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="disaggregator.utils.resample_set_traces">
+<tt class="descclassname">disaggregator.utils.</tt><tt class="descname">resample_set_traces</tt><big>(</big><em>device_set</em>, <em>sample_rate</em><big>)</big><a class="reference internal" href="_modules/disaggregator/utils.html#resample_set_traces"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#disaggregator.utils.resample_set_traces" title="Permalink to this definition">¶</a></dt>
+<dd><p>Resamples all traces in each instance of a given type.</p>
 </dd></dl>
 
 <dl class="function">
@@ -152,6 +218,13 @@ from a unique date</p>
 </dd></dl>
 
 <dl class="function">
+<dt id="disaggregator.utils.split_set_traces_into_rate">
+<tt class="descclassname">disaggregator.utils.</tt><tt class="descname">split_set_traces_into_rate</tt><big>(</big><em>device_set</em>, <em>rate</em><big>)</big><a class="reference internal" href="_modules/disaggregator/utils.html#split_set_traces_into_rate"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#disaggregator.utils.split_set_traces_into_rate" title="Permalink to this definition">¶</a></dt>
+<dd><p>Each trace in each instance of a set is split into multiple traces
+that are each from a unique date</p>
+</dd></dl>
+
+<dl class="function">
 <dt id="disaggregator.utils.split_trace_into_rate">
 <tt class="descclassname">disaggregator.utils.</tt><tt class="descname">split_trace_into_rate</tt><big>(</big><em>trace</em>, <em>rate</em><big>)</big><a class="reference internal" href="_modules/disaggregator/utils.html#split_trace_into_rate"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#disaggregator.utils.split_trace_into_rate" title="Permalink to this definition">¶</a></dt>
 <dd><p>Given a single trace, a list of traces are returned that are each
@@ -161,8 +234,21 @@ from a unique date.</p>
 <dl class="function">
 <dt id="disaggregator.utils.split_type_traces_into_rate">
 <tt class="descclassname">disaggregator.utils.</tt><tt class="descname">split_type_traces_into_rate</tt><big>(</big><em>device_type</em>, <em>rate</em><big>)</big><a class="reference internal" href="_modules/disaggregator/utils.html#split_type_traces_into_rate"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#disaggregator.utils.split_type_traces_into_rate" title="Permalink to this definition">¶</a></dt>
-<dd><p>Each trace in each instance of a type is split into multiple traces 
+<dd><p>Each trace in each instance of a type is split into multiple traces
 that are each from a unique date</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="disaggregator.utils.trace_series_to_numpy_array">
+<tt class="descclassname">disaggregator.utils.</tt><tt class="descname">trace_series_to_numpy_array</tt><big>(</big><em>values</em><big>)</big><a class="reference internal" href="_modules/disaggregator/utils.html#trace_series_to_numpy_array"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#disaggregator.utils.trace_series_to_numpy_array" title="Permalink to this definition">¶</a></dt>
+<dd><p>This takes the series from a trace and converts it to a numpy array for
+ingestion into HMMs and certain plots. It also removes the NaNs.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="disaggregator.utils.traces_aligned">
+<tt class="descclassname">disaggregator.utils.</tt><tt class="descname">traces_aligned</tt><big>(</big><em>traces</em><big>)</big><a class="reference internal" href="_modules/disaggregator/utils.html#traces_aligned"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#disaggregator.utils.traces_aligned" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns True if traces are temporally aligned</p>
 </dd></dl>
 
 </div>
