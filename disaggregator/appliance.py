@@ -37,6 +37,28 @@ class ApplianceTrace(object):
         '''
         return self.series.index.freq
 
+    def get_time_of_day(self, start_time, end_time):
+        '''
+        Given a start and end datetime.time, it returns a trace
+        within that time period.
+        '''
+        new_series = self.series.ix[start_time:end_time]
+        return ApplianceTrace(new_series,self.metadata)
+
+    def get_windows(self, window_length, window_step):
+        """
+        Returns a numpy array with stacked sliding windows of data.
+        """
+        total_length = self.series.size
+        n_steps = int((total_length - window_length) / window_step)
+        windows = []
+        for step in range(n_steps):
+            start = step * window_step
+            window = self.series[start:start + window_length].tolist()
+            windows.append(window)
+        return np.array(windows,dtype=np.float)
+
+
     def get_total_usage(self):
         '''
         Returns the total usage of this trace
@@ -63,9 +85,9 @@ class ApplianceTrace(object):
             new_series = new_series.resample(sample_rate,how='mean')
             new_series = new_series.map(decimal.Decimal)
             new_series.name = self.series.name
-            self.series = new_series
         except ValueError:
             raise utils.SampleError(sample_rate)
+        return ApplianceTrace(new_series,self.metadata) 
 
     def split_by(self,rate):
         '''
@@ -114,6 +136,16 @@ class ApplianceInstance(object):
         else:
             raise NotImplementedError
 
+    def get_time_of_day(self,start_time,end_time):
+        '''
+        Given a start and end datetime.time, it returns an instance with traces
+        within that time period.
+        '''
+        new_traces = []
+        for trace in self.traces:
+            new_traces.append(trace.get_time_of_day(start_time,end_time))
+        return ApplianceInstance(new_traces,self.metadata)
+
     def resample(self,sample_rate):
         '''
         Returns an instance with resampled traces.
@@ -147,20 +179,11 @@ class ApplianceSet(object):
         '''
         Initializes an appliance set given a list of instances.
         '''
-        self.instances = instances
+        if not utils.instances_aligned(instances):
+            self.instances = utils.align_instances(instances)
+        else:
+            self.instances = instances
         self.metadata = metadata
-
-    def get_dataframe(self):
-        '''
-        Makes a new dataframe of the appliance instances. Throws an exception if
-        if the appliance instances have traces that don't align.
-        '''
-        # TODO concatenate all traces into a single trace
-        # TODO change this to ordered dict
-        # TODO actually throw an exception
-        series_dict = {instance.traces[0].series.name:instance.traces[0].series
-                       for instance in self.instances}
-        return pd.DataFrame.from_dict(series_dict)
 
     def generate_top_k_set(self,k):
         '''
@@ -189,6 +212,28 @@ class ApplianceSet(object):
         return ApplianceSet(non_zero_instances,
                             {"name":"non_zero"})
 
+
+    def get_dataframe(self):
+        '''
+        Makes a new dataframe of the appliance instances. Throws an exception if
+        if the appliance instances have traces that don't align.
+        '''
+        # TODO concatenate all traces into a single trace
+        # TODO change this to ordered dict
+        # TODO actually throw an exception
+        series_dict = {instance.traces[0].series.name:instance.traces[0].series
+                       for instance in self.instances}
+        return pd.DataFrame.from_dict(series_dict)
+
+    def get_time_of_day(self,start_time,end_time):
+        '''
+        Given a start and end datetime.time, it returns an ApplianceType with
+        traces within that time period.
+        '''
+        new_instances=[]
+        for instance in self.instances:
+            new_instances.append(instance.get_time_of_day(start_time,end_time))
+        return ApplianceType(new_instances,self.metadata)
     def resample(self, sample_rate):
         '''
         Returns a new ApplianceSet instance with resampled traces.
@@ -227,7 +272,7 @@ class ApplianceType(object):
         self.instances = instances
         self.metadata = metadata
         try:
-            self.instance_id_index={metadata['dataid']:i for i,instance in enumerate(instances)}
+            self.instance_id_index={instance.metadata['dataid']:i for i,instance in enumerate(instances)}
         except KeyError:
             print 'Warning: no "dataid" key found in metadata.'
 
@@ -235,8 +280,18 @@ class ApplianceType(object):
         '''
         Gets the instance of the type with a specified instance id
         '''
-        index=self.instance_id_index[instance_id]
+        index = self.instance_id_index[instance_id]
         return ApplianceType.instances[index]
+
+    def get_time_of_day(self,start_time,end_time):
+        '''
+        Given a start and end datetime.time, it returns an ApplianceSet with
+        traces within that time period.
+        '''
+        new_instances=[]
+        for instance in self.instances:
+            new_instances.append(instance.get_time_of_day(start_time,end_time))
+        return ApplianceSet(new_instances,self.metadata)
 
     def resample(self,sample_rate):
         '''
