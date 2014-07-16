@@ -2,6 +2,7 @@ from sklearn import hmm
 import utils
 from copy import deepcopy
 import numpy as np
+import pandas as pd
 from collections import OrderedDict
 
 
@@ -13,13 +14,14 @@ def init_HMM(pi_prior,a_prior,mean_prior,cov_prior):
     a_prior is the transition matrix of the HMM
     mean_prior is the initial mean value of each state
     cov_prior is the initial covariance of each state
+
     For an n-state HMM:
-        pi_prior is a 1-D numpy array of size n
-        a_prior is a 2-D numpy array of size n x n
-        mean_prior is an numpy array of size n
-        cov_prior is a 3-D numpy array that has been tiled into two rows,
-        one column, and n third dimensional states.
-        ex) np.tile(1,(2,1,n)) for uniform covariance to start with.
+    *pi_prior is a 1-D numpy array of size n
+    *a_prior is a 2-D numpy array of size n x n
+    *mean_prior is an numpy array of size n
+    *cov_prior is a 3-D numpy array that has been tiled into two rows,
+    one column, and n third dimensional states.
+    ex) np.tile(1,(2,1,n)) for uniform covariance to start with.
     '''
     model = hmm.GaussianHMM(pi_prior.size,'full',pi_prior,a_prior)
     model.means_ = mean_prior
@@ -56,36 +58,36 @@ def generate_HMMs_from_type(type,pi_prior,a_prior,
     in order to name the model. If no key is given, the model is named based on
     its index.
     '''
-    model_list=OrderedDict()
+    instance_models=OrderedDict()
     for i,instance in enumerate(type.instances):
         if(key_for_model_name):
             instance_name=instance.traces[0].metadata[key_for_model_name]
         else:
             instance_name=i
-        model_list[instance_name]=init_HMM(pi_prior,a_prior,mean_prior,cov_prior)
-        model_list[instance_name]=fit_instance_to_HMM(model_list[instance_name],instance)
-    return model_list
+        instance_models[instance_name]=init_HMM(pi_prior,a_prior,mean_prior,cov_prior)
+        instance_models[instance_name]=fit_instance_to_HMM(instance_models[instance_name],instance)
+    return instance_models
 
-def generate_FHMM_from_HMMs(model_list,key_for_model_name=None):
+def generate_FHMM_from_HMMs(type_models,key_for_model_name=None):
     '''
     Takes a dictionary of models, where the keys are the device type name, and
     generates an FHMM of these models.
     '''
     pass
 
-def get_best_instance_model(model_list,device_type,key_for_model_name):
+def get_best_instance_model(instance_models,device_type,key_for_model_name):
     dfs_model = {}
     best_model_score = 0
-    for model_name in model_list:
+    for model_name in instance_models:
         instances_of_model = []
         for instance in device_type.instances:
             test_trace = instance.traces[0]
             instance_name = test_trace.metadata[key_for_model_name]
-            test = values_to_array(test_trace.series)
-            model_score = models[model_name].score(test)
+            test = utils.trace_series_to_numpy_array(test_trace.series)
+            model_score = instance_models[model_name].score(test)
             instances_of_model.append([model_name,instance_name,model_score])
             if(model_score > best_model_score):
-                best_model = models[model_name]
+                best_model = instance_models[model_name]
         dfs_model[model_name] = pd.DataFrame(data=instances_of_model,columns=['Model_Instance','Test_Instance','Value'])
     model_averages = []
     for key in dfs_model:
