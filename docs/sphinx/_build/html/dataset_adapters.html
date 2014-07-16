@@ -98,11 +98,11 @@ Credentials are required for access to the database.</p>
 <dl class="function">
 <dt id="disaggregator.PecanStreetDatasetAdapter.clean_dataframe">
 <tt class="descclassname">disaggregator.PecanStreetDatasetAdapter.</tt><tt class="descname">clean_dataframe</tt><big>(</big><em>df</em>, <em>schema</em>, <em>drop_cols</em><big>)</big><a class="reference internal" href="_modules/disaggregator/PecanStreetDatasetAdapter.html#clean_dataframe"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#disaggregator.PecanStreetDatasetAdapter.clean_dataframe" title="Permalink to this definition">¶</a></dt>
-<dd><p>Cleans a dataframe queried directly from the database by renaming the db 
+<dd><p>Cleans a dataframe queried directly from the database by renaming the db
 time column (ex. UTC_15MIN) to a column name &#8216;time&#8217;. It then converts the
 time column to datetime objects and reindexes the dataframe to the time
 column before dropping that column from the dataframe. It also drops any
-columns included in the list drop_cols. The columns &#8216;id&#8217; and &#8216;dataid&#8217; are 
+columns included in the list drop_cols. The columns &#8216;id&#8217; and &#8216;dataid&#8217; are
 also dropped.</p>
 </dd></dl>
 
@@ -116,7 +116,7 @@ also dropped.</p>
 <dt id="disaggregator.PecanStreetDatasetAdapter.generate_appliance_trace">
 <tt class="descclassname">disaggregator.PecanStreetDatasetAdapter.</tt><tt class="descname">generate_appliance_trace</tt><big>(</big><em>schema</em>, <em>table</em>, <em>appliance</em>, <em>dataid</em>, <em>sample_rate=None</em>, <em>verbose=True</em><big>)</big><a class="reference internal" href="_modules/disaggregator/PecanStreetDatasetAdapter.html#generate_appliance_trace"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#disaggregator.PecanStreetDatasetAdapter.generate_appliance_trace" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return an appliance trace by dataid. The trace is in decimal form and in
-average Watts.</p>
+average kiloWatts.</p>
 </dd></dl>
 
 <dl class="function">
@@ -260,19 +260,6 @@ drop_percentile samples. Use appliances=None for unfiltered windows.</p>
 <tt class="descclassname">disaggregator.PecanStreetDatasetAdapter.</tt><tt class="descname">set_url</tt><big>(</big><em>db_url</em><big>)</big><a class="reference internal" href="_modules/disaggregator/PecanStreetDatasetAdapter.html#set_url"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#disaggregator.PecanStreetDatasetAdapter.set_url" title="Permalink to this definition">¶</a></dt>
 <dd><p>Initialize an adapter using a database url_string. Consider the following
 example: db_url=&#8221;postgresql://user_name:password&#64;host.url:port/db&#8221;</p>
-</dd></dl>
-
-<dl class="function">
-<dt id="disaggregator.PecanStreetDatasetAdapter.time_align">
-<tt class="descclassname">disaggregator.PecanStreetDatasetAdapter.</tt><tt class="descname">time_align</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/disaggregator/PecanStreetDatasetAdapter.html#time_align"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#disaggregator.PecanStreetDatasetAdapter.time_align" title="Permalink to this definition">¶</a></dt>
-<dd><p>Checks that for all traces in a home the total time lengths are the
-same</p>
-</dd></dl>
-
-<dl class="function">
-<dt id="disaggregator.PecanStreetDatasetAdapter.verify_same_range">
-<tt class="descclassname">disaggregator.PecanStreetDatasetAdapter.</tt><tt class="descname">verify_same_range</tt><big>(</big><em>pair</em>, <em>pairs</em><big>)</big><a class="reference internal" href="_modules/disaggregator/PecanStreetDatasetAdapter.html#verify_same_range"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#disaggregator.PecanStreetDatasetAdapter.verify_same_range" title="Permalink to this definition">¶</a></dt>
-<dd><p>Check that all data points have the same range</p>
 </dd></dl>
 
 </div>
