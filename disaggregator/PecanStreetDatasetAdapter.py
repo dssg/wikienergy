@@ -512,7 +512,7 @@ def get_use_for_active_windows(schema, tables, appliances, dataids,
         usage_windows = utils.get_trace_windows(usage.traces[0],window_length,
                 window_stride)
         appliance_windows = []
-        if instances is []:
+        if instances_ is []:
             if drop_percentile is not 0:
                 print "Warning: ignoring drop_percentile"
 
@@ -583,10 +583,13 @@ def get_appliance_detection_arrays(schema,tables,appliance,window_length,
                 window_length,window_stride,drop_percentile=0)
 
         # concatenate results for different dataids
-        all_appliance_windows = np.concatenate(
-                [windows[0] for windows in active_appliance_windows],axis=0)
-        all_other_windows = np.concatenate(
-                [windows[0] for windows in other_windows],axis=0)
+	try:
+            all_appliance_windows = np.concatenate(
+                    [windows[0] for windows in active_appliance_windows],axis=0)
+            all_other_windows = np.concatenate(
+                    [windows[0] for windows in other_windows],axis=0)
+        except IndexError:
+            import pdb; pdb.set_trace()
         # make one-hot answer-key arrays
         appliance_keys = np.array([[0,1] for _ in all_appliance_windows])
         no_appliance_keys = np.array([[1,0] for _ in all_other_windows])
