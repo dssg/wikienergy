@@ -128,13 +128,6 @@ def get_table_names(schema):
         .format(schema_names[schema])]
     return table_names
 
-def verify_same_range(pair,pairs):
-    '''
-    Check that all data points have the same range
-    '''
-    #TODO this should go into utils
-    pass
-
 def get_table_dataids(schema,table):
     '''
     Returns a list of dataids for this schema and table
@@ -187,23 +180,13 @@ def get_unique_dataids(schema,year,month,group=None):
     else:
         raise SchemaError(schema)
 
-def time_align():
-    '''
-    Checks that for all traces in a home the total time lengths are the
-    same
-    '''
-    # TODO this should go into utils
-    pass
-
 def clean_dataframe(df,schema,drop_cols):
-    # TODO update this to use "curated" "shared" or "raw"
-    #   instead of full frame name
     '''
-    Cleans a dataframe queried directly from the database by renaming the db 
+    Cleans a dataframe queried directly from the database by renaming the db
     time column (ex. UTC_15MIN) to a column name 'time'. It then converts the
     time column to datetime objects and reindexes the dataframe to the time
     column before dropping that column from the dataframe. It also drops any
-    columns included in the list drop_cols. The columns 'id' and 'dataid' are 
+    columns included in the list drop_cols. The columns 'id' and 'dataid' are
     also dropped.
     '''
     # change the time column name
@@ -222,10 +205,6 @@ def clean_dataframe(df,schema,drop_cols):
 
     return df
 
-
-def check_sample_rate(schema,sampling_rate):
-    # TODO get from the data directly not like this
-    accepted_rates = {'curated':'15T' ,'raw':'15' ,'shared':'1T' }
 
 def generate_traces_by_table_and_dataid(schema,table,dataid,sample_rate=None):
     '''
@@ -501,11 +480,13 @@ def get_use_for_active_windows(schema, tables, appliances, dataids,
     Appliances should not include the 'use' column. Drops the lowest
     drop_percentile samples. Use appliances=None for unfiltered windows.
     '''
-    if not appliances:
-        appliances = []
-    appliances.append('use')
+    if appliances:
+        query_appliances = appliances[:]
+    else:
+        query_appliances = []
+    query_appliances.append('use')
     instances = generate_instances_for_appliances_by_dataids(
-            schema,tables,appliances,dataids,sample_rate)
+            schema,tables,query_appliances,dataids,sample_rate)
     usages = [instances_for_id[-1] for instances_for_id in instances]
     instances = [instances_for_id[:-1] for instances_for_id in instances]
     all_appliance_windows = []
@@ -514,7 +495,7 @@ def get_use_for_active_windows(schema, tables, appliances, dataids,
         usage_windows = utils.get_trace_windows(usage.traces[0],window_length,
                 window_stride)
         appliance_windows = []
-        if instances is []:
+        if not appliances:
             if drop_percentile is not 0:
                 print "Warning: ignoring drop_percentile"
 
@@ -585,10 +566,13 @@ def get_appliance_detection_arrays(schema,tables,appliance,window_length,
                 window_length,window_stride,drop_percentile=0)
 
         # concatenate results for different dataids
-        all_appliance_windows = np.concatenate(
-                [windows[0] for windows in active_appliance_windows],axis=0)
-        all_other_windows = np.concatenate(
-                [windows[0] for windows in other_windows],axis=0)
+	try:
+            all_appliance_windows = np.concatenate(
+                    [windows[0] for windows in active_appliance_windows],axis=0)
+            all_other_windows = np.concatenate(
+                    [windows[0] for windows in other_windows],axis=0)
+        except IndexError:
+            import pdb; pdb.set_trace()
         # make one-hot answer-key arrays
         appliance_keys = np.array([[0,1] for _ in all_appliance_windows])
         no_appliance_keys = np.array([[1,0] for _ in all_other_windows])
