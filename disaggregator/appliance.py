@@ -54,11 +54,9 @@ class ApplianceTrace(object):
 
     def resample(self,sample_rate):
         '''
-        Takes a trace and resamples it to a given sample rate, defined by the
+        Returns a new trace resampled to a given sample rate, defined by the
         offset aliases described in panda time series.
         http://pandas.pydata.org/pandas-docs/stable/timeseries.html#offset-aliases
-
-        See also utils.resample_trace(trace,sample_rate)
         '''
         try:
             new_series = self.series.astype(float)
@@ -68,6 +66,27 @@ class ApplianceTrace(object):
             self.series = new_series
         except ValueError:
             raise utils.SampleError(sample_rate)
+
+    def split_by(self,rate):
+        '''
+        Returns a list of traces formed by splitting this trace by day ('D')
+        or week ('W')
+        '''
+        # set rate to group by
+        if rate == 'D' or rate == '1D':
+            groupby_rate = self.series.index.date
+        elif rate == 'W' or rate == '1W':
+            groupby_rate = self.series.index.week
+        else:
+            raise NotImplementedError('Looking for "week" or "day"')
+
+        traces=[]
+        for i, group in enumerate(self.series.groupby(groupby_rate)):
+            metadata = dict.copy(self.metadata)
+            metadata['trace_num'] = i
+            traces.append(ApplianceTrace(group[1],metadata))
+        return traces
+
 
 
 class ApplianceInstance(object):
@@ -94,6 +113,25 @@ class ApplianceInstance(object):
             self.traces = [pd.concat(traces)]
         else:
             raise NotImplementedError
+
+    def resample(self,sample_rate):
+        '''
+        Returns an instance with resampled traces.
+        '''
+        new_traces = []
+        for trace in self.traces:
+            new_traces.append(trace.resample(sample_rate))
+        return ApplianceInstance(new_traces,self.metadata)
+
+    def split_by(self,rate):
+        '''
+        Return a new ApplianceTrace in which each instance split into multiple
+        traces split by day ('D') or week ('W') - (Sun-Sat?)
+        '''
+        traces=[]
+        for trace in self.traces:
+            traces.extend(trace.split_by(rate))
+        return ApplianceInstance(traces,device_instance.metadata)
 
 
 class ApplianceSet(object):
@@ -143,13 +181,33 @@ class ApplianceSet(object):
         with all zeros)
         '''
         # TODO compare speeds of individual instance summing vs dataframe building and summing
-        # TODO moe intelligently create the metadata
+        # TODO intelligently create the metadata
         df = get_dataframe()
         total_usages = df.sum(axis=0)
         usage_order = np.argsort(total_usages)[::-1] # assumes correctly ordered columns
         non_zero_instances = [self.instances[i] for i in usage_order if total_usages[i] > 0 ]
         return ApplianceSet(non_zero_instances,
                             {"name":"non_zero"})
+
+    def resample(self, sample_rate):
+        '''
+        Returns a new ApplianceSet instance with resampled traces.
+        '''
+        new_instances=[]
+        for instance in self.instances:
+            new_instances.append(instance.resample(sample_rate))
+        return ApplianceSet(new_instances,self.metadata)
+
+    def split_by(self, rate):
+        '''
+        Returns a new ApplianceSet object for which each trace in each instance
+        is split into multiple traces from unique days ('D') or weeks ('W')
+        '''
+        instances = []
+        for instance in self.instances:
+            new_instance = instance.split_by(rate)
+            instances.append(new_instance)
+        return ApplianceSet(instances,self.metadata)
 
 class ApplianceType(object):
     """This class represents appliance types, which contain a set of
@@ -158,7 +216,6 @@ class ApplianceType(object):
 
     Appliance types are most frequently used to generate models of particular
     types of appliances.
-
     """
 
     def __init__(self, instances, metadata):
@@ -173,7 +230,6 @@ class ApplianceType(object):
             self.instance_id_index={metadata['dataid']:i for i,instance in enumerate(instances)}
         except KeyError:
             print 'Warning: no "dataid" key found in metadata.'
-            
 
     def get_instance_by_id(self,instance_id):
         '''
@@ -181,3 +237,24 @@ class ApplianceType(object):
         '''
         index=self.instance_id_index[instance_id]
         return ApplianceType.instances[index]
+
+    def resample(self,sample_rate):
+        '''
+        Returns a new ApplianceType with resampled traces.
+        '''
+        new_instances=[]
+        for instance in self.instances:
+            new_instances.append(instance.resample(sample_rate))
+        return ApplianceType(new_instances,self.metadata)
+
+    def split_by(self, rate):
+        '''
+        Returns a new ApplianceType object for which each trace in each instance
+        is split into multiple traces from unique days ('D') or weeks ('W')
+        '''
+        instances=[]
+        for instance in self.instances:
+            new_instance= split_instance_traces_into_rate(instance,rate)
+            instances.append(new_instance)
+        return ApplianceType(instances,self.metadata)
+
