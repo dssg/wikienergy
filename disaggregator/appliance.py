@@ -63,9 +63,9 @@ class ApplianceTrace(object):
             new_series = new_series.resample(sample_rate,how='mean')
             new_series = new_series.map(decimal.Decimal)
             new_series.name = self.series.name
-            self.series = new_series
         except ValueError:
             raise utils.SampleError(sample_rate)
+        return ApplianceTrace(new_series,self.metadata) 
 
     def split_by(self,rate):
         '''
