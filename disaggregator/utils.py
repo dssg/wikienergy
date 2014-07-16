@@ -226,6 +226,15 @@ def resample_type_traces(device_type,sample_rate):
         new_instances.append(resample_instance_traces(instance,sample_rate))
     return appliance.ApplianceType(new_instances,device_type.metadata)
 
+def resample_set_traces(device_set,sample_rate):
+    '''
+    Resamples all traces in each instance of a given type.
+    '''
+    new_instances=[]
+    for instance in device_set.instances:
+        new_instances.append(resample_instance_traces(instance,sample_rate))
+    return appliance.ApplianceSet(new_instances,device_set.metadata)
+
 def order_traces(traces):
     '''
     Given a set of traces, orders them chronologically and catches
@@ -287,6 +296,8 @@ def get_trace_in_time_of_day(device_trace,start_time,end_time):
     Given a trace and a start and end datetime.time, it returns a trace
     within that time period.
     '''
+    print "WARNING: deprecated, "\
+          "use trace.get_time_of_day(start_time,end_time) instead"
     new_series=device_trace.series.ix[start_time:end_time]
     return appliance.ApplianceTrace(new_series,device_trace.metadata)
 
@@ -294,6 +305,8 @@ def get_instance_in_time_of_day(device_instance,start_time,end_time):
     '''
     Given an instance and a start and end datetime.time, it returns a trace within that time period.
     '''
+    print "WARNING: deprecated, "\
+          "use instance.get_time_of_day(start_time,end_time) instead"
     new_traces=[]
     for trace in device_instance.traces:
         new_traces.append(get_trace_in_time_of_day(trace,start_time,end_time))
@@ -303,6 +316,8 @@ def get_type_in_time_of_day(device_type,start_time,end_time):
     '''
     Resamples all traces in each instance of a given type.
     '''
+    print "WARNING: deprecated, "\
+          "use type.get_time_of_day(start_time,end_time) instead"
     new_instances=[]
     for instance in device_type.instances:
         new_instances.append(get_instance_in_time_of_day(instance,start_time,end_time))
@@ -312,6 +327,8 @@ def get_set_in_time_of_day(device_set,start_time,end_time):
     '''
     Resamples all traces in each instance of a given set.
     '''
+    print "WARNING: deprecated, "\
+          "use set.get_time_of_day(start_time,end_time) instead"
     new_instances = []
     for instance in device_set.instances:
         new_instances.append(get_instance_in_time_of_day(instance,start_time,end_time))
@@ -321,6 +338,8 @@ def get_trace_windows(trace,window_length,window_step):
     """
     Returns a numpy array with stacked sliding windows of data from a trace.
     """
+    print "WARNING: deprecated, "\
+          "use trace.get_windows(window_length,window_step) instead"
     total_length = trace.series.size
     n_steps = int((total_length - window_length) / window_step)
     windows = []
@@ -337,6 +356,21 @@ def traces_aligned(traces):
     indices = [trace.series.index for trace in traces]
     for index in indices[1:]:
         if not indices[0].equals(index):
+            return False
+    return True
+
+def instances_aligned(instances):
+    """
+    Returns True iff instances and their traces are temporally aligned.
+    """
+    if len(instances < 2):
+        return True
+    for instance in instances[1:]:
+        if not len(instance.traces) == len(instances[0].traces):
+            return False
+    traces = map(list,zip(*[instance.traces for instance in instances]))
+    for traces_ in traces:
+        if not traces_aligned(traces_):
             return False
     return True
 
@@ -384,4 +418,16 @@ def align_traces(traces,to=None,how="front"):
         trace.series = trace.series[:cutoff]
 
     return traces
+
+def align_instances(instances):
+    """
+    Aligns all traces in a list of instances. Removes traces that don't fit.
+    """
+    traces = map(list,zip(*[instance.traces for instance in instances]))
+    aligned_traces = []
+    for traces_ in traces:
+        aligned_traces.append(align_traces(traces_))
+    traces = map(list,zip(*aligned_traces))
+    return [ApplianceInstance(traces_,instance.metadata)
+            for traces_,instance in zip(traces,instances)]
 
