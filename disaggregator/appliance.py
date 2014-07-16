@@ -54,7 +54,8 @@ class ApplianceTrace(object):
 
 
 class ApplianceInstance(object):
-    """This class represents appliance instances, which may have multiple
+    """
+    This class represents appliance instances, which may have multiple
     appliance traces.
 
     Instances hold traces from a single instance of an appliance sampled
@@ -79,36 +80,22 @@ class ApplianceInstance(object):
 
 
 class ApplianceSet(object):
-    """This class represents appliance sets, which contain a set of temporally
+    """
+    This class represents appliance sets, which contain a set of temporally
     aligned appliance instances.
 
     Appliance sets are most frequently used as ground-truth for various
     algorithms, representing a particular home, building, or metered unit.
 
     """
-
     def __init__(self,instances,metadata):
         '''
         Initializes an appliance set given a list of instances.
         '''
         self.instances = instances
         self.metadata = metadata
-        self.make_dataframe()
 
-    def add_instances(self,instances):
-        '''
-        Adds the list of appliances to the appliance set.
-        '''
-        self.instances += instances
-        self.add_to_dataframe(instances)
-
-    def add_to_dataframe(self,instances):
-        '''
-        Adds a new list of appliances to the dataframe.
-        '''
-        pass
-
-    def make_dataframe(self):
+    def get_dataframe(self):
         '''
         Makes a new dataframe of the appliance instances. Throws an exception if
         if the appliance instances have traces that don't align.
@@ -116,16 +103,9 @@ class ApplianceSet(object):
         # TODO concatenate all traces into a single trace
         # TODO change this to ordered dict
         # TODO actually throw an exception
-        series_dict = {instance.traces[0].series.name:instance.traces[0].series for instance in self.instances}
-        self.df = pd.DataFrame.from_dict(series_dict)
-
-    def set_instances(self,instances):
-        '''
-        Replaces the old instances with the new list. Makes a new dataframe
-        using those instances
-        '''
-        self.instances = instances
-        self.make_dataframe()
+        series_dict = {instance.traces[0].series.name:instance.traces[0].series
+                       for instance in self.instances}
+        return pd.DataFrame.from_dict(series_dict)
 
     def generate_top_k_set(self,k):
         '''
@@ -133,7 +113,8 @@ class ApplianceSet(object):
         '''
         # TODO compare speeds of individual instance summing vs dataframe building and summing
         # TODO more intelligently create the metadata
-        total_usages = self.df.sum(axis=0)
+        df = get_dataframe()
+        total_usages = df.sum(axis=0)
         usage_order = np.argsort(total_usages)[::-1] # assumes correctly ordered columns
         top_k_instances = [self.instances[i] for i in usage_order[:k]]
         return ApplianceSet(top_k_instances,
@@ -146,7 +127,8 @@ class ApplianceSet(object):
         '''
         # TODO compare speeds of individual instance summing vs dataframe building and summing
         # TODO moe intelligently create the metadata
-        total_usages = self.df.sum(axis=0)
+        df = get_dataframe()
+        total_usages = df.sum(axis=0)
         usage_order = np.argsort(total_usages)[::-1] # assumes correctly ordered columns
         non_zero_instances = [self.instances[i] for i in usage_order if total_usages[i] > 0 ]
         return ApplianceSet(non_zero_instances,
@@ -170,4 +152,15 @@ class ApplianceType(object):
         # TODO Check for uniqueness?
         self.instances = instances
         self.metadata = metadata
+        try:
+            self.instance_id_index={metadata['dataid']:i for i,instance in enumerate(instances)}
+        except KeyError:
+            print 'Warning: no "dataid" key found in metadata.'
+            
 
+    def get_instance_by_id(self,instance_id):
+        '''
+        Gets the instance of the type with a specified instance id
+        '''
+        index=self.instance_id_index[instance_id]
+        return ApplianceType.instances[index]
