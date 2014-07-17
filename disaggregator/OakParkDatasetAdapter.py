@@ -39,6 +39,17 @@ def get_homes(db):
         houses.append(co)
     return {i:h for i,h in zip (ids,houses)}
 
+def homes_to_traces(homes):
+    '''
+       Returns a dictionary where the key is a home id and the value is an
+       Appliance Trace.
+    '''
+    homes = {}
+    for di in homes.keys():
+        homes[di]=generate_trace_by_dataid(homes,di)
+    return homes
+
+
 
 def generate_trace_by_dataid(homes,dataid):
     '''
@@ -80,5 +91,7 @@ def get_list_of_homes_with_certain_month_year(homes,year,month):
         if check_complete(homes[h],year,month):
             complete_homes.append(h)
     return complete_homes
+
+
 
 
