@@ -6,3 +6,4 @@ data/*
 *.pyc
 *.pkl
 .ipynb_checkpoints
+*.swp
