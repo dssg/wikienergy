@@ -374,7 +374,7 @@ def instances_aligned(instances):
             return False
     return True
 
-def align_traces(traces,to=None,how="front"):
+def align_traces(traces,to=None,how="front",freq=None):
     """
     Temporally aligns the traces. `how`="front" means to align to the front of
     the `to` trace. If no `to` trace is given, the first shortest trace is used.
@@ -388,9 +388,15 @@ def align_traces(traces,to=None,how="front"):
         return traces
 
     # resample to the same frequency
-    frequencies = [pd.tseries.frequencies.to_offset(trace.series.index.freq)
-                   for trace in traces if trace.series.index.freq]
-    new_freq = sorted(frequencies,reverse=True)[0]
+    if freq:
+        new_freq = freq
+    else:
+        frequencies = [pd.tseries.frequencies.to_offset(trace.series.index.freq)
+                    for trace in traces if trace.series.index.freq]
+        try:
+            new_freq = sorted(frequencies,reverse=True)[0]
+        except IndexError:
+            print "Please supply a frequency, no frequency could be guessed."
     for trace in traces:
         trace.resample(new_freq)
 
