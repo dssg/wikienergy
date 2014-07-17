@@ -19,6 +19,10 @@ from appliance import ApplianceType
 import utils
 import pymongo
 import pandas as pd
+from datetime import datetime
+import calendar
+
+source = "OakPark"
 
 def get_db_connection():
     connection = pymongo.MongoClient('ds059938.mongolab.com',59938)
@@ -39,6 +43,15 @@ def get_homes(db):
         houses.append(co)
     return {i:h for i,h in zip (ids,houses)}
 
+def homes_to_traces(homes):
+    '''
+       Returns a dictionary where the key is a home id and the value is an
+       Appliance Trace.
+    '''
+    homes_new = {}
+    for di in homes.keys():
+        homes_new[di]=generate_trace_by_dataid(homes,di)
+    return homes_new
 
 def generate_trace_by_dataid(homes,dataid):
     '''
@@ -57,20 +70,24 @@ def resample_trace_by_month(trace,month):
     return utils.resample_trace(trace,'MS')
 
 def check_complete(home,year,month):
+    year = int(year)
+    month = int(month)
     dt_start = datetime(year,month,1)
     dt_end = datetime(year,month,calendar.monthrange(year,month)[1])
     index_start = home.series.index.searchsorted(dt_start)
     index_end = home.series.index.searchsorted(dt_end)
     return index_end-index_start==((dt_end-dt_start)*48).days
 
-def get_home_series_by_year_month(year,month,home):
+def get_home_series_by_year_month(home,year,month):
     '''
         Returns the home's series sliced by year and month.
         '''
     if check_complete(home,year,month):
-        return  home.trace.series[index_start:index_end]
+        index_start = home.series.index.searchsorted(datetime(year,month,1))
+        index_end = home.series.index.searchsorted(datetime(year,month,calendar.monthrange(year,month)[1]))
+        return  home.series[index_start:index_end]
 
-def get_list_of_homes_with_certain_month_year(homes,year,month):
+def get_list_of_homes_with_certain_year_month(homes,year,month):
     '''
         Returns a list of homes which have complete trace info for given year and month.
         Assumes that homes is dict where keys are dataids and values are traces.
@@ -80,5 +97,19 @@ def get_list_of_homes_with_certain_month_year(homes,year,month):
         if check_complete(homes[h],year,month):
             complete_homes.append(h)
     return complete_homes
+
+def generate_set_by_year_month(year,month):
+    '''
+        Returns an appliance set by month and year. Where there is one
+        '''
+    db = get_db_connection()
+    homes = get_homes(db)
+    homes = homes_to_traces(homes)
+    complete_homes = get_list_of_homes_with_certain_year_month(homes,year,month)
+    for h in complete_homes:
+        homes[h].series=get_home_series_by_year_month(homes[h],year,month)
+    instances = [ApplianceInstance([t],t.metadata) for t in homes]
+    metadata_set= {'source':source,'dataids':complete_homes}
+    return ApplianceSet(instances,metadata_set)
 
 

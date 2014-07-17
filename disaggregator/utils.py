@@ -199,7 +199,7 @@ def resample_trace(trace,sample_rate):
         new_series=new_series.resample(sample_rate,how='mean')
         new_series=new_series.map(decimal.Decimal)
         new_series.name=trace.series.name
-        return appliance.ApplianceTrace(new_series,trace.metadata) 
+        return appliance.ApplianceTrace(new_series,trace.metadata)
     except ValueError:
         raise SampleError(self.sample_rate)
 
@@ -363,7 +363,7 @@ def instances_aligned(instances):
     """
     Returns True iff instances and their traces are temporally aligned.
     """
-    if len(instances < 2):
+    if len(instances) < 2:
         return True
     for instance in instances[1:]:
         if not len(instance.traces) == len(instances[0].traces):
