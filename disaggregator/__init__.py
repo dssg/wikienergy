@@ -18,4 +18,5 @@ import PecanStreetDatasetAdapter
 from TracebaseDatasetAdapter import TracebaseDatasetAdapter
 import utils
 import appliance
-import fhmm 
+import fhmm
+import generate
