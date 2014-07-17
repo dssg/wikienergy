@@ -4,7 +4,8 @@ from copy import deepcopy
 import numpy as np
 import pandas as pd
 from collections import OrderedDict
-
+import itertools
+import matplotlib.pyplot as plt
 
 def init_HMM(pi_prior,a_prior,mean_prior,cov_prior):
     '''
@@ -72,33 +73,39 @@ def generate_HMMs_from_type(type,pi_prior,a_prior,
 def generate_FHMM_from_HMMs(type_models):
     '''
     Takes a dictionary of models, where the keys are the device type name, and
-    generates an FHMM of these models.
+    generates an FHMM of these models. It returns the fhmm model as well as 
+    a dictionary with the key being device type and each value being a list
+    containing the means for each state of that device type.
     '''
     list_pi=[]
     list_A=[]
     list_means=[]
+    means={}
     for device_type_name in type_models:
         list_pi.append(type_models[device_type_name].startprob_)
         list_A.append(type_models[device_type_name].transmat_)
         list_means.append(type_models[device_type_name].means_.flatten().
             tolist())
+        means[device_type_name]=type_models[device_type_name].means_
     pi_combined=compute_pi_fhmm(list_pi)
     A_combined=compute_A_fhmm(list_A)
     [mean_combined, cov_combined]=compute_means_fhmm(list_means)
     model_fhmm=create_combined_hmm(len(pi_combined),pi_combined,
             A_combined, mean_combined, cov_combined)
+    return model_fhmm,means
 
-
-def predict_with_FHMM(model_fhmm,test_data,plot=False):
+def predict_with_FHMM(model_fhmm,means,test_data,power_total,plot=False):
     '''
     Predicts the decoded states and power for the given test data with the
-    given FHMM. test_data is a dictionary that should contain a key called
-    'aggregated', as well as keys for each device that is in the FHMM.
+    given FHMM. test_data is a dictionary containing keys for each device
+    that is in the FHMM.
     '''
-    learnt_states=model_fhmm.predict(test_data['total'])
-    decode_hmm(len(learnt_states), mean_prior,
-            [appliance for appliance in type_models], learnt_states)
-    plot_FHMM_and_predictions(test_data,decoded_power)
+    learnt_states=model_fhmm.predict(power_total)
+    [decoded_states,decoded_power]=decode_hmm(len(learnt_states), means,
+            [appliance for appliance in test_data], learnt_states)
+    if(plot):
+        plot_FHMM_and_predictions(test_data,decoded_power)
+    return decoded_states,decoded_power
 
 def plot_FHMM_and_predictions(test_data,decoded_power):
     '''
@@ -108,9 +115,8 @@ def plot_FHMM_and_predictions(test_data,decoded_power):
         if(device_type is not 'use'):
             plt.figure()
             plt.plot(test_data[device_type],'g')
-            plt.title('Ground Truth Power for %s' %device_type)
             plt.plot(decoded_power[device_type],'b')
-            plt.title('Predicted Power for %s' %device_type)
+            plt.title('Ground Truth (Green) and Predicted (Blue) for %s' %device_type)
             plt.ylabel('Power (W)')
             plt.xlabel('Time')
             plt.ylim((np.min(test_data[device_type])-10, np.max(test_data[device_type])+10))
