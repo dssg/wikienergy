@@ -65,15 +65,56 @@ def generate_HMMs_from_type(type,pi_prior,a_prior,
         else:
             instance_name=i
         instance_models[instance_name]=init_HMM(pi_prior,a_prior,mean_prior,cov_prior)
-        instance_models[instance_name]=fit_instance_to_HMM(instance_models[instance_name],instance)
+        instance_models[instance_name]=fit_instance_to_HMM(instance_models[instance_name],
+                instance)
     return instance_models
 
-def generate_FHMM_from_HMMs(type_models,key_for_model_name=None):
+def generate_FHMM_from_HMMs(type_models):
     '''
     Takes a dictionary of models, where the keys are the device type name, and
     generates an FHMM of these models.
     '''
-    pass
+    list_pi=[]
+    list_A=[]
+    list_means=[]
+    for device_type_name in type_models:
+        list_pi.append(type_models[device_type_name].startprob_)
+        list_A.append(type_models[device_type_name].transmat_)
+        list_means.append(type_models[device_type_name].means_.flatten().
+            tolist())
+    pi_combined=compute_pi_fhmm(list_pi)
+    A_combined=compute_A_fhmm(list_A)
+    [mean_combined, cov_combined]=compute_means_fhmm(list_means)
+    model_fhmm=create_combined_hmm(len(pi_combined),pi_combined,
+            A_combined, mean_combined, cov_combined)
+
+
+def predict_with_FHMM(model_fhmm,test_data,plot=False):
+    '''
+    Predicts the decoded states and power for the given test data with the
+    given FHMM. test_data is a dictionary that should contain a key called
+    'aggregated', as well as keys for each device that is in the FHMM.
+    '''
+    learnt_states=model_fhmm.predict(test_data['total'])
+    decode_hmm(len(learnt_states), mean_prior,
+            [appliance for appliance in type_models], learnt_states)
+    plot_FHMM_and_predictions(test_data,decoded_power)
+
+def plot_FHMM_and_predictions(test_data,decoded_power):
+    '''
+    This plots the actual and predicted power based on the FHMM.
+    '''
+    for i,device_type in enumerate(test_data):
+        if(device_type is not 'use'):
+            plt.figure()
+            plt.plot(test_data[device_type],'g')
+            plt.title('Ground Truth Power for %s' %device_type)
+            plt.plot(decoded_power[device_type],'b')
+            plt.title('Predicted Power for %s' %device_type)
+            plt.ylabel('Power (W)')
+            plt.xlabel('Time')
+            plt.ylim((np.min(test_data[device_type])-10, np.max(test_data[device_type])+10))
+            plt.tight_layout()
 
 def get_best_instance_model(instance_models,device_type,key_for_model_name):
     dfs_model = {}
@@ -88,7 +129,8 @@ def get_best_instance_model(instance_models,device_type,key_for_model_name):
             instances_of_model.append([model_name,instance_name,model_score])
             if(model_score > best_model_score):
                 best_model = instance_models[model_name]
-        dfs_model[model_name] = pd.DataFrame(data=instances_of_model,columns=['Model_Instance','Test_Instance','Value'])
+        dfs_model[model_name] = pd.DataFrame(data=instances_of_model,
+                columns=['Model_Instance','Test_Instance','Value'])
     model_averages = []
     for key in dfs_model:
         sum=0
@@ -96,9 +138,12 @@ def get_best_instance_model(instance_models,device_type,key_for_model_name):
             sum = sum+row[1]['Value']
         model_averages.append([key,sum/len(dfs_model[key].index)])
     print
-    avg_model_df = pd.DataFrame(data=model_averages,columns=['Model_Instance','Avg Probability'])
+    avg_model_df = pd.DataFrame(data=model_averages,
+            columns=['Model_Instance','Avg Probability'])
     print avg_model_df.sort('Avg Probability',ascending=False)
-    bestModel = avg_model_df.sort('Avg Probability',ascending=False).sort('Avg Probability',ascending=False).head(1)['Model_Instance'].values[0]
+    bestModel = avg_model_df.sort('Avg Probability',
+            ascending=False).sort('Avg Probability',
+                    ascending=False).head(1)['Model_Instance'].values[0]
     print str(bestModel) + ' is best.'
     return bestModel
 
@@ -162,3 +207,71 @@ def sort_learnt_parameters(startprob, means, covars, transmat):
     assert np.shape(startprob_new) == np.shape(startprob)
     assert np.shape(transmat_new) == np.shape(transmat)
     return [startprob_new, means_new, covars_new, transmat_new]
+
+def compute_pi_fhmm(list_pi):
+    '''
+    Input: list_pi: List of PI's of individual learnt HMMs
+    Output: Combined Pi for the FHMM
+    '''
+    result=list_pi[0]
+    for i in range(len(list_pi)-1):
+        result=np.kron(result,list_pi[i+1])
+    return result
+
+def compute_A_fhmm(list_A):
+    '''
+    Input: list_pi: List of PI's of individual learnt HMMs
+    Output: Combined Pi for the FHMM
+    '''
+    result=list_A[0]
+    for i in range(len(list_A)-1):
+        result=np.kron(result,list_A[i+1])
+    return result
+
+def compute_means_fhmm(list_means):  
+    '''
+    Returns [mu, sigma]
+    '''
+    
+    #list_of_appliances_centroids=[ [appliance[i][0] for i in range(len(appliance))] for appliance in list_B]
+    states_combination=list(itertools.product(*list_means))
+    print states_combination
+    num_combinations=len(states_combination)
+    print num_combinations
+    means_stacked=np.array([sum(x) for x in states_combination])
+    means=np.reshape(means_stacked,(num_combinations,1)) 
+    cov=np.tile(5*np.identity(1), (num_combinations, 1, 1))
+    return [means, cov] 
+
+def create_combined_hmm(n, pi, A, mean, cov):
+    combined_model=hmm.GaussianHMM(n_components=n,covariance_type='full', startprob=pi, transmat=A)
+    combined_model.covars_=cov
+    combined_model.means_=mean
+    return combined_model
+
+def decode_hmm(length_sequence, centroids, appliance_list, states):
+    '''
+    Decodes the HMM state sequence
+    '''
+    power_states_dict={}    
+    hmm_states={}
+    hmm_power={}
+    total_num_combinations=1
+    for appliance in appliance_list:
+        total_num_combinations*=len(centroids[appliance])  
+
+    for appliance in appliance_list:
+        hmm_states[appliance]=np.zeros(length_sequence,dtype=np.int)
+        hmm_power[appliance]=np.zeros(length_sequence)
+        
+    for i in range(length_sequence):
+        factor=total_num_combinations
+        for appliance in appliance_list:
+            #assuming integer division (will cause errors in Python 3x)
+            factor=factor//len(centroids[appliance])
+            
+            temp=int(states[i])/factor
+            hmm_states[appliance][i]=temp%len(centroids[appliance])
+            hmm_power[appliance][i]=centroids[appliance][hmm_states[appliance][i]]
+            
+    return [hmm_states,hmm_power]

@@ -25,8 +25,8 @@ def get_index(app_instances,app):
     for t_i in range(len(traces)):
         if traces[t_i]==app:
            return t_i
-    return -1	
-       
+    return -1
+
 
 def fraction_energy_assigned_correctly(predicted_power_as_instances, ground_truth_as_instances):
     '''
@@ -35,7 +35,7 @@ def fraction_energy_assigned_correctly(predicted_power_as_instances, ground_trut
     traces_truth = ground_truth_as_instances.traces
     #traces_power = [t.series for t in traces]
     traces_predicted = predicted_power_as_instances.traces
-    #traces_predicted_power = [t.series for t in traces_predicted] 
+    #traces_predicted_power = [t.series for t in traces_predicted]
     total_energy_ground_truth = np.sum([float(np.sum(t.series)) for t in traces_truth])
     percent_power_by_app = np.array([])
     for trace_index in range(len(traces_predicted)):
@@ -50,12 +50,6 @@ def fraction_energy_assigned_correctly(predicted_power_as_instances, ground_trut
                 app_energy_ground_truth = sys.maxint
         percent_power_by_app = np.append(percent_power_by_app,float(np.min([app_energy_predicted,app_energy_ground_truth])))
     return np.divide(float(np.sum(percent_power_by_app)),float(total_energy_ground_truth))
-
-        
-       
-    
-    
-    
 
 def rss(truth,prediction):
     '''Sum of squared residuals'''
