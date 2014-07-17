@@ -87,7 +87,7 @@ class ApplianceTrace(object):
             new_series.name = self.series.name
         except ValueError:
             raise utils.SampleError(sample_rate)
-        return ApplianceTrace(new_series,self.metadata) 
+        return ApplianceTrace(new_series,self.metadata)
 
     def split_by(self,rate):
         '''

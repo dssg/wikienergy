@@ -17,12 +17,14 @@ def init_HMM(pi_prior,a_prior,mean_prior,cov_prior):
     cov_prior is the initial covariance of each state
 
     For an n-state HMM:
-    *pi_prior is a 1-D numpy array of size n
-    *a_prior is a 2-D numpy array of size n x n
-    *mean_prior is an numpy array of size n
-    *cov_prior is a 3-D numpy array that has been tiled into two rows,
-    one column, and n third dimensional states.
-    ex) np.tile(1,(2,1,n)) for uniform covariance to start with.
+
+    * pi_prior is a 1-D numpy array of size n
+    * a_prior is a 2-D numpy array of size n x n
+    * mean_prior is an numpy array of size n
+    * cov_prior is a 3-D numpy array that has been tiled into two rows,
+      one column, and n third dimensional states.
+
+      * ex) np.tile(1,(2,1,n)) for uniform covariance to start with.
     '''
     model = hmm.GaussianHMM(pi_prior.size,'full',pi_prior,a_prior)
     model.means_ = mean_prior
