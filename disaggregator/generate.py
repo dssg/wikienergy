@@ -9,7 +9,7 @@ import numpy as np
 
 def generate_trace(start,periods,freq):
     """
-    Returns a generated appliance trace for a particular time period.
+    Returns a randomly generated appliance trace for a particular time period.
     Ex) generate_trace(datetime.datetime(2013,1,1),96,'15T'))
     """
     rng = pd.date_range(start, periods=periods, freq=freq)
@@ -19,9 +19,17 @@ def generate_trace(start,periods,freq):
 
 def generate_instance(starts,periods,freq):
     """
-    Returns a generated appliance instance for a particular time period.
+    Returns a randomly generated appliance instance for a particular time
+    period.
     """
     traces = []
     for start in starts:
         traces.append(generate_trace(start,periods,freq))
     return ApplianceInstance(traces,{"source": "generated"})
+
+def generate_refrigerator_trace(starts,periods,freq):
+    """
+    Uses hmm parameters learned from Pecan Street data to generate samples
+    for a fairly normal cycling refrigerator.
+    """
+    pass
