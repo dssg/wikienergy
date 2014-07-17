@@ -5,8 +5,10 @@
      dataset.
 
 .. moduleauthor:: Phil Ngo <ngo.phil@gmail.com>
+.. moduleauthor:: Miguel Perez <miguel@invalid.com>
 .. moduleauthor:: Stephen Suffian <steve@invalid.com>
 .. moduleauthor:: Sabina Tomkins <sabina.tomkins@gmail.com>
+
 
 """
 
@@ -550,19 +552,19 @@ def get_appliance_detection_arrays(schema,tables,appliance,window_length,
         if verbose:
             print set_name
         # get dataids
-        appliance_ids = [appliance_ids[i] for i in app_i]
-        no_appliance_ids = [no_appliance_ids[i] for i in no_app_i]
+        appliance_ids_ = [appliance_ids[i] for i in app_i]
+        no_appliance_ids_ = [no_appliance_ids[i] for i in no_app_i]
 
         # get windows for each dataid
         if verbose:
             print "Fetching samples for key = 1"
         active_appliance_windows = get_use_for_active_windows(
-                schema,tables,[appliance],appliance_ids,
+                schema,tables,[appliance],appliance_ids_,
                 window_length,window_stride,drop_percentile)
         if verbose:
             print "Fetching samples for key = 0"
         other_windows = get_use_for_active_windows(
-                schema,tables,None,no_appliance_ids,
+                schema,tables,None,no_appliance_ids_,
                 window_length,window_stride,drop_percentile=0)
 
         # concatenate results for different dataids
