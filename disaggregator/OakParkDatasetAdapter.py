@@ -3,12 +3,12 @@
     :platform: Unix
     :synopsis: Contains methods for importing data from Oak Park
     dataset.
-    
+
     .. moduleauthor:: Phil Ngo <ngo.phil@gmail.com>
     .. moduleauthor:: Miguel Perez <miguel@invalid.com>
     .. moduleauthor:: Stephen Suffian <steve@invalid.com>
     .. moduleauthor:: Sabina Tomkins <sabina.tomkins@gmail.com>
-    
+
 """
 
 
