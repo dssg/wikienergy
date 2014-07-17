@@ -68,7 +68,7 @@ trace of a particular appliance. However this is the point where you are
 informed that "seeing" is actually a step that comes after pickling. Do you want to pickle a house? If not you will be asked shortly to pickle a type? Enter yes or no'''
 boo = raw_input()
 if str(boo)=='yes':
-    
+
     #house = raw_input('Enter a home id\n')
     #appliance = raw_input('Enter an appliance name (this is not actually necessary at\this point):')
 
@@ -87,7 +87,7 @@ elif str(boo)=='no':
     print 'this step takes quite a while'
     pecan.set_url(db_url)
     dataids = pecan.get_dataids_with_real_values(schema,month,app)
-    
+
     type = pecan.generate_traces_for_appliance_by_dataids(schema, month,app,dataids)
     utils.pickle_object(type, '{}_{}'.format(app,month))
 
