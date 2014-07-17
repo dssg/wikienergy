@@ -5,7 +5,9 @@
       traces.
 
 .. moduleauthor:: Phil Ngo <ngo.phil@gmail.com>
+.. moduleauthor:: Miguel Perez <miguel@invalid.com>
 .. moduleauthor:: Stephen Suffian <steve@invalid.com>
+.. moduleauthor:: Sabina Tomkins <sabina.tomkins@gmail.com>
 
 """
 
@@ -13,6 +15,7 @@ import numpy as np
 import pandas as pd
 import pprint
 from utils import order_traces
+import utils
 import decimal
 
 class ApplianceTrace(object):
