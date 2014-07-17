@@ -3,8 +3,21 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-Disaggregator Package Overview
-==============================
+Disaggregator Package
+=====================
+
+.. toctree::
+   :maxdepth: 2
+
+   dataset_adapters
+   appliances
+   evaluation_metrics
+   utils
+   algorithms
+   generators
+
+Overview
+--------
 
 Datasets might be loaded from many external sources and combined or
 manipulated in a variety of ways toward the end of energy disaggregation;
@@ -66,19 +79,6 @@ appliance set
    a set of appliance instances which form a metered unit. Appliance sets
    might also be fabricated to form ground-truth training, validation or
    testing sets for algorithmic disaggregation tasks.
-
-Documentation
--------------
-
-.. toctree::
-   :maxdepth: 2
-
-   dataset_adapters
-   appliances
-   evaluation_metrics
-   utils
-   algorithms
-
 
 Indices and tables
 ==================
