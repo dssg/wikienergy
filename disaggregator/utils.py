@@ -199,7 +199,7 @@ def resample_trace(trace,sample_rate):
         new_series=new_series.resample(sample_rate,how='mean')
         new_series=new_series.map(decimal.Decimal)
         new_series.name=trace.series.name
-        return appliance.ApplianceTrace(new_series,trace.metadata) 
+        return appliance.ApplianceTrace(new_series,trace.metadata)
     except ValueError:
         raise SampleError(self.sample_rate)
 
@@ -355,7 +355,8 @@ def traces_aligned(traces):
     """
     indices = [trace.series.index for trace in traces]
     for index in indices[1:]:
-        if not indices[0].equals(index):
+        if not indices[0].summary()==(index.summary()):
+            print index
             return False
     return True
 
@@ -363,24 +364,27 @@ def instances_aligned(instances):
     """
     Returns True iff instances and their traces are temporally aligned.
     """
-    if len(instances < 2):
+    if len(instances) < 2:
         return True
     for instance in instances[1:]:
         if not len(instance.traces) == len(instances[0].traces):
+            print "one"
             return False
     traces = map(list,zip(*[instance.traces for instance in instances]))
     for traces_ in traces:
         if not traces_aligned(traces_):
+            print "two"
             return False
     return True
 
-def align_traces(traces,to=None,how="front"):
+def align_traces(traces,to=None,how="front",freq=None):
     """
     Temporally aligns the traces. `how`="front" means to align to the front of
     the `to` trace. If no `to` trace is given, the first shortest trace is used.
     Traces are all downsampled to match the lowest sampling rate
     """
     # make copies
+
     traces=copy.deepcopy(traces)
 
     # if already aligned, don't do extra work.
@@ -388,9 +392,17 @@ def align_traces(traces,to=None,how="front"):
         return traces
 
     # resample to the same frequency
-    frequencies = [pd.tseries.frequencies.to_offset(trace.series.index.freq)
-                   for trace in traces if trace.series.index.freq]
-    new_freq = sorted(frequencies,reverse=True)[0]
+
+    if freq:
+        new_freq = freq
+    else:
+        frequencies = [pd.tseries.frequencies.to_offset(trace.series.index.freq)
+                    for trace in traces if trace.series.index.freq]
+        try:
+            new_freq = sorted(frequencies,reverse=True)[0]
+        except IndexError:
+            print "Please supply a frequency, no frequency could be guessed."
+
     for trace in traces:
         trace.resample(new_freq)
 
@@ -424,10 +436,12 @@ def align_instances(instances):
     Aligns all traces in a list of instances. Removes traces that don't fit.
     """
     traces = map(list,zip(*[instance.traces for instance in instances]))
+    print traces
     aligned_traces = []
     for traces_ in traces:
         aligned_traces.append(align_traces(traces_))
-    traces = map(list,zip(*aligned_traces))
+    print aligned_traces
+    traces = map(list,zip(*aligned_traces_))
     return [ApplianceInstance(traces_,instance.metadata)
             for traces_,instance in zip(traces,instances)]
 
