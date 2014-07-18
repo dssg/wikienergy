@@ -355,7 +355,8 @@ def traces_aligned(traces):
     """
     indices = [trace.series.index for trace in traces]
     for index in indices[1:]:
-        if not indices[0].equals(index):
+        if not indices[0].summary()==(index.summary()):
+            print index
             return False
     return True
 
@@ -367,10 +368,12 @@ def instances_aligned(instances):
         return True
     for instance in instances[1:]:
         if not len(instance.traces) == len(instances[0].traces):
+            print "one"
             return False
     traces = map(list,zip(*[instance.traces for instance in instances]))
     for traces_ in traces:
         if not traces_aligned(traces_):
+            print "two"
             return False
     return True
 
@@ -381,6 +384,7 @@ def align_traces(traces,to=None,how="front",freq=None):
     Traces are all downsampled to match the lowest sampling rate
     """
     # make copies
+
     traces=copy.deepcopy(traces)
 
     # if already aligned, don't do extra work.
@@ -388,6 +392,7 @@ def align_traces(traces,to=None,how="front",freq=None):
         return traces
 
     # resample to the same frequency
+
     if freq:
         new_freq = freq
     else:
@@ -397,6 +402,7 @@ def align_traces(traces,to=None,how="front",freq=None):
             new_freq = sorted(frequencies,reverse=True)[0]
         except IndexError:
             print "Please supply a frequency, no frequency could be guessed."
+
     for trace in traces:
         trace.resample(new_freq)
 
@@ -430,10 +436,12 @@ def align_instances(instances):
     Aligns all traces in a list of instances. Removes traces that don't fit.
     """
     traces = map(list,zip(*[instance.traces for instance in instances]))
+    print traces
     aligned_traces = []
     for traces_ in traces:
         aligned_traces.append(align_traces(traces_))
-    traces = map(list,zip(*aligned_traces))
+    print aligned_traces
+    traces = map(list,zip(*aligned_traces_))
     return [ApplianceInstance(traces_,instance.metadata)
             for traces_,instance in zip(traces,instances)]
 
