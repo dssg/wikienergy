@@ -6,6 +6,7 @@ import fhmm
 
 import pandas as pd
 import numpy as np
+from scipy import stats
 
 def generate_trace(start,periods,freq):
     """
@@ -27,9 +28,15 @@ def generate_instance(starts,periods,freq):
         traces.append(generate_trace(start,periods,freq))
     return ApplianceInstance(traces,{"source": "generated"})
 
-def generate_refrigerator_trace(starts,periods,freq):
+def generate_refrigerator_trace(start,periods,freq):
     """
     Uses hmm parameters learned from Pecan Street data to generate samples
     for a fairly normal cycling refrigerator.
+
+    Uses a three state HMM.
     """
-    pass
+    rng = pd.date_range(start, periods, freq)
+    values = np.zeros(periods)
+    series = pd.Series(values,index=rng)
+
+    return ApplianceTrace(series,{"source": "fhmm generated"})
