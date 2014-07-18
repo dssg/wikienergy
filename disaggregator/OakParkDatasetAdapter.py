@@ -21,6 +21,7 @@ import pymongo
 import pandas as pd
 from datetime import datetime
 import calendar
+import copy
 
 source = "OakPark"
 
@@ -109,7 +110,7 @@ def generate_set_by_year_month(year,month):
     correct_homes = {}
     for h in complete_homes:
         correct_homes[h]=homes_traces[h]
-        correct_homes[h].series=get_home_series_by_year_month(homes_traces[h],year,month)
+        correct_homes[h].series=get_home_series_by_year_month(correct_homes[h],year,month)
         
         # print len(homes_traces[h].series)
         #print homes_traces[h].series.index[0]
@@ -117,4 +118,22 @@ def generate_set_by_year_month(year,month):
     metadata_set= {'source':source,'dataids':complete_homes}
     return ApplianceSet(instances,metadata_set)
 
+def generate_set_by_year_month(homes,year,month):
+    '''
+        Returns an appliance set by month and year. Where there is one
+        '''
+    # db = get_db_connection()
+ 
+    homes_traces = homes_to_traces(copy.deepcopy(homes))
+    complete_homes = get_list_of_homes_with_certain_year_month(homes_traces,year,month)
+    correct_homes = {}
+    for h in complete_homes:
+        correct_homes[h]=homes_traces[h]
+        correct_homes[h].series=get_home_series_by_year_month(homes_traces[h],year,month)
+    
+    # print len(homes_traces[h].series)
+    #print homes_traces[h].series.index[0]
+    instances = [ApplianceInstance([t],t.metadata) for t in correct_homes.values()]
+    metadata_set= {'source':source,'dataids':complete_homes}
+    return ApplianceSet(instances,metadata_set)
 
