@@ -40,4 +40,8 @@ pickle_permission = raw_input("Would you like a pickle with that? Enter yes or n
 if pickle_permission=='yes':
     utils.pickle_object(trace,'{}'.format(home))
 else:
-    print "Okie Doke, thanks for coming, check back in for sets and stuff!"
+    print "Okie Doke, thanks for coming, check back in for sets and stuff!\npysch"
+    print "here is a resampled trace"
+
+print trace.resample('MS').series
+
