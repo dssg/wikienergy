@@ -184,10 +184,10 @@ def _sort_transition_matrix(mapping, A):
             A_new[i,j] = A[mapping[i], mapping[j]]
     return A_new
 
-def return__sorting_mapping(means):
+def _return_sorting_mapping(means):
     means_copy = deepcopy(means)
     # _sorting
-    means_copy = np._sort(means_copy, axis = 0)
+    means_copy = np.sort(means_copy, axis = 0)
     # Finding mapping
     mapping = {}
     mapping_set=set()
@@ -205,8 +205,8 @@ def _sort_learnt_parameters(startprob, means, covars, transmat):
     '''
     sorts the learnt parameters for the HMM
     '''
-    mapping = return__sorting_mapping(means)
-    means_new = np._sort(means, axis = 0)
+    mapping = _return_sorting_mapping(means)
+    means_new = np.sort(means, axis = 0)
 
     startprob_new = _sort_startprob(mapping, startprob)
     covars_new = _sort_covars(mapping, covars)
@@ -240,7 +240,7 @@ def _compute_means_fhmm(list_means):
     '''
     Returns [mu, sigma]
     '''
-    
+
     #list_of_appliances_centroids=[ [appliance[i][0] for i in range(len(appliance))] for appliance in list_B]
     states_combination=list(itertools.product(*list_means))
     print states_combination
