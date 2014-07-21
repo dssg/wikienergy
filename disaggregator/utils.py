@@ -122,7 +122,7 @@ def split_instance_traces_into_rate(device_instance,rate):
     from a unique date
     '''
     print "WARNING: deprecated, "\
-          "use appliance_instance.split_traces_into_rate(rate) instead"
+          "use appliance_instance.split_by(rate) instead"
     traces=[]
     for trace in device_instance.traces:
         traces.extend(split_trace_into_rate(trace,rate))
@@ -134,7 +134,7 @@ def split_type_traces_into_rate(device_type, rate):
     that are each from a unique date
     '''
     print "WARNING: deprecated, "\
-          "use appliance_type.split_traces_into_rate(rate) instead"
+          "use appliance_type.split_by(rate) instead"
     instances=[]
     for instance in device_type.instances:
         new_instance= split_instance_traces_into_rate(instance,rate)
@@ -147,7 +147,7 @@ def split_set_traces_into_rate(device_set, rate):
     that are each from a unique date
     '''
     print "WARNING: deprecated, "\
-          "use appliance_set.split_traces_into_rate(rate) instead"
+          "use appliance_set.split_by(rate) instead"
     instances=[]
     for instance in device_set.instances:
         new_instance= split_instance_traces_into_rate(instance,rate)
