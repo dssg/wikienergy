@@ -12,6 +12,7 @@ import numpy as np
 import math
 import scipy
 import sys
+from tabulate import tabulate
 
 def sum_error(truth,prediction):
     '''
@@ -119,6 +120,13 @@ def get_accuracy(stats):
         Takes an array of true positives, false negatives, true negatives, and false positives. Returns the Accuracy measure where accuracy is tp+tn/(tn+fn+tp+fp)
     '''
     return (stats['tp']+stats['tn'])/sum(stats)
+
+def get_table_of_confusion(true_negatives, true_positives, false_negatives, false_positives):
+    row_one = ["Positive",true_positives.sum(),false_positives.sum()]
+    row_two = ["Negative", false_negatives.sum(), true_negatives.sum()]
+    headers = ["Positive","Negative"]
+    table = [row_one,row_two]
+    return tabulate(table,headers,tablefmt = "grid")
 
 
 def get_f1_score(stats):
