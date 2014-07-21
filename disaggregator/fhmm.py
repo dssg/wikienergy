@@ -243,9 +243,7 @@ def _compute_means_fhmm(list_means):
 
     #list_of_appliances_centroids=[ [appliance[i][0] for i in range(len(appliance))] for appliance in list_B]
     states_combination=list(itertools.product(*list_means))
-    print states_combination
     num_combinations=len(states_combination)
-    print num_combinations
     means_stacked=np.array([sum(x) for x in states_combination])
     means=np.reshape(means_stacked,(num_combinations,1))
     cov=np.tile(5*np.identity(1), (num_combinations, 1, 1))
