@@ -12,6 +12,7 @@ import numpy as np
 import math
 import scipy
 import sys
+from tabulate import tabulate
 
 def sum_error(truth,prediction):
     '''
@@ -107,7 +108,11 @@ def get_precision(true_positives,false_positives):
     that FP = 1 if a value was falsely predicted to be positive and 0
     otherwise.
     '''
-    return float(true_positives.sum())/(true_positives.sum()+false_positives.sum())
+    if(true_positives.sum()+false_positives.sum()>0):
+        return float(true_positives.sum())/(true_positives.sum()+false_positives.sum())
+    else:
+        print 'WARNING: There are no positives in this set. Returning 0.'
+        return float(0.0)
 
 
 def get_accuracy(stats):
@@ -116,5 +121,22 @@ def get_accuracy(stats):
     '''
     return (stats['tp']+stats['tn'])/sum(stats)
 
+def get_table_of_confusion(true_negatives, true_positives, false_negatives, false_positives):
+    row_one = ["Positive",true_positives.sum(),false_positives.sum()]
+    row_two = ["Negative", false_negatives.sum(), true_negatives.sum()]
+    headers = ["Positive","Negative"]
+    table = [row_one,row_two]
+    return tabulate(table,headers,tablefmt = "grid")
 
 
+def get_f1_score(stats):
+    '''
+        Takes an array of true positives, false negatives, true negatives, and false positives. Returns the f1 score based on precision and recall.
+    '''
+    precision=get_precision(stats['tp'],stats['fp'])
+    recall=get_sensitivity(stats['tp'],stats['fn'])
+    if(precision+recall>0):
+        return (2*precision*recall)/(precision+recall)
+    else:
+        print 'WARNING: The precision and recall are both 0. Returning 0.'
+        return float(0.0)
