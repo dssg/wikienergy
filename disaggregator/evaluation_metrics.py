@@ -87,8 +87,12 @@ def get_sensitivity(true_positives,false_negatives):
     classified as positive and 0 otherwise and FN is false negative, such that
     FN = 1 if a value was falsely predicted to be negative and 0 otherwise.
     '''
-    return float(true_positives.sum())/(true_positives.sum()+false_negatives.sum())
-
+    if(true_positives.sum()+false_positives.sum()>0):
+    	return float(true_positives.sum())/(true_positives.sum()+false_negatives.sum())
+    else:
+        print 'WARNING: No true positives are false negatives (all 0). Returning 0.'
+        return float(0.0)
+	
 def get_specificity(true_negatives, false_positives):
     '''
     Given a numpy array of true negatives, and false positives returns a
