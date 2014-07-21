@@ -56,7 +56,8 @@ class EvaluationMetricsTestCase(unittest.TestCase):
         print 'printing'
         print evm.fraction_energy_assigned_correctly(instance_p,instance_t)
 
-
+    def test_get_table_of_confusion(self):
+        print(evm.get_table_of_confusion(np.array([1,1]),np.array([0,0]),np.array([0,0]),np.array([0,0])))
 
 if __name__ == '__main__':
     unittest.main()
