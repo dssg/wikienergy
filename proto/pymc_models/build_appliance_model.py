@@ -20,18 +20,8 @@ n_states = 3
 means = np.array(zip(*means)).clip(0.001)
 variances = np.array(zip(*variances))#.clip(0.001)
 transitions = np.array(zip(*transitions))
-totals = np.sum(transitions,axis=2)
-new_shape = list(totals.shape)
-new_shape.append(1)
-transitions = (transitions / totals.reshape(new_shape))[:,:,:n_states-1]
-
-for i in range(3):
-    print means[i]
-    print
-    print variances[i]
-    print
-    print transitions[i]
-    print
+totals = np.sum(transitions,axis=2)[:,:,np.newaxis]
+transitions = (transitions / totals)[:,:,:n_states-1]
 
 mean_params = [pymc.Gamma('mean_param{}'.format(i), alpha=1, beta=.1) for i in range(n_states*2)]
 var_params = [pymc.Uniform('var_param{}'.format(i), lower=0, upper=1) for i in range(n_states*2)]
@@ -68,9 +58,7 @@ pred.extend(var_pred)
 pred.extend(trans_pred)
 model = pymc.Model(pred)
 
-M = pymc.MCMC(model)
-M.sample(10000,2000,10)
+M = pymc.MCMC(model, db="pickle",dbname=args.out_file)
+M.sample(1000,200,10)
+M.db.close()
 
-import pdb;pdb.set_trace()
-with open(args.out_file,'w') as f:
-    pickle.dump(M,f)
