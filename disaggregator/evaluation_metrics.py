@@ -79,6 +79,21 @@ def get_positive_negative_stats(true_states, predicted_states):
     pos_neg_stats['fp'] = np.array([1 if a==0 and b==1 else 0 for (a,b) in zip(true_states,predicted_states)])
     return pos_neg_stats
 
+def get_positive_negative_stats_neg(true_states, predicted_states):
+    '''
+        Returns a dictionary of numpy arrays containing the true positives a 'tp',
+        the false negatives as 'fn', the true negatives as 'tn', and
+        the false positives as 'fp'. I would like
+        to make this a truth table instead of putting the logic directly in the
+        list comprehension.
+        '''
+    pos_neg_stats={}
+    pos_neg_stats['tp'] = np.array([1 if a==1 and b==1 else 0 for (a,b) in zip(true_states,predicted_states)])
+    pos_neg_stats['fn'] = np.array([1 if a==1 and b==-1 else 0 for (a,b) in zip(true_states,predicted_states)])
+    pos_neg_stats['tn'] = np.array([1 if a==-1 and b==-1 else 0 for (a,b) in zip(true_states,predicted_states)])
+    pos_neg_stats['fp'] = np.array([1 if a==-1 and b==1 else 0 for (a,b) in zip(true_states,predicted_states)])
+    return pos_neg_stats
+
 def get_sensitivity(true_positives,false_negatives):
     '''
     Given a numpy array of true positives, and false negatives returns a
@@ -119,11 +134,11 @@ def get_accuracy(stats):
     '''
         Takes an array of true positives, false negatives, true negatives, and false positives. Returns the Accuracy measure where accuracy is tp+tn/(tn+fn+tp+fp)
     '''
-    return (stats['tp']+stats['tn'])/sum(stats)
+    return (sum(stats['tp'])+sum(stats['tn']))/float(sum([sum(i) for i in stats.values()]))
 
-def get_table_of_confusion(true_negatives, true_positives, false_negatives, false_positives):
-    row_one = ["Positive",true_positives.sum(),false_positives.sum()]
-    row_two = ["Negative", false_negatives.sum(), true_negatives.sum()]
+def get_table_of_confusion(stats):
+    row_one = ["Positive",stats['tp'].sum(),stats['fp'].sum()]
+    row_two = ["Negative", stats['fn'].sum(), stats['tn'].sum()]
     headers = ["Positive","Negative"]
     table = [row_one,row_two]
     return tabulate(table,headers,tablefmt = "grid")
