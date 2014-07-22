@@ -57,10 +57,12 @@
 
 <span class="kn">import</span> <span class="nn">pandas</span> <span class="kn">as</span> <span class="nn">pd</span>
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">scipy</span> <span class="kn">import</span> <span class="n">stats</span>
 
 <div class="viewcode-block" id="generate_trace"><a class="viewcode-back" href="../../generators.html#disaggregator.generate.generate_trace">[docs]</a><span class="k">def</span> <span class="nf">generate_trace</span><span class="p">(</span><span class="n">start</span><span class="p">,</span><span class="n">periods</span><span class="p">,</span><span class="n">freq</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Returns a generated appliance trace for a particular time period.</span>
+<span class="sd">    Returns a randomly generated appliance trace for a particular time period.</span>
+<span class="sd">    Ex) generate_trace(datetime.datetime(2013,1,1),96,&#39;15T&#39;))</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">rng</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">date_range</span><span class="p">(</span><span class="n">start</span><span class="p">,</span> <span class="n">periods</span><span class="o">=</span><span class="n">periods</span><span class="p">,</span> <span class="n">freq</span><span class="o">=</span><span class="n">freq</span><span class="p">)</span>
     <span class="n">series</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="n">periods</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="n">rng</span><span class="p">)</span>
@@ -69,12 +71,26 @@
 </div>
 <div class="viewcode-block" id="generate_instance"><a class="viewcode-back" href="../../generators.html#disaggregator.generate.generate_instance">[docs]</a><span class="k">def</span> <span class="nf">generate_instance</span><span class="p">(</span><span class="n">starts</span><span class="p">,</span><span class="n">periods</span><span class="p">,</span><span class="n">freq</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Returns a generated appliance instance for a particular time period.</span>
+<span class="sd">    Returns a randomly generated appliance instance for a particular time</span>
+<span class="sd">    period.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">traces</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="k">for</span> <span class="n">start</span> <span class="ow">in</span> <span class="n">starts</span><span class="p">:</span>
         <span class="n">traces</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">generate_trace</span><span class="p">(</span><span class="n">start</span><span class="p">,</span><span class="n">periods</span><span class="p">,</span><span class="n">freq</span><span class="p">))</span>
-    <span class="k">return</span> <span class="n">ApplianceInstance</span><span class="p">(</span><span class="n">traces</span><span class="p">,{</span><span class="s">&quot;source&quot;</span><span class="p">:</span> <span class="s">&quot;generated&quot;</span><span class="p">})</span></div>
+    <span class="k">return</span> <span class="n">ApplianceInstance</span><span class="p">(</span><span class="n">traces</span><span class="p">,{</span><span class="s">&quot;source&quot;</span><span class="p">:</span> <span class="s">&quot;generated&quot;</span><span class="p">})</span>
+</div>
+<div class="viewcode-block" id="generate_refrigerator_trace"><a class="viewcode-back" href="../../generators.html#disaggregator.generate.generate_refrigerator_trace">[docs]</a><span class="k">def</span> <span class="nf">generate_refrigerator_trace</span><span class="p">(</span><span class="n">start</span><span class="p">,</span><span class="n">periods</span><span class="p">,</span><span class="n">freq</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Uses hmm parameters learned from Pecan Street data to generate samples</span>
+<span class="sd">    for a fairly normal cycling refrigerator.</span>
+
+<span class="sd">    Uses a three state HMM.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">rng</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">date_range</span><span class="p">(</span><span class="n">start</span><span class="p">,</span> <span class="n">periods</span><span class="p">,</span> <span class="n">freq</span><span class="p">)</span>
+    <span class="n">values</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">periods</span><span class="p">)</span>
+    <span class="n">series</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">(</span><span class="n">values</span><span class="p">,</span><span class="n">index</span><span class="o">=</span><span class="n">rng</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">ApplianceTrace</span><span class="p">(</span><span class="n">series</span><span class="p">,{</span><span class="s">&quot;source&quot;</span><span class="p">:</span> <span class="s">&quot;fhmm generated&quot;</span><span class="p">})</span></div>
 </pre></div>
 
           </div>
