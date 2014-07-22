@@ -5,8 +5,10 @@
      dataset.
 
 .. moduleauthor:: Phil Ngo <ngo.phil@gmail.com>
+.. moduleauthor:: Miguel Perez <miguel@invalid.com>
 .. moduleauthor:: Stephen Suffian <steve@invalid.com>
 .. moduleauthor:: Sabina Tomkins <sabina.tomkins@gmail.com>
+
 
 """
 
@@ -467,6 +469,7 @@ def get_dataframe(query):
     '''
     global eng
     eng_object = eng.execute(query)
+    #import pdb;pdb.set_trace()
     df = pd.DataFrame.from_records(eng_object.fetchall())
     df.columns = eng_object.keys()
     return df
