@@ -25,6 +25,7 @@
     <script type="text/javascript" src="_static/doctools.js"></script>
     <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
     <link rel="top" title="disaggregator 0.1.0 documentation" href="index.html" />
+    <link rel="next" title="Generators" href="generators.html" />
     <link rel="prev" title="Utilities" href="utils.html" /> 
   </head>
   <body>
@@ -37,6 +38,9 @@
         <li class="right" >
           <a href="py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
+        <li class="right" >
+          <a href="generators.html" title="Generators"
+             accesskey="N">next</a> |</li>
         <li class="right" >
           <a href="utils.html" title="Utilities"
              accesskey="P">previous</a> |</li>
@@ -51,8 +55,22 @@
             
   <div class="section" id="algorithms">
 <h1>Algorithms<a class="headerlink" href="#algorithms" title="Permalink to this headline">¶</a></h1>
+<p>The following algorithm modules work modules with the particular data types
+defined in the <tt class="docutils literal"><span class="pre">appliance</span></tt> module to perform particular disaggregation tasks
+such as:</p>
+<ol class="arabic simple">
+<li>Appliance detection</li>
+<li>Appliance modeling and signal generation</li>
+<li>Appliance disaggregation</li>
+</ol>
+<div class="section" id="factorial-hidden-markov-models">
+<h2>Factorial Hidden Markov Models<a class="headerlink" href="#factorial-hidden-markov-models" title="Permalink to this headline">¶</a></h2>
+<p>The <tt class="docutils literal"><span class="pre">fhmm</span></tt> module contains methods for using Hidden Markov Models (HMM) and
+Factorial Hidden Markov Models (FHMM) for appliance type modeling and sample
+generation. Given a set of appliances for a house with known parameters, FHMMs
+combine a number of HMMs in parallel to model appliance states.</p>
 <div class="section" id="module-disaggregator.fhmm">
-<span id="fhmm"></span><h2>FHMM<a class="headerlink" href="#module-disaggregator.fhmm" title="Permalink to this headline">¶</a></h2>
+<span id="methods"></span><h3>Methods<a class="headerlink" href="#module-disaggregator.fhmm" title="Permalink to this headline">¶</a></h3>
 <dl class="function">
 <dt id="disaggregator.fhmm.fit_instance_to_HMM">
 <tt class="descclassname">disaggregator.fhmm.</tt><tt class="descname">fit_instance_to_HMM</tt><big>(</big><em>model</em>, <em>instance</em><big>)</big><a class="reference internal" href="_modules/disaggregator/fhmm.html#fit_instance_to_HMM"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#disaggregator.fhmm.fit_instance_to_HMM" title="Permalink to this definition">¶</a></dt>
@@ -123,14 +141,35 @@ one column, and n third dimensional states.<ul>
 </dd></dl>
 
 </div>
+</div>
 <div class="section" id="neural-networks">
 <h2>Neural Networks<a class="headerlink" href="#neural-networks" title="Permalink to this headline">¶</a></h2>
+<p>The <tt class="docutils literal"><span class="pre">nn</span></tt> module contains methods for using Neural networks for appliance
+detection.</p>
+<p>Convolutional Neural Networks capture translation invariant features.</p>
+<div class="section" id="id1">
+<h3>Methods<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h3>
+<p><em>[Future]</em></p>
+</div>
 </div>
 <div class="section" id="sparse-coding">
 <h2>Sparse Coding<a class="headerlink" href="#sparse-coding" title="Permalink to this headline">¶</a></h2>
+<p>Sparse coding methods model appliances as a linear combinations of basis
+functions. It is termed &#8220;sparse coding&#8221; because appliances are coded using
+a sparse selection of the basis functions.</p>
+<div class="section" id="id2">
+<h3>Methods<a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h3>
+<p><em>[Future]</em></p>
 </div>
-<div class="section" id="ensemble">
-<h2>Ensemble<a class="headerlink" href="#ensemble" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="ensemble-methods">
+<h2>Ensemble Methods<a class="headerlink" href="#ensemble-methods" title="Permalink to this headline">¶</a></h2>
+<p>Some methods use multiple algorithms to gain better insight into particular
+problems.</p>
+<div class="section" id="id3">
+<h3>Methods<a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h3>
+<p><em>[Future]</em></p>
+</div>
 </div>
 </div>
 
@@ -143,10 +182,22 @@ one column, and n third dimensional states.<ul>
   <h3><a href="index.html">Table Of Contents</a></h3>
   <ul>
 <li><a class="reference internal" href="#">Algorithms</a><ul>
-<li><a class="reference internal" href="#module-disaggregator.fhmm">FHMM</a></li>
-<li><a class="reference internal" href="#neural-networks">Neural Networks</a></li>
-<li><a class="reference internal" href="#sparse-coding">Sparse Coding</a></li>
-<li><a class="reference internal" href="#ensemble">Ensemble</a></li>
+<li><a class="reference internal" href="#factorial-hidden-markov-models">Factorial Hidden Markov Models</a><ul>
+<li><a class="reference internal" href="#module-disaggregator.fhmm">Methods</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#neural-networks">Neural Networks</a><ul>
+<li><a class="reference internal" href="#id1">Methods</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#sparse-coding">Sparse Coding</a><ul>
+<li><a class="reference internal" href="#id2">Methods</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#ensemble-methods">Ensemble Methods</a><ul>
+<li><a class="reference internal" href="#id3">Methods</a></li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>
@@ -154,6 +205,9 @@ one column, and n third dimensional states.<ul>
   <h4>Previous topic</h4>
   <p class="topless"><a href="utils.html"
                         title="previous chapter">Utilities</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="generators.html"
+                        title="next chapter">Generators</a></p>
   <h3>This Page</h3>
   <ul class="this-page-menu">
     <li><a href="_sources/algorithms.txt"
@@ -185,6 +239,9 @@ one column, and n third dimensional states.<ul>
         <li class="right" >
           <a href="py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
+        <li class="right" >
+          <a href="generators.html" title="Generators"
+             >next</a> |</li>
         <li class="right" >
           <a href="utils.html" title="Utilities"
              >previous</a> |</li>

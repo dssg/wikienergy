@@ -4,7 +4,8 @@ from copy import deepcopy
 import numpy as np
 import pandas as pd
 from collections import OrderedDict
-
+import itertools
+import matplotlib.pyplot as plt
 
 def init_HMM(pi_prior,a_prior,mean_prior,cov_prior):
     '''
@@ -36,7 +37,7 @@ def fit_trace_to_HMM(model,trace):
     '''
     trace_values = utils.trace_series_to_numpy_array(trace.series)
     model.fit([trace_values])
-    startprob, means, covars, transmat = sort_learnt_parameters(model.startprob_,
+    startprob, means, covars, transmat = _sort_learnt_parameters(model.startprob_,
             model.means_, model.covars_ , model.transmat_)
     model=hmm.GaussianHMM(startprob.size, 'full', startprob, transmat)
     model.means_ = means
@@ -67,15 +68,61 @@ def generate_HMMs_from_type(type,pi_prior,a_prior,
         else:
             instance_name=i
         instance_models[instance_name]=init_HMM(pi_prior,a_prior,mean_prior,cov_prior)
-        instance_models[instance_name]=fit_instance_to_HMM(instance_models[instance_name],instance)
+        instance_models[instance_name]=fit_instance_to_HMM(instance_models[instance_name],
+                instance)
     return instance_models
 
-def generate_FHMM_from_HMMs(type_models,key_for_model_name=None):
+def generate_FHMM_from_HMMs(type_models):
     '''
     Takes a dictionary of models, where the keys are the device type name, and
-    generates an FHMM of these models.
+    generates an FHMM of these models. It returns the fhmm model as well as 
+    a dictionary with the key being device type and each value being a list
+    containing the means for each state of that device type.
     '''
-    pass
+    list_pi=[]
+    list_A=[]
+    list_means=[]
+    means={}
+    for device_type_name in type_models:
+        list_pi.append(type_models[device_type_name].startprob_)
+        list_A.append(type_models[device_type_name].transmat_)
+        list_means.append(type_models[device_type_name].means_.flatten().
+            tolist())
+        means[device_type_name]=type_models[device_type_name].means_
+    pi_combined=_compute_pi_fhmm(list_pi)
+    A_combined=_compute_A_fhmm(list_A)
+    [mean_combined, cov_combined]=_compute_means_fhmm(list_means)
+    model_fhmm=_create_combined_hmm(len(pi_combined),pi_combined,
+            A_combined, mean_combined, cov_combined)
+    return model_fhmm,means
+
+def predict_with_FHMM(model_fhmm,means,test_data,power_total,plot=False):
+    '''
+    Predicts the _decoded states and power for the given test data with the
+    given FHMM. test_data is a dictionary containing keys for each device
+    that is in the FHMM.
+    '''
+    learnt_states=model_fhmm.predict(power_total)
+    [_decoded_states,_decoded_power]=_decode_hmm(len(learnt_states), means,
+            [appliance for appliance in test_data], learnt_states)
+    if(plot):
+        plot_FHMM_and_predictions(test_data,_decoded_power)
+    return _decoded_states,_decoded_power
+
+def plot_FHMM_and_predictions(test_data,_decoded_power):
+    '''
+    This plots the actual and predicted power based on the FHMM.
+    '''
+    for i,device_type in enumerate(test_data):
+        if(device_type is not 'use'):
+            plt.figure()
+            plt.plot(test_data[device_type],'g')
+            plt.plot(_decoded_power[device_type],'b')
+            plt.title('Ground Truth (Green) and Predicted (Blue) for %s' %device_type)
+            plt.ylabel('Power (W)')
+            plt.xlabel('Time')
+            plt.ylim((np.min(test_data[device_type])-10, np.max(test_data[device_type])+10))
+            plt.tight_layout()
 
 def get_best_instance_model(instance_models,device_type,key_for_model_name):
     dfs_model = {}
@@ -90,7 +137,8 @@ def get_best_instance_model(instance_models,device_type,key_for_model_name):
             instances_of_model.append([model_name,instance_name,model_score])
             if(model_score > best_model_score):
                 best_model = instance_models[model_name]
-        dfs_model[model_name] = pd.DataFrame(data=instances_of_model,columns=['Model_Instance','Test_Instance','Value'])
+        dfs_model[model_name] = pd.DataFrame(data=instances_of_model,
+                columns=['Model_Instance','Test_Instance','Value'])
     model_averages = []
     for key in dfs_model:
         sum=0
@@ -98,15 +146,18 @@ def get_best_instance_model(instance_models,device_type,key_for_model_name):
             sum = sum+row[1]['Value']
         model_averages.append([key,sum/len(dfs_model[key].index)])
     print
-    avg_model_df = pd.DataFrame(data=model_averages,columns=['Model_Instance','Avg Probability'])
-    print avg_model_df.sort('Avg Probability',ascending=False)
-    bestModel = avg_model_df.sort('Avg Probability',ascending=False).sort('Avg Probability',ascending=False).head(1)['Model_Instance'].values[0]
+    avg_model_df = pd.DataFrame(data=model_averages,
+            columns=['Model_Instance','Avg Probability'])
+    print avg_model_df._sort('Avg Probability',ascending=False)
+    bestModel = avg_model_df._sort('Avg Probability',
+            ascending=False)._sort('Avg Probability',
+                    ascending=False).head(1)['Model_Instance'].values[0]
     print str(bestModel) + ' is best.'
     return bestModel
 
-def sort_startprob(mapping, startprob):
+def _sort_startprob(mapping, startprob):
     '''
-    Sort the startprob of the HMM according to power means; as returned by mapping
+    _sort the startprob of the HMM according to power means; as returned by mapping
     '''
 
     num_elements = len(startprob)
@@ -115,16 +166,16 @@ def sort_startprob(mapping, startprob):
         new_startprob[i] = startprob[mapping[i]]
     return new_startprob
 
-def sort_covars(mapping, covars):
+def _sort_covars(mapping, covars):
     num_elements = len(covars)
     new_covars = np.zeros_like(covars)
     for i in xrange(len(covars)):
         new_covars[i] = covars[mapping[i]]
     return new_covars
 
-def sort_transition_matrix(mapping, A):
+def _sort_transition_matrix(mapping, A):
     '''
-    Sorts the transition matrix of the HMM according to power means; as returned by mapping
+    sorts the transition matrix of the HMM according to power means; as returned by mapping
     '''
     num_elements = len(A)
     A_new = np.zeros((num_elements, num_elements))
@@ -133,9 +184,9 @@ def sort_transition_matrix(mapping, A):
             A_new[i,j] = A[mapping[i], mapping[j]]
     return A_new
 
-def return_sorting_mapping(means):
+def _return_sorting_mapping(means):
     means_copy = deepcopy(means)
-    # Sorting
+    # _sorting
     means_copy = np.sort(means_copy, axis = 0)
     # Finding mapping
     mapping = {}
@@ -150,17 +201,83 @@ def return_sorting_mapping(means):
                 break
     return mapping
 
-def sort_learnt_parameters(startprob, means, covars, transmat):
+def _sort_learnt_parameters(startprob, means, covars, transmat):
     '''
-    Sorts the learnt parameters for the HMM
+    sorts the learnt parameters for the HMM
     '''
-    mapping = return_sorting_mapping(means)
+    mapping = _return_sorting_mapping(means)
     means_new = np.sort(means, axis = 0)
 
-    startprob_new = sort_startprob(mapping, startprob)
-    covars_new = sort_covars(mapping, covars)
-    transmat_new = sort_transition_matrix(mapping, transmat)
+    startprob_new = _sort_startprob(mapping, startprob)
+    covars_new = _sort_covars(mapping, covars)
+    transmat_new = _sort_transition_matrix(mapping, transmat)
     assert np.shape(means_new) == np.shape(means)
     assert np.shape(startprob_new) == np.shape(startprob)
     assert np.shape(transmat_new) == np.shape(transmat)
     return [startprob_new, means_new, covars_new, transmat_new]
+
+def _compute_pi_fhmm(list_pi):
+    '''
+    Input: list_pi: List of PI's of individual learnt HMMs
+    Output: Combined Pi for the FHMM
+    '''
+    result=list_pi[0]
+    for i in range(len(list_pi)-1):
+        result=np.kron(result,list_pi[i+1])
+    return result
+
+def _compute_A_fhmm(list_A):
+    '''
+    Input: list_pi: List of PI's of individual learnt HMMs
+    Output: Combined Pi for the FHMM
+    '''
+    result=list_A[0]
+    for i in range(len(list_A)-1):
+        result=np.kron(result,list_A[i+1])
+    return result
+
+def _compute_means_fhmm(list_means):  
+    '''
+    Returns [mu, sigma]
+    '''
+
+    #list_of_appliances_centroids=[ [appliance[i][0] for i in range(len(appliance))] for appliance in list_B]
+    states_combination=list(itertools.product(*list_means))
+    num_combinations=len(states_combination)
+    means_stacked=np.array([sum(x) for x in states_combination])
+    means=np.reshape(means_stacked,(num_combinations,1))
+    cov=np.tile(5*np.identity(1), (num_combinations, 1, 1))
+    return [means, cov]
+
+def _create_combined_hmm(n, pi, A, mean, cov):
+    combined_model=hmm.GaussianHMM(n_components=n,covariance_type='full', startprob=pi, transmat=A)
+    combined_model.covars_=cov
+    combined_model.means_=mean
+    return combined_model
+
+def _decode_hmm(length_sequence, centroids, appliance_list, states):
+    '''
+    decodes the HMM state sequence
+    '''
+    power_states_dict={}
+    hmm_states={}
+    hmm_power={}
+    total_num_combinations=1
+    for appliance in appliance_list:
+        total_num_combinations*=len(centroids[appliance])
+
+    for appliance in appliance_list:
+        hmm_states[appliance]=np.zeros(length_sequence,dtype=np.int)
+        hmm_power[appliance]=np.zeros(length_sequence)
+
+    for i in range(length_sequence):
+        factor=total_num_combinations
+        for appliance in appliance_list:
+            #assuming integer division (will cause errors in Python 3x)
+            factor=factor//len(centroids[appliance])
+
+            temp=int(states[i])/factor
+            hmm_states[appliance][i]=temp%len(centroids[appliance])
+            hmm_power[appliance][i]=centroids[appliance][hmm_states[appliance][i]]
+
+    return [hmm_states,hmm_power]

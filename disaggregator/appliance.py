@@ -5,7 +5,9 @@
       traces.
 
 .. moduleauthor:: Phil Ngo <ngo.phil@gmail.com>
+.. moduleauthor:: Miguel Perez <miguel@invalid.com>
 .. moduleauthor:: Stephen Suffian <steve@invalid.com>
+.. moduleauthor:: Sabina Tomkins <sabina.tomkins@gmail.com>
 
 """
 
@@ -13,6 +15,7 @@ import numpy as np
 import pandas as pd
 import pprint
 from utils import order_traces
+import utils
 import decimal
 
 class ApplianceTrace(object):
@@ -87,7 +90,7 @@ class ApplianceTrace(object):
             new_series.name = self.series.name
         except ValueError:
             raise utils.SampleError(sample_rate)
-        return ApplianceTrace(new_series,self.metadata) 
+        return ApplianceTrace(new_series,self.metadata)
 
     def split_by(self,rate):
         '''
