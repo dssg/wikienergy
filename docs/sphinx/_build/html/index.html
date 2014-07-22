@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Disaggregator Package Overview &mdash; disaggregator 0.1.0 documentation</title>
+    <title>Disaggregator Package &mdash; disaggregator 0.1.0 documentation</title>
     
     <link rel="stylesheet" href="_static/default.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -49,8 +49,40 @@
         <div class="bodywrapper">
           <div class="body">
             
-  <div class="section" id="disaggregator-package-overview">
-<h1>Disaggregator Package Overview<a class="headerlink" href="#disaggregator-package-overview" title="Permalink to this headline">¶</a></h1>
+  <div class="section" id="disaggregator-package">
+<h1>Disaggregator Package<a class="headerlink" href="#disaggregator-package" title="Permalink to this headline">¶</a></h1>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="dataset_adapters.html">Dataset Adapters</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="dataset_adapters.html#pecan-street-dataset-adapter">Pecan Street Dataset Adapter</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dataset_adapters.html#tracebase-dataset-adapter">Tracebase Dataset Adapter</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dataset_adapters.html#greenbutton-dataset-adapter">GreenButton Dataset Adapter</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="appliances.html">Appliances</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="appliances.html#appliance-traces">Appliance Traces</a></li>
+<li class="toctree-l2"><a class="reference internal" href="appliances.html#appliance-instances">Appliance Instances</a></li>
+<li class="toctree-l2"><a class="reference internal" href="appliances.html#appliance-sets">Appliance Sets</a></li>
+<li class="toctree-l2"><a class="reference internal" href="appliances.html#appliance-types">Appliance Types</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="evaluation_metrics.html">Evaluation Metrics</a></li>
+<li class="toctree-l1"><a class="reference internal" href="utils.html">Utilities</a></li>
+<li class="toctree-l1"><a class="reference internal" href="algorithms.html">Algorithms</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="algorithms.html#factorial-hidden-markov-models">Factorial Hidden Markov Models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="algorithms.html#neural-networks">Neural Networks</a></li>
+<li class="toctree-l2"><a class="reference internal" href="algorithms.html#sparse-coding">Sparse Coding</a></li>
+<li class="toctree-l2"><a class="reference internal" href="algorithms.html#ensemble-methods">Ensemble Methods</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="generators.html">Generators</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="generators.html#module-disaggregator.generate">Methods</a></li>
+</ul>
+</li>
+</ul>
+</div>
+<div class="section" id="overview">
+<h2>Overview<a class="headerlink" href="#overview" title="Permalink to this headline">¶</a></h2>
 <p>Datasets might be loaded from many external sources and combined or
 manipulated in a variety of ways toward the end of energy disaggregation;
 therefore, we organize a general hierarchical structure around appliance traces
@@ -68,6 +100,7 @@ sets for algorithmic models.</p>
 </li>
 <li>Evaluating algorithmic results with a standard set of metrics</li>
 </ul>
+</div>
 <div class="section" id="basic-usage">
 <h2>Basic usage<a class="headerlink" href="#basic-usage" title="Permalink to this headline">¶</a></h2>
 <p>Basic usage of the disaggregator module during development is as follows:</p>
@@ -108,35 +141,6 @@ might also be fabricated to form ground-truth training, validation or
 testing sets for algorithmic disaggregation tasks.</dd>
 </dl>
 </div>
-<div class="section" id="documentation">
-<h2>Documentation<a class="headerlink" href="#documentation" title="Permalink to this headline">¶</a></h2>
-<div class="toctree-wrapper compound">
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="dataset_adapters.html">Dataset Adapters</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="dataset_adapters.html#pecan-street-dataset-adapter">Pecan Street Dataset Adapter</a></li>
-<li class="toctree-l2"><a class="reference internal" href="dataset_adapters.html#tracebase-dataset-adapter">Tracebase Dataset Adapter</a></li>
-<li class="toctree-l2"><a class="reference internal" href="dataset_adapters.html#greenbutton-dataset-adapter">GreenButton Dataset Adapter</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="appliances.html">Appliances</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="appliances.html#appliance-trace">Appliance Trace</a></li>
-<li class="toctree-l2"><a class="reference internal" href="appliances.html#appliance-instance">Appliance Instance</a></li>
-<li class="toctree-l2"><a class="reference internal" href="appliances.html#appliance-set">Appliance Set</a></li>
-<li class="toctree-l2"><a class="reference internal" href="appliances.html#appliance-type">Appliance Type</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="evaluation_metrics.html">Evaluation Metrics</a></li>
-<li class="toctree-l1"><a class="reference internal" href="utils.html">Utilities</a></li>
-<li class="toctree-l1"><a class="reference internal" href="algorithms.html">Algorithms</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="algorithms.html#module-disaggregator.fhmm">FHMM</a></li>
-<li class="toctree-l2"><a class="reference internal" href="algorithms.html#neural-networks">Neural Networks</a></li>
-<li class="toctree-l2"><a class="reference internal" href="algorithms.html#sparse-coding">Sparse Coding</a></li>
-<li class="toctree-l2"><a class="reference internal" href="algorithms.html#ensemble">Ensemble</a></li>
-</ul>
-</li>
-</ul>
-</div>
-</div>
 </div>
 <div class="section" id="indices-and-tables">
 <h1>Indices and tables<a class="headerlink" href="#indices-and-tables" title="Permalink to this headline">¶</a></h1>
@@ -155,12 +159,10 @@ testing sets for algorithmic disaggregation tasks.</dd>
         <div class="sphinxsidebarwrapper">
   <h3><a href="#">Table Of Contents</a></h3>
   <ul>
-<li><a class="reference internal" href="#">Disaggregator Package Overview</a><ul>
+<li><a class="reference internal" href="#">Disaggregator Package</a><ul>
+<li><a class="reference internal" href="#overview">Overview</a></li>
 <li><a class="reference internal" href="#basic-usage">Basic usage</a></li>
 <li><a class="reference internal" href="#terms">Terms</a></li>
-<li><a class="reference internal" href="#documentation">Documentation</a><ul>
-</ul>
-</li>
 </ul>
 </li>
 <li><a class="reference internal" href="#indices-and-tables">Indices and tables</a></li>
