@@ -55,7 +55,8 @@
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
 <span class="kn">import</span> <span class="nn">pandas</span> <span class="kn">as</span> <span class="nn">pd</span>
 <span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">OrderedDict</span>
-
+<span class="kn">import</span> <span class="nn">itertools</span>
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="kn">as</span> <span class="nn">plt</span>
 
 <div class="viewcode-block" id="init_HMM"><a class="viewcode-back" href="../../algorithms.html#disaggregator.fhmm.init_HMM">[docs]</a><span class="k">def</span> <span class="nf">init_HMM</span><span class="p">(</span><span class="n">pi_prior</span><span class="p">,</span><span class="n">a_prior</span><span class="p">,</span><span class="n">mean_prior</span><span class="p">,</span><span class="n">cov_prior</span><span class="p">):</span>
     <span class="sd">&#39;&#39;&#39;</span>
@@ -87,7 +88,7 @@
 <span class="sd">    &#39;&#39;&#39;</span>
     <span class="n">trace_values</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">trace_series_to_numpy_array</span><span class="p">(</span><span class="n">trace</span><span class="o">.</span><span class="n">series</span><span class="p">)</span>
     <span class="n">model</span><span class="o">.</span><span class="n">fit</span><span class="p">([</span><span class="n">trace_values</span><span class="p">])</span>
-    <span class="n">startprob</span><span class="p">,</span> <span class="n">means</span><span class="p">,</span> <span class="n">covars</span><span class="p">,</span> <span class="n">transmat</span> <span class="o">=</span> <span class="n">sort_learnt_parameters</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">startprob_</span><span class="p">,</span>
+    <span class="n">startprob</span><span class="p">,</span> <span class="n">means</span><span class="p">,</span> <span class="n">covars</span><span class="p">,</span> <span class="n">transmat</span> <span class="o">=</span> <span class="n">_sort_learnt_parameters</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">startprob_</span><span class="p">,</span>
             <span class="n">model</span><span class="o">.</span><span class="n">means_</span><span class="p">,</span> <span class="n">model</span><span class="o">.</span><span class="n">covars_</span> <span class="p">,</span> <span class="n">model</span><span class="o">.</span><span class="n">transmat_</span><span class="p">)</span>
     <span class="n">model</span><span class="o">=</span><span class="n">hmm</span><span class="o">.</span><span class="n">GaussianHMM</span><span class="p">(</span><span class="n">startprob</span><span class="o">.</span><span class="n">size</span><span class="p">,</span> <span class="s">&#39;full&#39;</span><span class="p">,</span> <span class="n">startprob</span><span class="p">,</span> <span class="n">transmat</span><span class="p">)</span>
     <span class="n">model</span><span class="o">.</span><span class="n">means_</span> <span class="o">=</span> <span class="n">means</span>
@@ -118,15 +119,61 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="n">instance_name</span><span class="o">=</span><span class="n">i</span>
         <span class="n">instance_models</span><span class="p">[</span><span class="n">instance_name</span><span class="p">]</span><span class="o">=</span><span class="n">init_HMM</span><span class="p">(</span><span class="n">pi_prior</span><span class="p">,</span><span class="n">a_prior</span><span class="p">,</span><span class="n">mean_prior</span><span class="p">,</span><span class="n">cov_prior</span><span class="p">)</span>
-        <span class="n">instance_models</span><span class="p">[</span><span class="n">instance_name</span><span class="p">]</span><span class="o">=</span><span class="n">fit_instance_to_HMM</span><span class="p">(</span><span class="n">instance_models</span><span class="p">[</span><span class="n">instance_name</span><span class="p">],</span><span class="n">instance</span><span class="p">)</span>
+        <span class="n">instance_models</span><span class="p">[</span><span class="n">instance_name</span><span class="p">]</span><span class="o">=</span><span class="n">fit_instance_to_HMM</span><span class="p">(</span><span class="n">instance_models</span><span class="p">[</span><span class="n">instance_name</span><span class="p">],</span>
+                <span class="n">instance</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">instance_models</span>
 </div>
-<div class="viewcode-block" id="generate_FHMM_from_HMMs"><a class="viewcode-back" href="../../algorithms.html#disaggregator.fhmm.generate_FHMM_from_HMMs">[docs]</a><span class="k">def</span> <span class="nf">generate_FHMM_from_HMMs</span><span class="p">(</span><span class="n">type_models</span><span class="p">,</span><span class="n">key_for_model_name</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+<div class="viewcode-block" id="generate_FHMM_from_HMMs"><a class="viewcode-back" href="../../algorithms.html#disaggregator.fhmm.generate_FHMM_from_HMMs">[docs]</a><span class="k">def</span> <span class="nf">generate_FHMM_from_HMMs</span><span class="p">(</span><span class="n">type_models</span><span class="p">):</span>
     <span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">    Takes a dictionary of models, where the keys are the device type name, and</span>
-<span class="sd">    generates an FHMM of these models.</span>
+<span class="sd">    generates an FHMM of these models. It returns the fhmm model as well as </span>
+<span class="sd">    a dictionary with the key being device type and each value being a list</span>
+<span class="sd">    containing the means for each state of that device type.</span>
 <span class="sd">    &#39;&#39;&#39;</span>
-    <span class="k">pass</span>
+    <span class="n">list_pi</span><span class="o">=</span><span class="p">[]</span>
+    <span class="n">list_A</span><span class="o">=</span><span class="p">[]</span>
+    <span class="n">list_means</span><span class="o">=</span><span class="p">[]</span>
+    <span class="n">means</span><span class="o">=</span><span class="p">{}</span>
+    <span class="k">for</span> <span class="n">device_type_name</span> <span class="ow">in</span> <span class="n">type_models</span><span class="p">:</span>
+        <span class="n">list_pi</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">type_models</span><span class="p">[</span><span class="n">device_type_name</span><span class="p">]</span><span class="o">.</span><span class="n">startprob_</span><span class="p">)</span>
+        <span class="n">list_A</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">type_models</span><span class="p">[</span><span class="n">device_type_name</span><span class="p">]</span><span class="o">.</span><span class="n">transmat_</span><span class="p">)</span>
+        <span class="n">list_means</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">type_models</span><span class="p">[</span><span class="n">device_type_name</span><span class="p">]</span><span class="o">.</span><span class="n">means_</span><span class="o">.</span><span class="n">flatten</span><span class="p">()</span><span class="o">.</span>
+            <span class="n">tolist</span><span class="p">())</span>
+        <span class="n">means</span><span class="p">[</span><span class="n">device_type_name</span><span class="p">]</span><span class="o">=</span><span class="n">type_models</span><span class="p">[</span><span class="n">device_type_name</span><span class="p">]</span><span class="o">.</span><span class="n">means_</span>
+    <span class="n">pi_combined</span><span class="o">=</span><span class="n">_compute_pi_fhmm</span><span class="p">(</span><span class="n">list_pi</span><span class="p">)</span>
+    <span class="n">A_combined</span><span class="o">=</span><span class="n">_compute_A_fhmm</span><span class="p">(</span><span class="n">list_A</span><span class="p">)</span>
+    <span class="p">[</span><span class="n">mean_combined</span><span class="p">,</span> <span class="n">cov_combined</span><span class="p">]</span><span class="o">=</span><span class="n">_compute_means_fhmm</span><span class="p">(</span><span class="n">list_means</span><span class="p">)</span>
+    <span class="n">model_fhmm</span><span class="o">=</span><span class="n">_create_combined_hmm</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">pi_combined</span><span class="p">),</span><span class="n">pi_combined</span><span class="p">,</span>
+            <span class="n">A_combined</span><span class="p">,</span> <span class="n">mean_combined</span><span class="p">,</span> <span class="n">cov_combined</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">model_fhmm</span><span class="p">,</span><span class="n">means</span>
+</div>
+<div class="viewcode-block" id="predict_with_FHMM"><a class="viewcode-back" href="../../algorithms.html#disaggregator.fhmm.predict_with_FHMM">[docs]</a><span class="k">def</span> <span class="nf">predict_with_FHMM</span><span class="p">(</span><span class="n">model_fhmm</span><span class="p">,</span><span class="n">means</span><span class="p">,</span><span class="n">test_data</span><span class="p">,</span><span class="n">power_total</span><span class="p">,</span><span class="n">plot</span><span class="o">=</span><span class="bp">False</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Predicts the _decoded states and power for the given test data with the</span>
+<span class="sd">    given FHMM. test_data is a dictionary containing keys for each device</span>
+<span class="sd">    that is in the FHMM.</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="n">learnt_states</span><span class="o">=</span><span class="n">model_fhmm</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">power_total</span><span class="p">)</span>
+    <span class="p">[</span><span class="n">_decoded_states</span><span class="p">,</span><span class="n">_decoded_power</span><span class="p">]</span><span class="o">=</span><span class="n">_decode_hmm</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">learnt_states</span><span class="p">),</span> <span class="n">means</span><span class="p">,</span>
+            <span class="p">[</span><span class="n">appliance</span> <span class="k">for</span> <span class="n">appliance</span> <span class="ow">in</span> <span class="n">test_data</span><span class="p">],</span> <span class="n">learnt_states</span><span class="p">)</span>
+    <span class="k">if</span><span class="p">(</span><span class="n">plot</span><span class="p">):</span>
+        <span class="n">plot_FHMM_and_predictions</span><span class="p">(</span><span class="n">test_data</span><span class="p">,</span><span class="n">_decoded_power</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">_decoded_states</span><span class="p">,</span><span class="n">_decoded_power</span>
+</div>
+<div class="viewcode-block" id="plot_FHMM_and_predictions"><a class="viewcode-back" href="../../algorithms.html#disaggregator.fhmm.plot_FHMM_and_predictions">[docs]</a><span class="k">def</span> <span class="nf">plot_FHMM_and_predictions</span><span class="p">(</span><span class="n">test_data</span><span class="p">,</span><span class="n">_decoded_power</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    This plots the actual and predicted power based on the FHMM.</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="k">for</span> <span class="n">i</span><span class="p">,</span><span class="n">device_type</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">test_data</span><span class="p">):</span>
+        <span class="k">if</span><span class="p">(</span><span class="n">device_type</span> <span class="ow">is</span> <span class="ow">not</span> <span class="s">&#39;use&#39;</span><span class="p">):</span>
+            <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">()</span>
+            <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">test_data</span><span class="p">[</span><span class="n">device_type</span><span class="p">],</span><span class="s">&#39;g&#39;</span><span class="p">)</span>
+            <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">_decoded_power</span><span class="p">[</span><span class="n">device_type</span><span class="p">],</span><span class="s">&#39;b&#39;</span><span class="p">)</span>
+            <span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s">&#39;Ground Truth (Green) and Predicted (Blue) for </span><span class="si">%s</span><span class="s">&#39;</span> <span class="o">%</span><span class="n">device_type</span><span class="p">)</span>
+            <span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s">&#39;Power (W)&#39;</span><span class="p">)</span>
+            <span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s">&#39;Time&#39;</span><span class="p">)</span>
+            <span class="n">plt</span><span class="o">.</span><span class="n">ylim</span><span class="p">((</span><span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">test_data</span><span class="p">[</span><span class="n">device_type</span><span class="p">])</span><span class="o">-</span><span class="mi">10</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">test_data</span><span class="p">[</span><span class="n">device_type</span><span class="p">])</span><span class="o">+</span><span class="mi">10</span><span class="p">))</span>
+            <span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
 </div>
 <span class="k">def</span> <span class="nf">get_best_instance_model</span><span class="p">(</span><span class="n">instance_models</span><span class="p">,</span><span class="n">device_type</span><span class="p">,</span><span class="n">key_for_model_name</span><span class="p">):</span>
     <span class="n">dfs_model</span> <span class="o">=</span> <span class="p">{}</span>
@@ -141,7 +188,8 @@
             <span class="n">instances_of_model</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="n">model_name</span><span class="p">,</span><span class="n">instance_name</span><span class="p">,</span><span class="n">model_score</span><span class="p">])</span>
             <span class="k">if</span><span class="p">(</span><span class="n">model_score</span> <span class="o">&gt;</span> <span class="n">best_model_score</span><span class="p">):</span>
                 <span class="n">best_model</span> <span class="o">=</span> <span class="n">instance_models</span><span class="p">[</span><span class="n">model_name</span><span class="p">]</span>
-        <span class="n">dfs_model</span><span class="p">[</span><span class="n">model_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">instances_of_model</span><span class="p">,</span><span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s">&#39;Model_Instance&#39;</span><span class="p">,</span><span class="s">&#39;Test_Instance&#39;</span><span class="p">,</span><span class="s">&#39;Value&#39;</span><span class="p">])</span>
+        <span class="n">dfs_model</span><span class="p">[</span><span class="n">model_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">instances_of_model</span><span class="p">,</span>
+                <span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s">&#39;Model_Instance&#39;</span><span class="p">,</span><span class="s">&#39;Test_Instance&#39;</span><span class="p">,</span><span class="s">&#39;Value&#39;</span><span class="p">])</span>
     <span class="n">model_averages</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">dfs_model</span><span class="p">:</span>
         <span class="nb">sum</span><span class="o">=</span><span class="mi">0</span>
@@ -149,15 +197,18 @@
             <span class="nb">sum</span> <span class="o">=</span> <span class="nb">sum</span><span class="o">+</span><span class="n">row</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="s">&#39;Value&#39;</span><span class="p">]</span>
         <span class="n">model_averages</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="n">key</span><span class="p">,</span><span class="nb">sum</span><span class="o">/</span><span class="nb">len</span><span class="p">(</span><span class="n">dfs_model</span><span class="p">[</span><span class="n">key</span><span class="p">]</span><span class="o">.</span><span class="n">index</span><span class="p">)])</span>
     <span class="k">print</span>
-    <span class="n">avg_model_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">model_averages</span><span class="p">,</span><span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s">&#39;Model_Instance&#39;</span><span class="p">,</span><span class="s">&#39;Avg Probability&#39;</span><span class="p">])</span>
-    <span class="k">print</span> <span class="n">avg_model_df</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="s">&#39;Avg Probability&#39;</span><span class="p">,</span><span class="n">ascending</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
-    <span class="n">bestModel</span> <span class="o">=</span> <span class="n">avg_model_df</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="s">&#39;Avg Probability&#39;</span><span class="p">,</span><span class="n">ascending</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="s">&#39;Avg Probability&#39;</span><span class="p">,</span><span class="n">ascending</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span><span class="o">.</span><span class="n">head</span><span class="p">(</span><span class="mi">1</span><span class="p">)[</span><span class="s">&#39;Model_Instance&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">avg_model_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">model_averages</span><span class="p">,</span>
+            <span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s">&#39;Model_Instance&#39;</span><span class="p">,</span><span class="s">&#39;Avg Probability&#39;</span><span class="p">])</span>
+    <span class="k">print</span> <span class="n">avg_model_df</span><span class="o">.</span><span class="n">_sort</span><span class="p">(</span><span class="s">&#39;Avg Probability&#39;</span><span class="p">,</span><span class="n">ascending</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
+    <span class="n">bestModel</span> <span class="o">=</span> <span class="n">avg_model_df</span><span class="o">.</span><span class="n">_sort</span><span class="p">(</span><span class="s">&#39;Avg Probability&#39;</span><span class="p">,</span>
+            <span class="n">ascending</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span><span class="o">.</span><span class="n">_sort</span><span class="p">(</span><span class="s">&#39;Avg Probability&#39;</span><span class="p">,</span>
+                    <span class="n">ascending</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span><span class="o">.</span><span class="n">head</span><span class="p">(</span><span class="mi">1</span><span class="p">)[</span><span class="s">&#39;Model_Instance&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
     <span class="k">print</span> <span class="nb">str</span><span class="p">(</span><span class="n">bestModel</span><span class="p">)</span> <span class="o">+</span> <span class="s">&#39; is best.&#39;</span>
     <span class="k">return</span> <span class="n">bestModel</span>
 
-<div class="viewcode-block" id="sort_startprob"><a class="viewcode-back" href="../../algorithms.html#disaggregator.fhmm.sort_startprob">[docs]</a><span class="k">def</span> <span class="nf">sort_startprob</span><span class="p">(</span><span class="n">mapping</span><span class="p">,</span> <span class="n">startprob</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">_sort_startprob</span><span class="p">(</span><span class="n">mapping</span><span class="p">,</span> <span class="n">startprob</span><span class="p">):</span>
     <span class="sd">&#39;&#39;&#39;</span>
-<span class="sd">    Sort the startprob of the HMM according to power means; as returned by mapping</span>
+<span class="sd">    _sort the startprob of the HMM according to power means; as returned by mapping</span>
 <span class="sd">    &#39;&#39;&#39;</span>
 
     <span class="n">num_elements</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">startprob</span><span class="p">)</span>
@@ -165,17 +216,17 @@
     <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">xrange</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">startprob</span><span class="p">)):</span>
         <span class="n">new_startprob</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">startprob</span><span class="p">[</span><span class="n">mapping</span><span class="p">[</span><span class="n">i</span><span class="p">]]</span>
     <span class="k">return</span> <span class="n">new_startprob</span>
-</div>
-<span class="k">def</span> <span class="nf">sort_covars</span><span class="p">(</span><span class="n">mapping</span><span class="p">,</span> <span class="n">covars</span><span class="p">):</span>
+
+<span class="k">def</span> <span class="nf">_sort_covars</span><span class="p">(</span><span class="n">mapping</span><span class="p">,</span> <span class="n">covars</span><span class="p">):</span>
     <span class="n">num_elements</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">covars</span><span class="p">)</span>
     <span class="n">new_covars</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">covars</span><span class="p">)</span>
     <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">xrange</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">covars</span><span class="p">)):</span>
         <span class="n">new_covars</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">covars</span><span class="p">[</span><span class="n">mapping</span><span class="p">[</span><span class="n">i</span><span class="p">]]</span>
     <span class="k">return</span> <span class="n">new_covars</span>
 
-<div class="viewcode-block" id="sort_transition_matrix"><a class="viewcode-back" href="../../algorithms.html#disaggregator.fhmm.sort_transition_matrix">[docs]</a><span class="k">def</span> <span class="nf">sort_transition_matrix</span><span class="p">(</span><span class="n">mapping</span><span class="p">,</span> <span class="n">A</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">_sort_transition_matrix</span><span class="p">(</span><span class="n">mapping</span><span class="p">,</span> <span class="n">A</span><span class="p">):</span>
     <span class="sd">&#39;&#39;&#39;</span>
-<span class="sd">    Sorts the transition matrix of the HMM according to power means; as returned by mapping</span>
+<span class="sd">    sorts the transition matrix of the HMM according to power means; as returned by mapping</span>
 <span class="sd">    &#39;&#39;&#39;</span>
     <span class="n">num_elements</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">A</span><span class="p">)</span>
     <span class="n">A_new</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">num_elements</span><span class="p">,</span> <span class="n">num_elements</span><span class="p">))</span>
@@ -183,10 +234,10 @@
         <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">num_elements</span><span class="p">):</span>
             <span class="n">A_new</span><span class="p">[</span><span class="n">i</span><span class="p">,</span><span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="n">A</span><span class="p">[</span><span class="n">mapping</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">mapping</span><span class="p">[</span><span class="n">j</span><span class="p">]]</span>
     <span class="k">return</span> <span class="n">A_new</span>
-</div>
-<span class="k">def</span> <span class="nf">return_sorting_mapping</span><span class="p">(</span><span class="n">means</span><span class="p">):</span>
+
+<span class="k">def</span> <span class="nf">_return_sorting_mapping</span><span class="p">(</span><span class="n">means</span><span class="p">):</span>
     <span class="n">means_copy</span> <span class="o">=</span> <span class="n">deepcopy</span><span class="p">(</span><span class="n">means</span><span class="p">)</span>
-    <span class="c"># Sorting</span>
+    <span class="c"># _sorting</span>
     <span class="n">means_copy</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="n">means_copy</span><span class="p">,</span> <span class="n">axis</span> <span class="o">=</span> <span class="mi">0</span><span class="p">)</span>
     <span class="c"># Finding mapping</span>
     <span class="n">mapping</span> <span class="o">=</span> <span class="p">{}</span>
@@ -201,20 +252,86 @@
                 <span class="k">break</span>
     <span class="k">return</span> <span class="n">mapping</span>
 
-<div class="viewcode-block" id="sort_learnt_parameters"><a class="viewcode-back" href="../../algorithms.html#disaggregator.fhmm.sort_learnt_parameters">[docs]</a><span class="k">def</span> <span class="nf">sort_learnt_parameters</span><span class="p">(</span><span class="n">startprob</span><span class="p">,</span> <span class="n">means</span><span class="p">,</span> <span class="n">covars</span><span class="p">,</span> <span class="n">transmat</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">_sort_learnt_parameters</span><span class="p">(</span><span class="n">startprob</span><span class="p">,</span> <span class="n">means</span><span class="p">,</span> <span class="n">covars</span><span class="p">,</span> <span class="n">transmat</span><span class="p">):</span>
     <span class="sd">&#39;&#39;&#39;</span>
-<span class="sd">    Sorts the learnt parameters for the HMM</span>
+<span class="sd">    sorts the learnt parameters for the HMM</span>
 <span class="sd">    &#39;&#39;&#39;</span>
-    <span class="n">mapping</span> <span class="o">=</span> <span class="n">return_sorting_mapping</span><span class="p">(</span><span class="n">means</span><span class="p">)</span>
+    <span class="n">mapping</span> <span class="o">=</span> <span class="n">_return_sorting_mapping</span><span class="p">(</span><span class="n">means</span><span class="p">)</span>
     <span class="n">means_new</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="n">means</span><span class="p">,</span> <span class="n">axis</span> <span class="o">=</span> <span class="mi">0</span><span class="p">)</span>
 
-    <span class="n">startprob_new</span> <span class="o">=</span> <span class="n">sort_startprob</span><span class="p">(</span><span class="n">mapping</span><span class="p">,</span> <span class="n">startprob</span><span class="p">)</span>
-    <span class="n">covars_new</span> <span class="o">=</span> <span class="n">sort_covars</span><span class="p">(</span><span class="n">mapping</span><span class="p">,</span> <span class="n">covars</span><span class="p">)</span>
-    <span class="n">transmat_new</span> <span class="o">=</span> <span class="n">sort_transition_matrix</span><span class="p">(</span><span class="n">mapping</span><span class="p">,</span> <span class="n">transmat</span><span class="p">)</span>
+    <span class="n">startprob_new</span> <span class="o">=</span> <span class="n">_sort_startprob</span><span class="p">(</span><span class="n">mapping</span><span class="p">,</span> <span class="n">startprob</span><span class="p">)</span>
+    <span class="n">covars_new</span> <span class="o">=</span> <span class="n">_sort_covars</span><span class="p">(</span><span class="n">mapping</span><span class="p">,</span> <span class="n">covars</span><span class="p">)</span>
+    <span class="n">transmat_new</span> <span class="o">=</span> <span class="n">_sort_transition_matrix</span><span class="p">(</span><span class="n">mapping</span><span class="p">,</span> <span class="n">transmat</span><span class="p">)</span>
     <span class="k">assert</span> <span class="n">np</span><span class="o">.</span><span class="n">shape</span><span class="p">(</span><span class="n">means_new</span><span class="p">)</span> <span class="o">==</span> <span class="n">np</span><span class="o">.</span><span class="n">shape</span><span class="p">(</span><span class="n">means</span><span class="p">)</span>
     <span class="k">assert</span> <span class="n">np</span><span class="o">.</span><span class="n">shape</span><span class="p">(</span><span class="n">startprob_new</span><span class="p">)</span> <span class="o">==</span> <span class="n">np</span><span class="o">.</span><span class="n">shape</span><span class="p">(</span><span class="n">startprob</span><span class="p">)</span>
     <span class="k">assert</span> <span class="n">np</span><span class="o">.</span><span class="n">shape</span><span class="p">(</span><span class="n">transmat_new</span><span class="p">)</span> <span class="o">==</span> <span class="n">np</span><span class="o">.</span><span class="n">shape</span><span class="p">(</span><span class="n">transmat</span><span class="p">)</span>
-    <span class="k">return</span> <span class="p">[</span><span class="n">startprob_new</span><span class="p">,</span> <span class="n">means_new</span><span class="p">,</span> <span class="n">covars_new</span><span class="p">,</span> <span class="n">transmat_new</span><span class="p">]</span></div>
+    <span class="k">return</span> <span class="p">[</span><span class="n">startprob_new</span><span class="p">,</span> <span class="n">means_new</span><span class="p">,</span> <span class="n">covars_new</span><span class="p">,</span> <span class="n">transmat_new</span><span class="p">]</span>
+
+<span class="k">def</span> <span class="nf">_compute_pi_fhmm</span><span class="p">(</span><span class="n">list_pi</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Input: list_pi: List of PI&#39;s of individual learnt HMMs</span>
+<span class="sd">    Output: Combined Pi for the FHMM</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="n">result</span><span class="o">=</span><span class="n">list_pi</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">list_pi</span><span class="p">)</span><span class="o">-</span><span class="mi">1</span><span class="p">):</span>
+        <span class="n">result</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">kron</span><span class="p">(</span><span class="n">result</span><span class="p">,</span><span class="n">list_pi</span><span class="p">[</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">])</span>
+    <span class="k">return</span> <span class="n">result</span>
+
+<span class="k">def</span> <span class="nf">_compute_A_fhmm</span><span class="p">(</span><span class="n">list_A</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Input: list_pi: List of PI&#39;s of individual learnt HMMs</span>
+<span class="sd">    Output: Combined Pi for the FHMM</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="n">result</span><span class="o">=</span><span class="n">list_A</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">list_A</span><span class="p">)</span><span class="o">-</span><span class="mi">1</span><span class="p">):</span>
+        <span class="n">result</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">kron</span><span class="p">(</span><span class="n">result</span><span class="p">,</span><span class="n">list_A</span><span class="p">[</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">])</span>
+    <span class="k">return</span> <span class="n">result</span>
+
+<span class="k">def</span> <span class="nf">_compute_means_fhmm</span><span class="p">(</span><span class="n">list_means</span><span class="p">):</span>  
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Returns [mu, sigma]</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+
+    <span class="c">#list_of_appliances_centroids=[ [appliance[i][0] for i in range(len(appliance))] for appliance in list_B]</span>
+    <span class="n">states_combination</span><span class="o">=</span><span class="nb">list</span><span class="p">(</span><span class="n">itertools</span><span class="o">.</span><span class="n">product</span><span class="p">(</span><span class="o">*</span><span class="n">list_means</span><span class="p">))</span>
+    <span class="n">num_combinations</span><span class="o">=</span><span class="nb">len</span><span class="p">(</span><span class="n">states_combination</span><span class="p">)</span>
+    <span class="n">means_stacked</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="nb">sum</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">states_combination</span><span class="p">])</span>
+    <span class="n">means</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">means_stacked</span><span class="p">,(</span><span class="n">num_combinations</span><span class="p">,</span><span class="mi">1</span><span class="p">))</span>
+    <span class="n">cov</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">tile</span><span class="p">(</span><span class="mi">5</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">identity</span><span class="p">(</span><span class="mi">1</span><span class="p">),</span> <span class="p">(</span><span class="n">num_combinations</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
+    <span class="k">return</span> <span class="p">[</span><span class="n">means</span><span class="p">,</span> <span class="n">cov</span><span class="p">]</span>
+
+<span class="k">def</span> <span class="nf">_create_combined_hmm</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">pi</span><span class="p">,</span> <span class="n">A</span><span class="p">,</span> <span class="n">mean</span><span class="p">,</span> <span class="n">cov</span><span class="p">):</span>
+    <span class="n">combined_model</span><span class="o">=</span><span class="n">hmm</span><span class="o">.</span><span class="n">GaussianHMM</span><span class="p">(</span><span class="n">n_components</span><span class="o">=</span><span class="n">n</span><span class="p">,</span><span class="n">covariance_type</span><span class="o">=</span><span class="s">&#39;full&#39;</span><span class="p">,</span> <span class="n">startprob</span><span class="o">=</span><span class="n">pi</span><span class="p">,</span> <span class="n">transmat</span><span class="o">=</span><span class="n">A</span><span class="p">)</span>
+    <span class="n">combined_model</span><span class="o">.</span><span class="n">covars_</span><span class="o">=</span><span class="n">cov</span>
+    <span class="n">combined_model</span><span class="o">.</span><span class="n">means_</span><span class="o">=</span><span class="n">mean</span>
+    <span class="k">return</span> <span class="n">combined_model</span>
+
+<span class="k">def</span> <span class="nf">_decode_hmm</span><span class="p">(</span><span class="n">length_sequence</span><span class="p">,</span> <span class="n">centroids</span><span class="p">,</span> <span class="n">appliance_list</span><span class="p">,</span> <span class="n">states</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    decodes the HMM state sequence</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="n">power_states_dict</span><span class="o">=</span><span class="p">{}</span>
+    <span class="n">hmm_states</span><span class="o">=</span><span class="p">{}</span>
+    <span class="n">hmm_power</span><span class="o">=</span><span class="p">{}</span>
+    <span class="n">total_num_combinations</span><span class="o">=</span><span class="mi">1</span>
+    <span class="k">for</span> <span class="n">appliance</span> <span class="ow">in</span> <span class="n">appliance_list</span><span class="p">:</span>
+        <span class="n">total_num_combinations</span><span class="o">*=</span><span class="nb">len</span><span class="p">(</span><span class="n">centroids</span><span class="p">[</span><span class="n">appliance</span><span class="p">])</span>
+
+    <span class="k">for</span> <span class="n">appliance</span> <span class="ow">in</span> <span class="n">appliance_list</span><span class="p">:</span>
+        <span class="n">hmm_states</span><span class="p">[</span><span class="n">appliance</span><span class="p">]</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">length_sequence</span><span class="p">,</span><span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">int</span><span class="p">)</span>
+        <span class="n">hmm_power</span><span class="p">[</span><span class="n">appliance</span><span class="p">]</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">length_sequence</span><span class="p">)</span>
+
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">length_sequence</span><span class="p">):</span>
+        <span class="n">factor</span><span class="o">=</span><span class="n">total_num_combinations</span>
+        <span class="k">for</span> <span class="n">appliance</span> <span class="ow">in</span> <span class="n">appliance_list</span><span class="p">:</span>
+            <span class="c">#assuming integer division (will cause errors in Python 3x)</span>
+            <span class="n">factor</span><span class="o">=</span><span class="n">factor</span><span class="o">//</span><span class="nb">len</span><span class="p">(</span><span class="n">centroids</span><span class="p">[</span><span class="n">appliance</span><span class="p">])</span>
+
+            <span class="n">temp</span><span class="o">=</span><span class="nb">int</span><span class="p">(</span><span class="n">states</span><span class="p">[</span><span class="n">i</span><span class="p">])</span><span class="o">/</span><span class="n">factor</span>
+            <span class="n">hmm_states</span><span class="p">[</span><span class="n">appliance</span><span class="p">][</span><span class="n">i</span><span class="p">]</span><span class="o">=</span><span class="n">temp</span><span class="o">%</span><span class="nb">len</span><span class="p">(</span><span class="n">centroids</span><span class="p">[</span><span class="n">appliance</span><span class="p">])</span>
+            <span class="n">hmm_power</span><span class="p">[</span><span class="n">appliance</span><span class="p">][</span><span class="n">i</span><span class="p">]</span><span class="o">=</span><span class="n">centroids</span><span class="p">[</span><span class="n">appliance</span><span class="p">][</span><span class="n">hmm_states</span><span class="p">[</span><span class="n">appliance</span><span class="p">][</span><span class="n">i</span><span class="p">]]</span>
+
+    <span class="k">return</span> <span class="p">[</span><span class="n">hmm_states</span><span class="p">,</span><span class="n">hmm_power</span><span class="p">]</span>
 </pre></div>
 
           </div>

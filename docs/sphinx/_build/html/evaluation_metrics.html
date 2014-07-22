@@ -68,8 +68,24 @@
 </dd></dl>
 
 <dl class="function">
+<dt id="disaggregator.evaluation_metrics.get_f1_score">
+<tt class="descclassname">disaggregator.evaluation_metrics.</tt><tt class="descname">get_f1_score</tt><big>(</big><em>stats</em><big>)</big><a class="reference internal" href="_modules/disaggregator/evaluation_metrics.html#get_f1_score"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#disaggregator.evaluation_metrics.get_f1_score" title="Permalink to this definition">¶</a></dt>
+<dd><p>Takes an array of true positives, false negatives, true negatives, and false positives. Returns the f1 score based on precision and recall.</p>
+</dd></dl>
+
+<dl class="function">
 <dt id="disaggregator.evaluation_metrics.get_positive_negative_stats">
 <tt class="descclassname">disaggregator.evaluation_metrics.</tt><tt class="descname">get_positive_negative_stats</tt><big>(</big><em>true_states</em>, <em>predicted_states</em><big>)</big><a class="reference internal" href="_modules/disaggregator/evaluation_metrics.html#get_positive_negative_stats"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#disaggregator.evaluation_metrics.get_positive_negative_stats" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a dictionary of numpy arrays containing the true positives a &#8216;tp&#8217;,
+the false negatives as &#8216;fn&#8217;, the true negatives as &#8216;tn&#8217;, and
+the false positives as &#8216;fp&#8217;. I would like
+to make this a truth table instead of putting the logic directly in the
+list comprehension.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="disaggregator.evaluation_metrics.get_positive_negative_stats_neg">
+<tt class="descclassname">disaggregator.evaluation_metrics.</tt><tt class="descname">get_positive_negative_stats_neg</tt><big>(</big><em>true_states</em>, <em>predicted_states</em><big>)</big><a class="reference internal" href="_modules/disaggregator/evaluation_metrics.html#get_positive_negative_stats_neg"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#disaggregator.evaluation_metrics.get_positive_negative_stats_neg" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns a dictionary of numpy arrays containing the true positives a &#8216;tp&#8217;,
 the false negatives as &#8216;fn&#8217;, the true negatives as &#8216;tn&#8217;, and
 the false positives as &#8216;fp&#8217;. I would like
