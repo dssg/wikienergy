@@ -102,12 +102,12 @@ def get_sensitivity(true_positives,false_negatives):
     classified as positive and 0 otherwise and FN is false negative, such that
     FN = 1 if a value was falsely predicted to be negative and 0 otherwise.
     '''
-    if(true_positives.sum()+false_positives.sum()>0):
-    	return float(true_positives.sum())/(true_positives.sum()+false_negatives.sum())
+    if(true_positives.sum()+false_negatives.sum()>0):
+        return float(true_positives.sum())/(true_positives.sum()+false_negatives.sum())
     else:
-        print 'WARNING: No true positives are false negatives (all 0). Returning 0.'
+       #print 'WARNING: There are no positives in this set. Returning 0.'
         return float(0.0)
-	
+
 def get_specificity(true_negatives, false_positives):
     '''
     Given a numpy array of true negatives, and false positives returns a
@@ -130,7 +130,7 @@ def get_precision(true_positives,false_positives):
     if(true_positives.sum()+false_positives.sum()>0):
         return float(true_positives.sum())/(true_positives.sum()+false_positives.sum())
     else:
-        print 'WARNING: There are no positives in this set. Returning 0.'
+       #print 'WARNING: There are no positives in this set. Returning 0.'
         return float(0.0)
 
 
@@ -157,5 +157,5 @@ def get_f1_score(stats):
     if(precision+recall>0):
         return (2*precision*recall)/(precision+recall)
     else:
-        print 'WARNING: The precision and recall are both 0. Returning 0.'
+       #print 'WARNING: The precision and recall are both 0. Returning 0.'
         return float(0.0)
