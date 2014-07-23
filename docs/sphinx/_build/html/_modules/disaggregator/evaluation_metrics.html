@@ -63,6 +63,7 @@
 <span class="kn">import</span> <span class="nn">math</span>
 <span class="kn">import</span> <span class="nn">scipy</span>
 <span class="kn">import</span> <span class="nn">sys</span>
+<span class="kn">from</span> <span class="nn">tabulate</span> <span class="kn">import</span> <span class="n">tabulate</span>
 
 <div class="viewcode-block" id="sum_error"><a class="viewcode-back" href="../../evaluation_metrics.html#disaggregator.evaluation_metrics.sum_error">[docs]</a><span class="k">def</span> <span class="nf">sum_error</span><span class="p">(</span><span class="n">truth</span><span class="p">,</span><span class="n">prediction</span><span class="p">):</span>
     <span class="sd">&#39;&#39;&#39;</span>
@@ -76,8 +77,8 @@
     <span class="k">for</span> <span class="n">t_i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">traces</span><span class="p">)):</span>
         <span class="k">if</span> <span class="n">traces</span><span class="p">[</span><span class="n">t_i</span><span class="p">]</span><span class="o">==</span><span class="n">app</span><span class="p">:</span>
            <span class="k">return</span> <span class="n">t_i</span>
-    <span class="k">return</span> <span class="o">-</span><span class="mi">1</span>	
-       
+    <span class="k">return</span> <span class="o">-</span><span class="mi">1</span>
+
 
 <div class="viewcode-block" id="fraction_energy_assigned_correctly"><a class="viewcode-back" href="../../evaluation_metrics.html#disaggregator.evaluation_metrics.fraction_energy_assigned_correctly">[docs]</a><span class="k">def</span> <span class="nf">fraction_energy_assigned_correctly</span><span class="p">(</span><span class="n">predicted_power_as_instances</span><span class="p">,</span> <span class="n">ground_truth_as_instances</span><span class="p">):</span>
     <span class="sd">&#39;&#39;&#39;</span>
@@ -86,7 +87,7 @@
     <span class="n">traces_truth</span> <span class="o">=</span> <span class="n">ground_truth_as_instances</span><span class="o">.</span><span class="n">traces</span>
     <span class="c">#traces_power = [t.series for t in traces]</span>
     <span class="n">traces_predicted</span> <span class="o">=</span> <span class="n">predicted_power_as_instances</span><span class="o">.</span><span class="n">traces</span>
-    <span class="c">#traces_predicted_power = [t.series for t in traces_predicted] </span>
+    <span class="c">#traces_predicted_power = [t.series for t in traces_predicted]</span>
     <span class="n">total_energy_ground_truth</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">([</span><span class="nb">float</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">t</span><span class="o">.</span><span class="n">series</span><span class="p">))</span> <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">traces_truth</span><span class="p">])</span>
     <span class="n">percent_power_by_app</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([])</span>
     <span class="k">for</span> <span class="n">trace_index</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">traces_predicted</span><span class="p">)):</span>
@@ -101,12 +102,6 @@
                 <span class="n">app_energy_ground_truth</span> <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">maxint</span>
         <span class="n">percent_power_by_app</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">percent_power_by_app</span><span class="p">,</span><span class="nb">float</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">([</span><span class="n">app_energy_predicted</span><span class="p">,</span><span class="n">app_energy_ground_truth</span><span class="p">])))</span>
     <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">divide</span><span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">percent_power_by_app</span><span class="p">)),</span><span class="nb">float</span><span class="p">(</span><span class="n">total_energy_ground_truth</span><span class="p">))</span>
-
-        
-       
-    
-    
-    
 </div>
 <div class="viewcode-block" id="rss"><a class="viewcode-back" href="../../evaluation_metrics.html#disaggregator.evaluation_metrics.rss">[docs]</a><span class="k">def</span> <span class="nf">rss</span><span class="p">(</span><span class="n">truth</span><span class="p">,</span><span class="n">prediction</span><span class="p">):</span>
     <span class="sd">&#39;&#39;&#39;Sum of squared residuals&#39;&#39;&#39;</span>
@@ -135,6 +130,21 @@
     <span class="n">pos_neg_stats</span><span class="p">[</span><span class="s">&#39;fp&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">1</span> <span class="k">if</span> <span class="n">a</span><span class="o">==</span><span class="mi">0</span> <span class="ow">and</span> <span class="n">b</span><span class="o">==</span><span class="mi">1</span> <span class="k">else</span> <span class="mi">0</span> <span class="k">for</span> <span class="p">(</span><span class="n">a</span><span class="p">,</span><span class="n">b</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">true_states</span><span class="p">,</span><span class="n">predicted_states</span><span class="p">)])</span>
     <span class="k">return</span> <span class="n">pos_neg_stats</span>
 </div>
+<div class="viewcode-block" id="get_positive_negative_stats_neg"><a class="viewcode-back" href="../../evaluation_metrics.html#disaggregator.evaluation_metrics.get_positive_negative_stats_neg">[docs]</a><span class="k">def</span> <span class="nf">get_positive_negative_stats_neg</span><span class="p">(</span><span class="n">true_states</span><span class="p">,</span> <span class="n">predicted_states</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Returns a dictionary of numpy arrays containing the true positives a &#39;tp&#39;,</span>
+<span class="sd">        the false negatives as &#39;fn&#39;, the true negatives as &#39;tn&#39;, and</span>
+<span class="sd">        the false positives as &#39;fp&#39;. I would like</span>
+<span class="sd">        to make this a truth table instead of putting the logic directly in the</span>
+<span class="sd">        list comprehension.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+    <span class="n">pos_neg_stats</span><span class="o">=</span><span class="p">{}</span>
+    <span class="n">pos_neg_stats</span><span class="p">[</span><span class="s">&#39;tp&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">1</span> <span class="k">if</span> <span class="n">a</span><span class="o">==</span><span class="mi">1</span> <span class="ow">and</span> <span class="n">b</span><span class="o">==</span><span class="mi">1</span> <span class="k">else</span> <span class="mi">0</span> <span class="k">for</span> <span class="p">(</span><span class="n">a</span><span class="p">,</span><span class="n">b</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">true_states</span><span class="p">,</span><span class="n">predicted_states</span><span class="p">)])</span>
+    <span class="n">pos_neg_stats</span><span class="p">[</span><span class="s">&#39;fn&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">1</span> <span class="k">if</span> <span class="n">a</span><span class="o">==</span><span class="mi">1</span> <span class="ow">and</span> <span class="n">b</span><span class="o">==-</span><span class="mi">1</span> <span class="k">else</span> <span class="mi">0</span> <span class="k">for</span> <span class="p">(</span><span class="n">a</span><span class="p">,</span><span class="n">b</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">true_states</span><span class="p">,</span><span class="n">predicted_states</span><span class="p">)])</span>
+    <span class="n">pos_neg_stats</span><span class="p">[</span><span class="s">&#39;tn&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">1</span> <span class="k">if</span> <span class="n">a</span><span class="o">==-</span><span class="mi">1</span> <span class="ow">and</span> <span class="n">b</span><span class="o">==-</span><span class="mi">1</span> <span class="k">else</span> <span class="mi">0</span> <span class="k">for</span> <span class="p">(</span><span class="n">a</span><span class="p">,</span><span class="n">b</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">true_states</span><span class="p">,</span><span class="n">predicted_states</span><span class="p">)])</span>
+    <span class="n">pos_neg_stats</span><span class="p">[</span><span class="s">&#39;fp&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">1</span> <span class="k">if</span> <span class="n">a</span><span class="o">==-</span><span class="mi">1</span> <span class="ow">and</span> <span class="n">b</span><span class="o">==</span><span class="mi">1</span> <span class="k">else</span> <span class="mi">0</span> <span class="k">for</span> <span class="p">(</span><span class="n">a</span><span class="p">,</span><span class="n">b</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">true_states</span><span class="p">,</span><span class="n">predicted_states</span><span class="p">)])</span>
+    <span class="k">return</span> <span class="n">pos_neg_stats</span>
+</div>
 <div class="viewcode-block" id="get_sensitivity"><a class="viewcode-back" href="../../evaluation_metrics.html#disaggregator.evaluation_metrics.get_sensitivity">[docs]</a><span class="k">def</span> <span class="nf">get_sensitivity</span><span class="p">(</span><span class="n">true_positives</span><span class="p">,</span><span class="n">false_negatives</span><span class="p">):</span>
     <span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">    Given a numpy array of true positives, and false negatives returns a</span>
@@ -143,7 +153,11 @@
 <span class="sd">    classified as positive and 0 otherwise and FN is false negative, such that</span>
 <span class="sd">    FN = 1 if a value was falsely predicted to be negative and 0 otherwise.</span>
 <span class="sd">    &#39;&#39;&#39;</span>
-    <span class="k">return</span> <span class="nb">float</span><span class="p">(</span><span class="n">true_positives</span><span class="o">.</span><span class="n">sum</span><span class="p">())</span><span class="o">/</span><span class="p">(</span><span class="n">true_positives</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span><span class="o">+</span><span class="n">false_negatives</span><span class="o">.</span><span class="n">sum</span><span class="p">())</span>
+    <span class="k">if</span><span class="p">(</span><span class="n">true_positives</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span><span class="o">+</span><span class="n">false_negatives</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span><span class="o">&gt;</span><span class="mi">0</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">float</span><span class="p">(</span><span class="n">true_positives</span><span class="o">.</span><span class="n">sum</span><span class="p">())</span><span class="o">/</span><span class="p">(</span><span class="n">true_positives</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span><span class="o">+</span><span class="n">false_negatives</span><span class="o">.</span><span class="n">sum</span><span class="p">())</span>
+    <span class="k">else</span><span class="p">:</span>
+       <span class="c">#print &#39;WARNING: There are no positives in this set. Returning 0.&#39;</span>
+        <span class="k">return</span> <span class="nb">float</span><span class="p">(</span><span class="mf">0.0</span><span class="p">)</span>
 </div>
 <div class="viewcode-block" id="get_specificity"><a class="viewcode-back" href="../../evaluation_metrics.html#disaggregator.evaluation_metrics.get_specificity">[docs]</a><span class="k">def</span> <span class="nf">get_specificity</span><span class="p">(</span><span class="n">true_negatives</span><span class="p">,</span> <span class="n">false_positives</span><span class="p">):</span>
     <span class="sd">&#39;&#39;&#39;</span>
@@ -164,15 +178,39 @@
 <span class="sd">    that FP = 1 if a value was falsely predicted to be positive and 0</span>
 <span class="sd">    otherwise.</span>
 <span class="sd">    &#39;&#39;&#39;</span>
-    <span class="k">return</span> <span class="nb">float</span><span class="p">(</span><span class="n">true_positives</span><span class="o">.</span><span class="n">sum</span><span class="p">())</span><span class="o">/</span><span class="p">(</span><span class="n">true_positives</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span><span class="o">+</span><span class="n">false_positives</span><span class="o">.</span><span class="n">sum</span><span class="p">())</span>
+    <span class="k">if</span><span class="p">(</span><span class="n">true_positives</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span><span class="o">+</span><span class="n">false_positives</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span><span class="o">&gt;</span><span class="mi">0</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">float</span><span class="p">(</span><span class="n">true_positives</span><span class="o">.</span><span class="n">sum</span><span class="p">())</span><span class="o">/</span><span class="p">(</span><span class="n">true_positives</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span><span class="o">+</span><span class="n">false_positives</span><span class="o">.</span><span class="n">sum</span><span class="p">())</span>
+    <span class="k">else</span><span class="p">:</span>
+       <span class="c">#print &#39;WARNING: There are no positives in this set. Returning 0.&#39;</span>
+        <span class="k">return</span> <span class="nb">float</span><span class="p">(</span><span class="mf">0.0</span><span class="p">)</span>
 
 </div>
 <div class="viewcode-block" id="get_accuracy"><a class="viewcode-back" href="../../evaluation_metrics.html#disaggregator.evaluation_metrics.get_accuracy">[docs]</a><span class="k">def</span> <span class="nf">get_accuracy</span><span class="p">(</span><span class="n">stats</span><span class="p">):</span>
     <span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">        Takes an array of true positives, false negatives, true negatives, and false positives. Returns the Accuracy measure where accuracy is tp+tn/(tn+fn+tp+fp)</span>
 <span class="sd">    &#39;&#39;&#39;</span>
-    <span class="k">return</span> <span class="p">(</span><span class="n">stats</span><span class="p">[</span><span class="s">&#39;tp&#39;</span><span class="p">]</span><span class="o">+</span><span class="n">stats</span><span class="p">[</span><span class="s">&#39;tn&#39;</span><span class="p">])</span><span class="o">/</span><span class="nb">sum</span><span class="p">(</span><span class="n">stats</span><span class="p">)</span>
-</pre></div></div>
+    <span class="k">return</span> <span class="p">(</span><span class="nb">sum</span><span class="p">(</span><span class="n">stats</span><span class="p">[</span><span class="s">&#39;tp&#39;</span><span class="p">])</span><span class="o">+</span><span class="nb">sum</span><span class="p">(</span><span class="n">stats</span><span class="p">[</span><span class="s">&#39;tn&#39;</span><span class="p">]))</span><span class="o">/</span><span class="nb">float</span><span class="p">(</span><span class="nb">sum</span><span class="p">([</span><span class="nb">sum</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">stats</span><span class="o">.</span><span class="n">values</span><span class="p">()]))</span>
+</div>
+<span class="k">def</span> <span class="nf">get_table_of_confusion</span><span class="p">(</span><span class="n">stats</span><span class="p">):</span>
+    <span class="n">row_one</span> <span class="o">=</span> <span class="p">[</span><span class="s">&quot;Positive&quot;</span><span class="p">,</span><span class="n">stats</span><span class="p">[</span><span class="s">&#39;tp&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">sum</span><span class="p">(),</span><span class="n">stats</span><span class="p">[</span><span class="s">&#39;fp&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">sum</span><span class="p">()]</span>
+    <span class="n">row_two</span> <span class="o">=</span> <span class="p">[</span><span class="s">&quot;Negative&quot;</span><span class="p">,</span> <span class="n">stats</span><span class="p">[</span><span class="s">&#39;fn&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">sum</span><span class="p">(),</span> <span class="n">stats</span><span class="p">[</span><span class="s">&#39;tn&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">sum</span><span class="p">()]</span>
+    <span class="n">headers</span> <span class="o">=</span> <span class="p">[</span><span class="s">&quot;Positive&quot;</span><span class="p">,</span><span class="s">&quot;Negative&quot;</span><span class="p">]</span>
+    <span class="n">table</span> <span class="o">=</span> <span class="p">[</span><span class="n">row_one</span><span class="p">,</span><span class="n">row_two</span><span class="p">]</span>
+    <span class="k">return</span> <span class="n">tabulate</span><span class="p">(</span><span class="n">table</span><span class="p">,</span><span class="n">headers</span><span class="p">,</span><span class="n">tablefmt</span> <span class="o">=</span> <span class="s">&quot;grid&quot;</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="get_f1_score"><a class="viewcode-back" href="../../evaluation_metrics.html#disaggregator.evaluation_metrics.get_f1_score">[docs]</a><span class="k">def</span> <span class="nf">get_f1_score</span><span class="p">(</span><span class="n">stats</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Takes an array of true positives, false negatives, true negatives, and false positives. Returns the f1 score based on precision and recall.</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="n">precision</span><span class="o">=</span><span class="n">get_precision</span><span class="p">(</span><span class="n">stats</span><span class="p">[</span><span class="s">&#39;tp&#39;</span><span class="p">],</span><span class="n">stats</span><span class="p">[</span><span class="s">&#39;fp&#39;</span><span class="p">])</span>
+    <span class="n">recall</span><span class="o">=</span><span class="n">get_sensitivity</span><span class="p">(</span><span class="n">stats</span><span class="p">[</span><span class="s">&#39;tp&#39;</span><span class="p">],</span><span class="n">stats</span><span class="p">[</span><span class="s">&#39;fn&#39;</span><span class="p">])</span>
+    <span class="k">if</span><span class="p">(</span><span class="n">precision</span><span class="o">+</span><span class="n">recall</span><span class="o">&gt;</span><span class="mi">0</span><span class="p">):</span>
+        <span class="k">return</span> <span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="n">precision</span><span class="o">*</span><span class="n">recall</span><span class="p">)</span><span class="o">/</span><span class="p">(</span><span class="n">precision</span><span class="o">+</span><span class="n">recall</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+       <span class="c">#print &#39;WARNING: The precision and recall are both 0. Returning 0.&#39;</span>
+        <span class="k">return</span> <span class="nb">float</span><span class="p">(</span><span class="mf">0.0</span><span class="p">)</span></div>
+</pre></div>
 
           </div>
         </div>
