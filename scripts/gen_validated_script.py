@@ -44,6 +44,11 @@ def generate_and_pickle_models(device_name,pi_prior,a_prior,mean_prior,cov_prior
     device_models=fhmm.generate_HMMs_from_type(device_type,pi_prior,a_prior,mean_prior,cov_prior,
             key_for_model_name)
     print 'Device Model Completed.'
+    for l,key in enumerate(device_models):
+        if device_models[key]._means_[1]<.1:
+            device_models.pop(key,None)
+            i=i+1
+    print "Deleted " + str(i) + " of "+str(l+1) +" models due to low on-states."
     with open(str(device_name)+'_'+str(schema)+'_'+str(table_num)+'_' + str(sample_rate)+'.pkl','w') as f:
        pickle.dump(device_models,f)
     return device_type,device_models
