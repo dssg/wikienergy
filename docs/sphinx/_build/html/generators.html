@@ -58,13 +58,23 @@ and appliance traces.</p>
 <dl class="function">
 <dt id="disaggregator.generate.generate_instance">
 <tt class="descclassname">disaggregator.generate.</tt><tt class="descname">generate_instance</tt><big>(</big><em>starts</em>, <em>periods</em>, <em>freq</em><big>)</big><a class="reference internal" href="_modules/disaggregator/generate.html#generate_instance"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#disaggregator.generate.generate_instance" title="Permalink to this definition">¶</a></dt>
-<dd><p>Returns a generated appliance instance for a particular time period.</p>
+<dd><p>Returns a randomly generated appliance instance for a particular time
+period.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="disaggregator.generate.generate_refrigerator_trace">
+<tt class="descclassname">disaggregator.generate.</tt><tt class="descname">generate_refrigerator_trace</tt><big>(</big><em>start</em>, <em>periods</em>, <em>freq</em><big>)</big><a class="reference internal" href="_modules/disaggregator/generate.html#generate_refrigerator_trace"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#disaggregator.generate.generate_refrigerator_trace" title="Permalink to this definition">¶</a></dt>
+<dd><p>Uses hmm parameters learned from Pecan Street data to generate samples
+for a fairly normal cycling refrigerator.</p>
+<p>Uses a three state HMM.</p>
 </dd></dl>
 
 <dl class="function">
 <dt id="disaggregator.generate.generate_trace">
 <tt class="descclassname">disaggregator.generate.</tt><tt class="descname">generate_trace</tt><big>(</big><em>start</em>, <em>periods</em>, <em>freq</em><big>)</big><a class="reference internal" href="_modules/disaggregator/generate.html#generate_trace"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#disaggregator.generate.generate_trace" title="Permalink to this definition">¶</a></dt>
-<dd><p>Returns a generated appliance trace for a particular time period.</p>
+<dd><p>Returns a randomly generated appliance trace for a particular time period.
+Ex) generate_trace(datetime.datetime(2013,1,1),96,&#8216;15T&#8217;))</p>
 </dd></dl>
 
 </div>
