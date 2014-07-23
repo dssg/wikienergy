@@ -5,7 +5,9 @@
       appliance classes.
 
 .. moduleauthor:: Phil Ngo <ngo.phil@gmail.com>
+.. moduleauthor:: Miguel Perez <miguel@invalid.com>
 .. moduleauthor:: Stephen Suffian <steve@invalid.com>
+.. moduleauthor:: Sabina Tomkins <sabina@invalid.com>
 
 """
 
@@ -21,6 +23,7 @@ import decimal
 import datetime
 import random
 import copy
+
 
 def aggregate_instances(instances, metadata, how="strict"):
     '''
@@ -248,9 +251,13 @@ def pickle_object(obj,title):
     '''
     Given an object and a filename saves the object in pickled format to the data directory.
     '''
-    rel_path = os.path.relpath(os.getcwd(),'data')
-    with open(os.path.join(rel_path,'data/{}.p'.format(title)),'wb') as f:
+    rel_path = os.path.relpath(os.getcwd(),'data/')
+    file = os.path.join(rel_path,'../data/{}.p'.format(title))
+#print open(os.path.join(rel_path,'{}.p'.format(title)),'wb')
+
+    with open(os.path.join(file),'wb') as f:
         pickle.dump(obj, f)
+
 
 def generate_random_appliance_sets(appliance_sets,k,n):
     """
