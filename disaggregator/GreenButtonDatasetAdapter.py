@@ -32,7 +32,7 @@ def get_trace_from_xml(xml_filepath):
     This function returns a unique set of dates (corresponding to
     individual files) for a single device instance id
     '''
-    schema_file = ''
+    schema_file = '../assets/schemas/espiDerived.xsd'
     with open(schema_file, 'r') as f:
         schema_root = etree.XML(f.read())
     schema = etree.XMLSchema(schema_root)
