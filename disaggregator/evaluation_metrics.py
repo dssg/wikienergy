@@ -12,6 +12,7 @@ import numpy as np
 import math
 import scipy
 import sys
+from tabulate import tabulate
 
 def sum_error(truth,prediction):
     '''
@@ -25,8 +26,8 @@ def get_index(app_instances,app):
     for t_i in range(len(traces)):
         if traces[t_i]==app:
            return t_i
-    return -1	
-       
+    return -1
+
 
 def fraction_energy_assigned_correctly(predicted_power_as_instances, ground_truth_as_instances):
     '''
@@ -35,7 +36,7 @@ def fraction_energy_assigned_correctly(predicted_power_as_instances, ground_trut
     traces_truth = ground_truth_as_instances.traces
     #traces_power = [t.series for t in traces]
     traces_predicted = predicted_power_as_instances.traces
-    #traces_predicted_power = [t.series for t in traces_predicted] 
+    #traces_predicted_power = [t.series for t in traces_predicted]
     total_energy_ground_truth = np.sum([float(np.sum(t.series)) for t in traces_truth])
     percent_power_by_app = np.array([])
     for trace_index in range(len(traces_predicted)):
@@ -50,12 +51,6 @@ def fraction_energy_assigned_correctly(predicted_power_as_instances, ground_trut
                 app_energy_ground_truth = sys.maxint
         percent_power_by_app = np.append(percent_power_by_app,float(np.min([app_energy_predicted,app_energy_ground_truth])))
     return np.divide(float(np.sum(percent_power_by_app)),float(total_energy_ground_truth))
-
-        
-       
-    
-    
-    
 
 def rss(truth,prediction):
     '''Sum of squared residuals'''
@@ -84,6 +79,21 @@ def get_positive_negative_stats(true_states, predicted_states):
     pos_neg_stats['fp'] = np.array([1 if a==0 and b==1 else 0 for (a,b) in zip(true_states,predicted_states)])
     return pos_neg_stats
 
+def get_positive_negative_stats_neg(true_states, predicted_states):
+    '''
+        Returns a dictionary of numpy arrays containing the true positives a 'tp',
+        the false negatives as 'fn', the true negatives as 'tn', and
+        the false positives as 'fp'. I would like
+        to make this a truth table instead of putting the logic directly in the
+        list comprehension.
+        '''
+    pos_neg_stats={}
+    pos_neg_stats['tp'] = np.array([1 if a==1 and b==1 else 0 for (a,b) in zip(true_states,predicted_states)])
+    pos_neg_stats['fn'] = np.array([1 if a==1 and b==-1 else 0 for (a,b) in zip(true_states,predicted_states)])
+    pos_neg_stats['tn'] = np.array([1 if a==-1 and b==-1 else 0 for (a,b) in zip(true_states,predicted_states)])
+    pos_neg_stats['fp'] = np.array([1 if a==-1 and b==1 else 0 for (a,b) in zip(true_states,predicted_states)])
+    return pos_neg_stats
+
 def get_sensitivity(true_positives,false_negatives):
     '''
     Given a numpy array of true positives, and false negatives returns a
@@ -92,7 +102,11 @@ def get_sensitivity(true_positives,false_negatives):
     classified as positive and 0 otherwise and FN is false negative, such that
     FN = 1 if a value was falsely predicted to be negative and 0 otherwise.
     '''
-    return float(true_positives.sum())/(true_positives.sum()+false_negatives.sum())
+    if(true_positives.sum()+false_negatives.sum()>0):
+        return float(true_positives.sum())/(true_positives.sum()+false_negatives.sum())
+    else:
+       #print 'WARNING: There are no positives in this set. Returning 0.'
+        return float(0.0)
 
 def get_specificity(true_negatives, false_positives):
     '''
@@ -113,14 +127,35 @@ def get_precision(true_positives,false_positives):
     that FP = 1 if a value was falsely predicted to be positive and 0
     otherwise.
     '''
-    return float(true_positives.sum())/(true_positives.sum()+false_positives.sum())
+    if(true_positives.sum()+false_positives.sum()>0):
+        return float(true_positives.sum())/(true_positives.sum()+false_positives.sum())
+    else:
+       #print 'WARNING: There are no positives in this set. Returning 0.'
+        return float(0.0)
 
 
 def get_accuracy(stats):
     '''
         Takes an array of true positives, false negatives, true negatives, and false positives. Returns the Accuracy measure where accuracy is tp+tn/(tn+fn+tp+fp)
     '''
-    return (stats['tp']+stats['tn'])/sum(stats)
+    return (sum(stats['tp'])+sum(stats['tn']))/float(sum([sum(i) for i in stats.values()]))
+
+def get_table_of_confusion(stats):
+    row_one = ["Positive",stats['tp'].sum(),stats['fp'].sum()]
+    row_two = ["Negative", stats['fn'].sum(), stats['tn'].sum()]
+    headers = ["Positive","Negative"]
+    table = [row_one,row_two]
+    return tabulate(table,headers,tablefmt = "grid")
 
 
-
+def get_f1_score(stats):
+    '''
+        Takes an array of true positives, false negatives, true negatives, and false positives. Returns the f1 score based on precision and recall.
+    '''
+    precision=get_precision(stats['tp'],stats['fp'])
+    recall=get_sensitivity(stats['tp'],stats['fn'])
+    if(precision+recall>0):
+        return (2*precision*recall)/(precision+recall)
+    else:
+       #print 'WARNING: The precision and recall are both 0. Returning 0.'
+        return float(0.0)

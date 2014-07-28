@@ -26,7 +26,7 @@
     <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
     <link rel="top" title="disaggregator 0.1.0 documentation" href="index.html" />
     <link rel="next" title="Appliances" href="appliances.html" />
-    <link rel="prev" title="Disaggregator Package Overview" href="index.html" /> 
+    <link rel="prev" title="Disaggregator Package" href="index.html" /> 
   </head>
   <body>
     <div class="related">
@@ -42,7 +42,7 @@
           <a href="appliances.html" title="Appliances"
              accesskey="N">next</a> |</li>
         <li class="right" >
-          <a href="index.html" title="Disaggregator Package Overview"
+          <a href="index.html" title="Disaggregator Package"
              accesskey="P">previous</a> |</li>
         <li><a href="index.html">disaggregator 0.1.0 documentation</a> &raquo;</li> 
       </ul>
@@ -340,7 +340,6 @@ least 6 hours of real values</p>
 </div>
 <div class="section" id="greenbutton-dataset-adapter">
 <h2>GreenButton Dataset Adapter<a class="headerlink" href="#greenbutton-dataset-adapter" title="Permalink to this headline">¶</a></h2>
-<p><em>[Future]</em></p>
 <div class="section" id="id4">
 <h3>Overview<a class="headerlink" href="#id4" title="Permalink to this headline">¶</a></h3>
 <p>The Green Button xml format is a standard which is used by commercial energy
@@ -348,7 +347,81 @@ suppliers to provide end-users with historical energy usages</p>
 </div>
 <div class="section" id="id5">
 <h3>Methods<a class="headerlink" href="#id5" title="Permalink to this headline">¶</a></h3>
-<p><em>[None]</em></p>
+<span class="target" id="module-disaggregator.GreenButtonDatasetAdapter"></span><span class="target" id="module-GreenButtonDatasetAdapter"></span><dl class="exception">
+<dt id="disaggregator.GreenButtonDatasetAdapter.InvalidXMLError">
+<em class="property">exception </em><tt class="descclassname">disaggregator.GreenButtonDatasetAdapter.</tt><tt class="descname">InvalidXMLError</tt><a class="reference internal" href="_modules/disaggregator/GreenButtonDatasetAdapter.html#InvalidXMLError"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#disaggregator.GreenButtonDatasetAdapter.InvalidXMLError" title="Permalink to this definition">¶</a></dt>
+<dd><p>Exception raised for errors in the xml format of the data.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="disaggregator.GreenButtonDatasetAdapter.get_trace_from_xml">
+<tt class="descclassname">disaggregator.GreenButtonDatasetAdapter.</tt><tt class="descname">get_trace_from_xml</tt><big>(</big><em>xml_string</em><big>)</big><a class="reference internal" href="_modules/disaggregator/GreenButtonDatasetAdapter.html#get_trace_from_xml"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#disaggregator.GreenButtonDatasetAdapter.get_trace_from_xml" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns an ApplianceTrace representing the data in the XML file, which
+must conform to the GreenButtonXML format.</p>
+</dd></dl>
+
+</div>
+</div>
+<div class="section" id="oak-park-dataset-adapter">
+<h2>Oak Park  Dataset Adapter<a class="headerlink" href="#oak-park-dataset-adapter" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="id6">
+<h3>Overview<a class="headerlink" href="#id6" title="Permalink to this headline">¶</a></h3>
+<p>A set of functions for working with a database of Oak Park home energy
+usage.</p>
+</div>
+<div class="section" id="id7">
+<h3>Methods<a class="headerlink" href="#id7" title="Permalink to this headline">¶</a></h3>
+<span class="target" id="module-disaggregator.OakParkDatasetAdapter"></span><span class="target" id="module-OakParkDatasetAdapter"></span><dl class="function">
+<dt id="disaggregator.OakParkDatasetAdapter.generate_set_by_year_month">
+<tt class="descclassname">disaggregator.OakParkDatasetAdapter.</tt><tt class="descname">generate_set_by_year_month</tt><big>(</big><em>homes</em>, <em>year</em>, <em>month</em><big>)</big><a class="reference internal" href="_modules/disaggregator/OakParkDatasetAdapter.html#generate_set_by_year_month"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#disaggregator.OakParkDatasetAdapter.generate_set_by_year_month" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns an appliance set by month and year. Where there is one</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="disaggregator.OakParkDatasetAdapter.generate_trace_by_dataid">
+<tt class="descclassname">disaggregator.OakParkDatasetAdapter.</tt><tt class="descname">generate_trace_by_dataid</tt><big>(</big><em>homes</em>, <em>dataid</em><big>)</big><a class="reference internal" href="_modules/disaggregator/OakParkDatasetAdapter.html#generate_trace_by_dataid"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#disaggregator.OakParkDatasetAdapter.generate_trace_by_dataid" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a trace.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="disaggregator.OakParkDatasetAdapter.get_home_series_by_year_month">
+<tt class="descclassname">disaggregator.OakParkDatasetAdapter.</tt><tt class="descname">get_home_series_by_year_month</tt><big>(</big><em>home</em>, <em>year</em>, <em>month</em><big>)</big><a class="reference internal" href="_modules/disaggregator/OakParkDatasetAdapter.html#get_home_series_by_year_month"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#disaggregator.OakParkDatasetAdapter.get_home_series_by_year_month" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the home&#8217;s series sliced by year and month.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="disaggregator.OakParkDatasetAdapter.get_homes">
+<tt class="descclassname">disaggregator.OakParkDatasetAdapter.</tt><tt class="descname">get_homes</tt><big>(</big><em>db</em><big>)</big><a class="reference internal" href="_modules/disaggregator/OakParkDatasetAdapter.html#get_homes"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#disaggregator.OakParkDatasetAdapter.get_homes" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a dictionary where each key is a home id and each value is a home.
+A home as meta_data, and a list of dates and power values in kwH.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="disaggregator.OakParkDatasetAdapter.get_list_of_homes_with_certain_year_month">
+<tt class="descclassname">disaggregator.OakParkDatasetAdapter.</tt><tt class="descname">get_list_of_homes_with_certain_year_month</tt><big>(</big><em>homes</em>, <em>year</em>, <em>month</em><big>)</big><a class="reference internal" href="_modules/disaggregator/OakParkDatasetAdapter.html#get_list_of_homes_with_certain_year_month"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#disaggregator.OakParkDatasetAdapter.get_list_of_homes_with_certain_year_month" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a list of homes which have complete trace info for given year and month.
+Assumes that homes is dict where keys are dataids and values are traces.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="disaggregator.OakParkDatasetAdapter.get_trace_from_intermediate_xml">
+<tt class="descclassname">disaggregator.OakParkDatasetAdapter.</tt><tt class="descname">get_trace_from_intermediate_xml</tt><big>(</big><em>xml_house</em><big>)</big><a class="reference internal" href="_modules/disaggregator/OakParkDatasetAdapter.html#get_trace_from_intermediate_xml"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#disaggregator.OakParkDatasetAdapter.get_trace_from_intermediate_xml" title="Permalink to this definition">¶</a></dt>
+<dd><p>Assumes you have a dict with interval readings. Assigns an arbitrary dataid.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="disaggregator.OakParkDatasetAdapter.homes_to_traces">
+<tt class="descclassname">disaggregator.OakParkDatasetAdapter.</tt><tt class="descname">homes_to_traces</tt><big>(</big><em>homes</em><big>)</big><a class="reference internal" href="_modules/disaggregator/OakParkDatasetAdapter.html#homes_to_traces"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#disaggregator.OakParkDatasetAdapter.homes_to_traces" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a dictionary where the key is a home id and the value is an
+Appliance Trace.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="disaggregator.OakParkDatasetAdapter.resample_trace_by_month">
+<tt class="descclassname">disaggregator.OakParkDatasetAdapter.</tt><tt class="descname">resample_trace_by_month</tt><big>(</big><em>trace</em>, <em>month</em><big>)</big><a class="reference internal" href="_modules/disaggregator/OakParkDatasetAdapter.html#resample_trace_by_month"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#disaggregator.OakParkDatasetAdapter.resample_trace_by_month" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a set of houses for a given month.</p>
+</dd></dl>
+
 </div>
 </div>
 </div>
@@ -379,13 +452,18 @@ suppliers to provide end-users with historical energy usages</p>
 <li><a class="reference internal" href="#id5">Methods</a></li>
 </ul>
 </li>
+<li><a class="reference internal" href="#oak-park-dataset-adapter">Oak Park  Dataset Adapter</a><ul>
+<li><a class="reference internal" href="#id6">Overview</a></li>
+<li><a class="reference internal" href="#id7">Methods</a></li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>
 
   <h4>Previous topic</h4>
   <p class="topless"><a href="index.html"
-                        title="previous chapter">Disaggregator Package Overview</a></p>
+                        title="previous chapter">Disaggregator Package</a></p>
   <h4>Next topic</h4>
   <p class="topless"><a href="appliances.html"
                         title="next chapter">Appliances</a></p>
@@ -424,7 +502,7 @@ suppliers to provide end-users with historical energy usages</p>
           <a href="appliances.html" title="Appliances"
              >next</a> |</li>
         <li class="right" >
-          <a href="index.html" title="Disaggregator Package Overview"
+          <a href="index.html" title="Disaggregator Package"
              >previous</a> |</li>
         <li><a href="index.html">disaggregator 0.1.0 documentation</a> &raquo;</li> 
       </ul>

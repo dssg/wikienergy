@@ -56,7 +56,9 @@
 <span class="sd">      appliance classes.</span>
 
 <span class="sd">.. moduleauthor:: Phil Ngo &lt;ngo.phil@gmail.com&gt;</span>
+<span class="sd">.. moduleauthor:: Miguel Perez &lt;miguel@invalid.com&gt;</span>
 <span class="sd">.. moduleauthor:: Stephen Suffian &lt;steve@invalid.com&gt;</span>
+<span class="sd">.. moduleauthor:: Sabina Tomkins &lt;sabina@invalid.com&gt;</span>
 
 <span class="sd">&quot;&quot;&quot;</span>
 
@@ -72,6 +74,7 @@
 <span class="kn">import</span> <span class="nn">datetime</span>
 <span class="kn">import</span> <span class="nn">random</span>
 <span class="kn">import</span> <span class="nn">copy</span>
+
 
 <div class="viewcode-block" id="aggregate_instances"><a class="viewcode-back" href="../../utils.html#disaggregator.utils.aggregate_instances">[docs]</a><span class="k">def</span> <span class="nf">aggregate_instances</span><span class="p">(</span><span class="n">instances</span><span class="p">,</span> <span class="n">metadata</span><span class="p">,</span> <span class="n">how</span><span class="o">=</span><span class="s">&quot;strict&quot;</span><span class="p">):</span>
     <span class="sd">&#39;&#39;&#39;</span>
@@ -173,7 +176,7 @@
 <span class="sd">    from a unique date</span>
 <span class="sd">    &#39;&#39;&#39;</span>
     <span class="k">print</span> <span class="s">&quot;WARNING: deprecated, &quot;</span>\
-          <span class="s">&quot;use appliance_instance.split_traces_into_rate(rate) instead&quot;</span>
+          <span class="s">&quot;use appliance_instance.split_by(rate) instead&quot;</span>
     <span class="n">traces</span><span class="o">=</span><span class="p">[]</span>
     <span class="k">for</span> <span class="n">trace</span> <span class="ow">in</span> <span class="n">device_instance</span><span class="o">.</span><span class="n">traces</span><span class="p">:</span>
         <span class="n">traces</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">split_trace_into_rate</span><span class="p">(</span><span class="n">trace</span><span class="p">,</span><span class="n">rate</span><span class="p">))</span>
@@ -185,7 +188,7 @@
 <span class="sd">    that are each from a unique date</span>
 <span class="sd">    &#39;&#39;&#39;</span>
     <span class="k">print</span> <span class="s">&quot;WARNING: deprecated, &quot;</span>\
-          <span class="s">&quot;use appliance_type.split_traces_into_rate(rate) instead&quot;</span>
+          <span class="s">&quot;use appliance_type.split_by(rate) instead&quot;</span>
     <span class="n">instances</span><span class="o">=</span><span class="p">[]</span>
     <span class="k">for</span> <span class="n">instance</span> <span class="ow">in</span> <span class="n">device_type</span><span class="o">.</span><span class="n">instances</span><span class="p">:</span>
         <span class="n">new_instance</span><span class="o">=</span> <span class="n">split_instance_traces_into_rate</span><span class="p">(</span><span class="n">instance</span><span class="p">,</span><span class="n">rate</span><span class="p">)</span>
@@ -198,7 +201,7 @@
 <span class="sd">    that are each from a unique date</span>
 <span class="sd">    &#39;&#39;&#39;</span>
     <span class="k">print</span> <span class="s">&quot;WARNING: deprecated, &quot;</span>\
-          <span class="s">&quot;use appliance_set.split_traces_into_rate(rate) instead&quot;</span>
+          <span class="s">&quot;use appliance_set.split_by(rate) instead&quot;</span>
     <span class="n">instances</span><span class="o">=</span><span class="p">[]</span>
     <span class="k">for</span> <span class="n">instance</span> <span class="ow">in</span> <span class="n">device_set</span><span class="o">.</span><span class="n">instances</span><span class="p">:</span>
         <span class="n">new_instance</span><span class="o">=</span> <span class="n">split_instance_traces_into_rate</span><span class="p">(</span><span class="n">instance</span><span class="p">,</span><span class="n">rate</span><span class="p">)</span>
@@ -299,9 +302,13 @@
     <span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">    Given an object and a filename saves the object in pickled format to the data directory.</span>
 <span class="sd">    &#39;&#39;&#39;</span>
-    <span class="n">rel_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">relpath</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">getcwd</span><span class="p">(),</span><span class="s">&#39;data&#39;</span><span class="p">)</span>
-    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">rel_path</span><span class="p">,</span><span class="s">&#39;data/{}.p&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">title</span><span class="p">)),</span><span class="s">&#39;wb&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+    <span class="n">rel_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">relpath</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">getcwd</span><span class="p">(),</span><span class="s">&#39;data/&#39;</span><span class="p">)</span>
+    <span class="nb">file</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">rel_path</span><span class="p">,</span><span class="s">&#39;../data/{}.p&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">title</span><span class="p">))</span>
+<span class="c">#print open(os.path.join(rel_path,&#39;{}.p&#39;.format(title)),&#39;wb&#39;)</span>
+
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">file</span><span class="p">),</span><span class="s">&#39;wb&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
         <span class="n">pickle</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">f</span><span class="p">)</span>
+
 </div>
 <div class="viewcode-block" id="generate_random_appliance_sets"><a class="viewcode-back" href="../../utils.html#disaggregator.utils.generate_random_appliance_sets">[docs]</a><span class="k">def</span> <span class="nf">generate_random_appliance_sets</span><span class="p">(</span><span class="n">appliance_sets</span><span class="p">,</span><span class="n">k</span><span class="p">,</span><span class="n">n</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
@@ -406,7 +413,8 @@
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">indices</span> <span class="o">=</span> <span class="p">[</span><span class="n">trace</span><span class="o">.</span><span class="n">series</span><span class="o">.</span><span class="n">index</span> <span class="k">for</span> <span class="n">trace</span> <span class="ow">in</span> <span class="n">traces</span><span class="p">]</span>
     <span class="k">for</span> <span class="n">index</span> <span class="ow">in</span> <span class="n">indices</span><span class="p">[</span><span class="mi">1</span><span class="p">:]:</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">indices</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">equals</span><span class="p">(</span><span class="n">index</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">indices</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">summary</span><span class="p">()</span><span class="o">==</span><span class="p">(</span><span class="n">index</span><span class="o">.</span><span class="n">summary</span><span class="p">()):</span>
+            <span class="k">print</span> <span class="n">index</span>
             <span class="k">return</span> <span class="bp">False</span>
     <span class="k">return</span> <span class="bp">True</span>
 </div>
@@ -414,24 +422,27 @@
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Returns True iff instances and their traces are temporally aligned.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">instances</span> <span class="o">&lt;</span> <span class="mi">2</span><span class="p">):</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">instances</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">2</span><span class="p">:</span>
         <span class="k">return</span> <span class="bp">True</span>
     <span class="k">for</span> <span class="n">instance</span> <span class="ow">in</span> <span class="n">instances</span><span class="p">[</span><span class="mi">1</span><span class="p">:]:</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="nb">len</span><span class="p">(</span><span class="n">instance</span><span class="o">.</span><span class="n">traces</span><span class="p">)</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="n">instances</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">traces</span><span class="p">):</span>
+            <span class="k">print</span> <span class="s">&quot;one&quot;</span>
             <span class="k">return</span> <span class="bp">False</span>
     <span class="n">traces</span> <span class="o">=</span> <span class="nb">map</span><span class="p">(</span><span class="nb">list</span><span class="p">,</span><span class="nb">zip</span><span class="p">(</span><span class="o">*</span><span class="p">[</span><span class="n">instance</span><span class="o">.</span><span class="n">traces</span> <span class="k">for</span> <span class="n">instance</span> <span class="ow">in</span> <span class="n">instances</span><span class="p">]))</span>
     <span class="k">for</span> <span class="n">traces_</span> <span class="ow">in</span> <span class="n">traces</span><span class="p">:</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">traces_aligned</span><span class="p">(</span><span class="n">traces_</span><span class="p">):</span>
+            <span class="k">print</span> <span class="s">&quot;two&quot;</span>
             <span class="k">return</span> <span class="bp">False</span>
     <span class="k">return</span> <span class="bp">True</span>
 </div>
-<div class="viewcode-block" id="align_traces"><a class="viewcode-back" href="../../utils.html#disaggregator.utils.align_traces">[docs]</a><span class="k">def</span> <span class="nf">align_traces</span><span class="p">(</span><span class="n">traces</span><span class="p">,</span><span class="n">to</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span><span class="n">how</span><span class="o">=</span><span class="s">&quot;front&quot;</span><span class="p">):</span>
+<div class="viewcode-block" id="align_traces"><a class="viewcode-back" href="../../utils.html#disaggregator.utils.align_traces">[docs]</a><span class="k">def</span> <span class="nf">align_traces</span><span class="p">(</span><span class="n">traces</span><span class="p">,</span><span class="n">to</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span><span class="n">how</span><span class="o">=</span><span class="s">&quot;front&quot;</span><span class="p">,</span><span class="n">freq</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Temporally aligns the traces. `how`=&quot;front&quot; means to align to the front of</span>
 <span class="sd">    the `to` trace. If no `to` trace is given, the first shortest trace is used.</span>
 <span class="sd">    Traces are all downsampled to match the lowest sampling rate</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="c"># make copies</span>
+
     <span class="n">traces</span><span class="o">=</span><span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="n">traces</span><span class="p">)</span>
 
     <span class="c"># if already aligned, don&#39;t do extra work.</span>
@@ -439,9 +450,17 @@
         <span class="k">return</span> <span class="n">traces</span>
 
     <span class="c"># resample to the same frequency</span>
-    <span class="n">frequencies</span> <span class="o">=</span> <span class="p">[</span><span class="n">pd</span><span class="o">.</span><span class="n">tseries</span><span class="o">.</span><span class="n">frequencies</span><span class="o">.</span><span class="n">to_offset</span><span class="p">(</span><span class="n">trace</span><span class="o">.</span><span class="n">series</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">freq</span><span class="p">)</span>
-                   <span class="k">for</span> <span class="n">trace</span> <span class="ow">in</span> <span class="n">traces</span> <span class="k">if</span> <span class="n">trace</span><span class="o">.</span><span class="n">series</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">freq</span><span class="p">]</span>
-    <span class="n">new_freq</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">frequencies</span><span class="p">,</span><span class="n">reverse</span><span class="o">=</span><span class="bp">True</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+
+    <span class="k">if</span> <span class="n">freq</span><span class="p">:</span>
+        <span class="n">new_freq</span> <span class="o">=</span> <span class="n">freq</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">frequencies</span> <span class="o">=</span> <span class="p">[</span><span class="n">pd</span><span class="o">.</span><span class="n">tseries</span><span class="o">.</span><span class="n">frequencies</span><span class="o">.</span><span class="n">to_offset</span><span class="p">(</span><span class="n">trace</span><span class="o">.</span><span class="n">series</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">freq</span><span class="p">)</span>
+                    <span class="k">for</span> <span class="n">trace</span> <span class="ow">in</span> <span class="n">traces</span> <span class="k">if</span> <span class="n">trace</span><span class="o">.</span><span class="n">series</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">freq</span><span class="p">]</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">new_freq</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">frequencies</span><span class="p">,</span><span class="n">reverse</span><span class="o">=</span><span class="bp">True</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="k">except</span> <span class="ne">IndexError</span><span class="p">:</span>
+            <span class="k">print</span> <span class="s">&quot;Please supply a frequency, no frequency could be guessed.&quot;</span>
+
     <span class="k">for</span> <span class="n">trace</span> <span class="ow">in</span> <span class="n">traces</span><span class="p">:</span>
         <span class="n">trace</span><span class="o">.</span><span class="n">resample</span><span class="p">(</span><span class="n">new_freq</span><span class="p">)</span>
 
@@ -475,10 +494,12 @@
 <span class="sd">    Aligns all traces in a list of instances. Removes traces that don&#39;t fit.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">traces</span> <span class="o">=</span> <span class="nb">map</span><span class="p">(</span><span class="nb">list</span><span class="p">,</span><span class="nb">zip</span><span class="p">(</span><span class="o">*</span><span class="p">[</span><span class="n">instance</span><span class="o">.</span><span class="n">traces</span> <span class="k">for</span> <span class="n">instance</span> <span class="ow">in</span> <span class="n">instances</span><span class="p">]))</span>
+    <span class="k">print</span> <span class="n">traces</span>
     <span class="n">aligned_traces</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="k">for</span> <span class="n">traces_</span> <span class="ow">in</span> <span class="n">traces</span><span class="p">:</span>
         <span class="n">aligned_traces</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">align_traces</span><span class="p">(</span><span class="n">traces_</span><span class="p">))</span>
-    <span class="n">traces</span> <span class="o">=</span> <span class="nb">map</span><span class="p">(</span><span class="nb">list</span><span class="p">,</span><span class="nb">zip</span><span class="p">(</span><span class="o">*</span><span class="n">aligned_traces</span><span class="p">))</span>
+    <span class="k">print</span> <span class="n">aligned_traces</span>
+    <span class="n">traces</span> <span class="o">=</span> <span class="nb">map</span><span class="p">(</span><span class="nb">list</span><span class="p">,</span><span class="nb">zip</span><span class="p">(</span><span class="o">*</span><span class="n">aligned_traces_</span><span class="p">))</span>
     <span class="k">return</span> <span class="p">[</span><span class="n">ApplianceInstance</span><span class="p">(</span><span class="n">traces_</span><span class="p">,</span><span class="n">instance</span><span class="o">.</span><span class="n">metadata</span><span class="p">)</span>
             <span class="k">for</span> <span class="n">traces_</span><span class="p">,</span><span class="n">instance</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">traces</span><span class="p">,</span><span class="n">instances</span><span class="p">)]</span>
 </pre></div></div>
