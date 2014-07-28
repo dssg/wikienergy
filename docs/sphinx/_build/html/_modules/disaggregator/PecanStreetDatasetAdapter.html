@@ -56,8 +56,10 @@
 <span class="sd">     dataset.</span>
 
 <span class="sd">.. moduleauthor:: Phil Ngo &lt;ngo.phil@gmail.com&gt;</span>
+<span class="sd">.. moduleauthor:: Miguel Perez &lt;miguel@invalid.com&gt;</span>
 <span class="sd">.. moduleauthor:: Stephen Suffian &lt;steve@invalid.com&gt;</span>
 <span class="sd">.. moduleauthor:: Sabina Tomkins &lt;sabina.tomkins@gmail.com&gt;</span>
+
 
 <span class="sd">&quot;&quot;&quot;</span>
 
@@ -518,6 +520,7 @@
 <span class="sd">    &#39;&#39;&#39;</span>
     <span class="k">global</span> <span class="n">eng</span>
     <span class="n">eng_object</span> <span class="o">=</span> <span class="n">eng</span><span class="o">.</span><span class="n">execute</span><span class="p">(</span><span class="n">query</span><span class="p">)</span>
+    <span class="c">#import pdb;pdb.set_trace()</span>
     <span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="o">.</span><span class="n">from_records</span><span class="p">(</span><span class="n">eng_object</span><span class="o">.</span><span class="n">fetchall</span><span class="p">())</span>
     <span class="n">df</span><span class="o">.</span><span class="n">columns</span> <span class="o">=</span> <span class="n">eng_object</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span>
     <span class="k">return</span> <span class="n">df</span>
@@ -601,19 +604,19 @@
         <span class="k">if</span> <span class="n">verbose</span><span class="p">:</span>
             <span class="k">print</span> <span class="n">set_name</span>
         <span class="c"># get dataids</span>
-        <span class="n">appliance_ids</span> <span class="o">=</span> <span class="p">[</span><span class="n">appliance_ids</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">app_i</span><span class="p">]</span>
-        <span class="n">no_appliance_ids</span> <span class="o">=</span> <span class="p">[</span><span class="n">no_appliance_ids</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">no_app_i</span><span class="p">]</span>
+        <span class="n">appliance_ids_</span> <span class="o">=</span> <span class="p">[</span><span class="n">appliance_ids</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">app_i</span><span class="p">]</span>
+        <span class="n">no_appliance_ids_</span> <span class="o">=</span> <span class="p">[</span><span class="n">no_appliance_ids</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">no_app_i</span><span class="p">]</span>
 
         <span class="c"># get windows for each dataid</span>
         <span class="k">if</span> <span class="n">verbose</span><span class="p">:</span>
             <span class="k">print</span> <span class="s">&quot;Fetching samples for key = 1&quot;</span>
         <span class="n">active_appliance_windows</span> <span class="o">=</span> <span class="n">get_use_for_active_windows</span><span class="p">(</span>
-                <span class="n">schema</span><span class="p">,</span><span class="n">tables</span><span class="p">,[</span><span class="n">appliance</span><span class="p">],</span><span class="n">appliance_ids</span><span class="p">,</span>
+                <span class="n">schema</span><span class="p">,</span><span class="n">tables</span><span class="p">,[</span><span class="n">appliance</span><span class="p">],</span><span class="n">appliance_ids_</span><span class="p">,</span>
                 <span class="n">window_length</span><span class="p">,</span><span class="n">window_stride</span><span class="p">,</span><span class="n">drop_percentile</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">verbose</span><span class="p">:</span>
             <span class="k">print</span> <span class="s">&quot;Fetching samples for key = 0&quot;</span>
         <span class="n">other_windows</span> <span class="o">=</span> <span class="n">get_use_for_active_windows</span><span class="p">(</span>
-                <span class="n">schema</span><span class="p">,</span><span class="n">tables</span><span class="p">,</span><span class="bp">None</span><span class="p">,</span><span class="n">no_appliance_ids</span><span class="p">,</span>
+                <span class="n">schema</span><span class="p">,</span><span class="n">tables</span><span class="p">,</span><span class="bp">None</span><span class="p">,</span><span class="n">no_appliance_ids_</span><span class="p">,</span>
                 <span class="n">window_length</span><span class="p">,</span><span class="n">window_stride</span><span class="p">,</span><span class="n">drop_percentile</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
 
         <span class="c"># concatenate results for different dataids</span>
