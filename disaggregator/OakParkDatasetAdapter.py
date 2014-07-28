@@ -44,6 +44,17 @@ def get_homes(db):
         houses.append(co)
     return {i:h for i,h in zip (ids,houses)}
 
+def get_trace_from_intermediate_xml(xml_house):
+    '''
+        Assumes you have a dict with interval readings. Assigns an arbitrary dataid.
+    '''
+    dates = [x[0] for x in xml_house['interval_readings']]
+    values = [x[1]['value'] for x in xml_house['interval_readings']]
+    return ApplianceTrace(pd.Series(values, index = dates),xml_house['meta'])
+
+
+
+
 def homes_to_traces(homes):
     '''
        Returns a dictionary where the key is a home id and the value is an
