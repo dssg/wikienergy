@@ -1,0 +1,244 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>disaggregator.OakParkDatasetAdapter &mdash; disaggregator 0.1.0 documentation</title>
+    
+    <link rel="stylesheet" href="../../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '0.1.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="top" title="disaggregator 0.1.0 documentation" href="../../index.html" />
+    <link rel="up" title="disaggregator" href="../disaggregator.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../index.html">disaggregator 0.1.0 documentation</a> &raquo;</li>
+          <li><a href="../index.html" >Module code</a> &raquo;</li>
+          <li><a href="../disaggregator.html" accesskey="U">disaggregator</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <h1>Source code for disaggregator.OakParkDatasetAdapter</h1><div class="highlight"><pre>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    .. module:: OakParkDatasetAdapter</span>
+<span class="sd">    :platform: Unix</span>
+<span class="sd">    :synopsis: Contains methods for importing data from Oak Park</span>
+<span class="sd">    dataset.</span>
+
+<span class="sd">    .. moduleauthor:: Phil Ngo &lt;ngo.phil@gmail.com&gt;</span>
+<span class="sd">    .. moduleauthor:: Miguel Perez &lt;miguel@invalid.com&gt;</span>
+<span class="sd">    .. moduleauthor:: Stephen Suffian &lt;steve@invalid.com&gt;</span>
+<span class="sd">    .. moduleauthor:: Sabina Tomkins &lt;sabina.tomkins@gmail.com&gt;</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+
+
+<span class="kn">from</span> <span class="nn">appliance</span> <span class="kn">import</span> <span class="n">ApplianceTrace</span>
+<span class="kn">from</span> <span class="nn">appliance</span> <span class="kn">import</span> <span class="n">ApplianceInstance</span>
+<span class="kn">from</span> <span class="nn">appliance</span> <span class="kn">import</span> <span class="n">ApplianceSet</span>
+<span class="kn">from</span> <span class="nn">appliance</span> <span class="kn">import</span> <span class="n">ApplianceType</span>
+<span class="kn">import</span> <span class="nn">utils</span>
+<span class="kn">import</span> <span class="nn">pymongo</span>
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="kn">as</span> <span class="nn">pd</span>
+<span class="kn">from</span> <span class="nn">datetime</span> <span class="kn">import</span> <span class="n">datetime</span>
+<span class="kn">import</span> <span class="nn">calendar</span>
+<span class="kn">import</span> <span class="nn">copy</span>
+
+<span class="n">source</span> <span class="o">=</span> <span class="s">&quot;OakPark&quot;</span>
+
+<span class="k">def</span> <span class="nf">get_db_connection</span><span class="p">():</span>
+    <span class="n">connection</span> <span class="o">=</span> <span class="n">pymongo</span><span class="o">.</span><span class="n">MongoClient</span><span class="p">(</span><span class="s">&#39;ds059938.mongolab.com&#39;</span><span class="p">,</span><span class="mi">59938</span><span class="p">)</span>
+    <span class="n">db</span> <span class="o">=</span> <span class="n">connection</span><span class="p">[</span><span class="s">&#39;oakparkhistoric&#39;</span><span class="p">]</span>
+    <span class="n">db</span><span class="o">.</span><span class="n">authenticate</span><span class="p">(</span><span class="s">&#39;anonymouseenergy&#39;</span><span class="p">,</span> <span class="s">&#39;KaTard3i3&#39;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">db</span>
+
+<div class="viewcode-block" id="get_homes"><a class="viewcode-back" href="../../dataset_adapters.html#disaggregator.OakParkDatasetAdapter.get_homes">[docs]</a><span class="k">def</span> <span class="nf">get_homes</span><span class="p">(</span><span class="n">db</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Returns a dictionary where each key is a home id and each value is a home.</span>
+<span class="sd">    A home as meta_data, and a list of dates and power values in kwH.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">houses</span> <span class="o">=</span><span class="p">[]</span>
+    <span class="n">ids</span><span class="o">=</span><span class="p">[]</span>
+    <span class="n">c</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">usage</span><span class="o">.</span><span class="n">find</span><span class="p">()</span>
+    <span class="k">for</span> <span class="n">co</span> <span class="ow">in</span> <span class="n">c</span><span class="p">:</span>
+        <span class="n">ids</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">co</span><span class="p">[</span><span class="s">&#39;meta&#39;</span><span class="p">][</span><span class="s">&#39;dataid&#39;</span><span class="p">]))</span>
+        <span class="n">houses</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">co</span><span class="p">)</span>
+    <span class="k">return</span> <span class="p">{</span><span class="n">i</span><span class="p">:</span><span class="n">h</span> <span class="k">for</span> <span class="n">i</span><span class="p">,</span><span class="n">h</span> <span class="ow">in</span> <span class="nb">zip</span> <span class="p">(</span><span class="n">ids</span><span class="p">,</span><span class="n">houses</span><span class="p">)}</span>
+</div>
+<div class="viewcode-block" id="get_trace_from_intermediate_xml"><a class="viewcode-back" href="../../dataset_adapters.html#disaggregator.OakParkDatasetAdapter.get_trace_from_intermediate_xml">[docs]</a><span class="k">def</span> <span class="nf">get_trace_from_intermediate_xml</span><span class="p">(</span><span class="n">xml_house</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Assumes you have a dict with interval readings. Assigns an arbitrary dataid.</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="n">dates</span> <span class="o">=</span> <span class="p">[</span><span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">xml_house</span><span class="p">[</span><span class="s">&#39;interval_readings&#39;</span><span class="p">]]</span>
+    <span class="n">values</span> <span class="o">=</span> <span class="p">[</span><span class="n">x</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="s">&#39;value&#39;</span><span class="p">]</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">xml_house</span><span class="p">[</span><span class="s">&#39;interval_readings&#39;</span><span class="p">]]</span>
+    <span class="k">return</span> <span class="n">ApplianceTrace</span><span class="p">(</span><span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">(</span><span class="n">values</span><span class="p">,</span> <span class="n">index</span> <span class="o">=</span> <span class="n">dates</span><span class="p">),</span><span class="n">xml_house</span><span class="p">[</span><span class="s">&#39;meta&#39;</span><span class="p">])</span>
+
+
+
+</div>
+<div class="viewcode-block" id="homes_to_traces"><a class="viewcode-back" href="../../dataset_adapters.html#disaggregator.OakParkDatasetAdapter.homes_to_traces">[docs]</a><span class="k">def</span> <span class="nf">homes_to_traces</span><span class="p">(</span><span class="n">homes</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">       Returns a dictionary where the key is a home id and the value is an</span>
+<span class="sd">       Appliance Trace.</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="n">homes_new</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="k">for</span> <span class="n">di</span> <span class="ow">in</span> <span class="n">homes</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+        <span class="n">homes_new</span><span class="p">[</span><span class="n">di</span><span class="p">]</span><span class="o">=</span><span class="n">generate_trace_by_dataid</span><span class="p">(</span><span class="n">homes</span><span class="p">,</span><span class="n">di</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">homes_new</span>
+</div>
+<div class="viewcode-block" id="generate_trace_by_dataid"><a class="viewcode-back" href="../../dataset_adapters.html#disaggregator.OakParkDatasetAdapter.generate_trace_by_dataid">[docs]</a><span class="k">def</span> <span class="nf">generate_trace_by_dataid</span><span class="p">(</span><span class="n">homes</span><span class="p">,</span><span class="n">dataid</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Returns a trace.</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="n">house</span> <span class="o">=</span> <span class="n">homes</span><span class="p">[</span><span class="n">dataid</span><span class="p">]</span>
+    <span class="n">dates</span> <span class="o">=</span> <span class="p">[</span><span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">house</span><span class="p">[</span><span class="s">&#39;interval_readings&#39;</span><span class="p">]]</span>
+    <span class="n">values</span> <span class="o">=</span> <span class="p">[</span><span class="n">x</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="s">&#39;value&#39;</span><span class="p">]</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">house</span><span class="p">[</span><span class="s">&#39;interval_readings&#39;</span><span class="p">]]</span>
+    
+    <span class="k">return</span> <span class="n">ApplianceTrace</span><span class="p">(</span><span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">(</span><span class="n">values</span><span class="p">,</span> <span class="n">index</span> <span class="o">=</span> <span class="n">dates</span><span class="p">),</span><span class="n">house</span><span class="p">[</span><span class="s">&#39;meta&#39;</span><span class="p">])</span>
+</div>
+<div class="viewcode-block" id="resample_trace_by_month"><a class="viewcode-back" href="../../dataset_adapters.html#disaggregator.OakParkDatasetAdapter.resample_trace_by_month">[docs]</a><span class="k">def</span> <span class="nf">resample_trace_by_month</span><span class="p">(</span><span class="n">trace</span><span class="p">,</span><span class="n">month</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Returns a set of houses for a given month.</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="k">return</span> <span class="n">utils</span><span class="o">.</span><span class="n">resample_trace</span><span class="p">(</span><span class="n">trace</span><span class="p">,</span><span class="s">&#39;MS&#39;</span><span class="p">)</span>
+</div>
+<span class="k">def</span> <span class="nf">check_complete</span><span class="p">(</span><span class="n">home</span><span class="p">,</span><span class="n">year</span><span class="p">,</span><span class="n">month</span><span class="p">):</span>
+    <span class="n">year</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">year</span><span class="p">)</span>
+    <span class="n">month</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">month</span><span class="p">)</span>
+    <span class="n">dt_start</span> <span class="o">=</span> <span class="n">datetime</span><span class="p">(</span><span class="n">year</span><span class="p">,</span><span class="n">month</span><span class="p">,</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">dt_end</span> <span class="o">=</span> <span class="n">datetime</span><span class="p">(</span><span class="n">year</span><span class="p">,</span><span class="n">month</span><span class="p">,</span><span class="n">calendar</span><span class="o">.</span><span class="n">monthrange</span><span class="p">(</span><span class="n">year</span><span class="p">,</span><span class="n">month</span><span class="p">)[</span><span class="mi">1</span><span class="p">])</span>
+    <span class="n">index_start</span> <span class="o">=</span> <span class="n">home</span><span class="o">.</span><span class="n">series</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">searchsorted</span><span class="p">(</span><span class="n">dt_start</span><span class="p">)</span>
+    <span class="n">index_end</span> <span class="o">=</span> <span class="n">home</span><span class="o">.</span><span class="n">series</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">searchsorted</span><span class="p">(</span><span class="n">dt_end</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">index_end</span><span class="o">-</span><span class="n">index_start</span><span class="o">==</span><span class="p">((</span><span class="n">dt_end</span><span class="o">-</span><span class="n">dt_start</span><span class="p">)</span><span class="o">*</span><span class="mi">48</span><span class="p">)</span><span class="o">.</span><span class="n">days</span>
+
+<div class="viewcode-block" id="get_home_series_by_year_month"><a class="viewcode-back" href="../../dataset_adapters.html#disaggregator.OakParkDatasetAdapter.get_home_series_by_year_month">[docs]</a><span class="k">def</span> <span class="nf">get_home_series_by_year_month</span><span class="p">(</span><span class="n">home</span><span class="p">,</span><span class="n">year</span><span class="p">,</span><span class="n">month</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Returns the home&#39;s series sliced by year and month.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+    <span class="k">if</span> <span class="n">check_complete</span><span class="p">(</span><span class="n">home</span><span class="p">,</span><span class="n">year</span><span class="p">,</span><span class="n">month</span><span class="p">):</span>
+        <span class="n">index_start</span> <span class="o">=</span> <span class="n">home</span><span class="o">.</span><span class="n">series</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">searchsorted</span><span class="p">(</span><span class="n">datetime</span><span class="p">(</span><span class="n">year</span><span class="p">,</span><span class="n">month</span><span class="p">,</span><span class="mi">1</span><span class="p">))</span>
+        <span class="n">index_end</span> <span class="o">=</span> <span class="n">home</span><span class="o">.</span><span class="n">series</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">searchsorted</span><span class="p">(</span><span class="n">datetime</span><span class="p">(</span><span class="n">year</span><span class="p">,</span><span class="n">month</span><span class="p">,</span><span class="n">calendar</span><span class="o">.</span><span class="n">monthrange</span><span class="p">(</span><span class="n">year</span><span class="p">,</span><span class="n">month</span><span class="p">)[</span><span class="mi">1</span><span class="p">]))</span>
+        <span class="k">return</span>  <span class="n">home</span><span class="o">.</span><span class="n">series</span><span class="p">[</span><span class="n">index_start</span><span class="p">:</span><span class="n">index_end</span><span class="p">]</span>
+</div>
+<div class="viewcode-block" id="get_list_of_homes_with_certain_year_month"><a class="viewcode-back" href="../../dataset_adapters.html#disaggregator.OakParkDatasetAdapter.get_list_of_homes_with_certain_year_month">[docs]</a><span class="k">def</span> <span class="nf">get_list_of_homes_with_certain_year_month</span><span class="p">(</span><span class="n">homes</span><span class="p">,</span><span class="n">year</span><span class="p">,</span><span class="n">month</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Returns a list of homes which have complete trace info for given year and month.</span>
+<span class="sd">        Assumes that homes is dict where keys are dataids and values are traces.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+    <span class="n">complete_homes</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">h</span> <span class="ow">in</span> <span class="n">homes</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+        <span class="k">if</span> <span class="n">check_complete</span><span class="p">(</span><span class="n">homes</span><span class="p">[</span><span class="n">h</span><span class="p">],</span><span class="n">year</span><span class="p">,</span><span class="n">month</span><span class="p">):</span>
+            <span class="n">complete_homes</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">h</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">complete_homes</span>
+</div>
+<span class="k">def</span> <span class="nf">generate_set_by_year_month</span><span class="p">(</span><span class="n">year</span><span class="p">,</span><span class="n">month</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Returns an appliance set by month and year. Where there is one</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+    <span class="n">db</span> <span class="o">=</span> <span class="n">get_db_connection</span><span class="p">()</span>
+    <span class="n">homes</span> <span class="o">=</span> <span class="n">get_homes</span><span class="p">(</span><span class="n">db</span><span class="p">)</span>
+    <span class="n">homes_traces</span> <span class="o">=</span> <span class="n">homes_to_traces</span><span class="p">(</span><span class="n">homes</span><span class="p">)</span>
+    <span class="n">complete_homes</span> <span class="o">=</span> <span class="n">get_list_of_homes_with_certain_year_month</span><span class="p">(</span><span class="n">homes_traces</span><span class="p">,</span><span class="n">year</span><span class="p">,</span><span class="n">month</span><span class="p">)</span>
+    <span class="n">correct_homes</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="k">for</span> <span class="n">h</span> <span class="ow">in</span> <span class="n">complete_homes</span><span class="p">:</span>
+        <span class="n">correct_homes</span><span class="p">[</span><span class="n">h</span><span class="p">]</span><span class="o">=</span><span class="n">homes_traces</span><span class="p">[</span><span class="n">h</span><span class="p">]</span>
+        <span class="n">correct_homes</span><span class="p">[</span><span class="n">h</span><span class="p">]</span><span class="o">.</span><span class="n">series</span><span class="o">=</span><span class="n">get_home_series_by_year_month</span><span class="p">(</span><span class="n">correct_homes</span><span class="p">[</span><span class="n">h</span><span class="p">],</span><span class="n">year</span><span class="p">,</span><span class="n">month</span><span class="p">)</span>
+        
+        <span class="c"># print len(homes_traces[h].series)</span>
+        <span class="c">#print homes_traces[h].series.index[0]</span>
+    <span class="n">instances</span> <span class="o">=</span> <span class="p">[</span><span class="n">ApplianceInstance</span><span class="p">([</span><span class="n">t</span><span class="p">],</span><span class="n">t</span><span class="o">.</span><span class="n">metadata</span><span class="p">)</span> <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">correct_homes</span><span class="p">]</span>
+    <span class="n">metadata_set</span><span class="o">=</span> <span class="p">{</span><span class="s">&#39;source&#39;</span><span class="p">:</span><span class="n">source</span><span class="p">,</span><span class="s">&#39;dataids&#39;</span><span class="p">:</span><span class="n">complete_homes</span><span class="p">}</span>
+    <span class="k">return</span> <span class="n">ApplianceSet</span><span class="p">(</span><span class="n">instances</span><span class="p">,</span><span class="n">metadata_set</span><span class="p">)</span>
+
+<div class="viewcode-block" id="generate_set_by_year_month"><a class="viewcode-back" href="../../dataset_adapters.html#disaggregator.OakParkDatasetAdapter.generate_set_by_year_month">[docs]</a><span class="k">def</span> <span class="nf">generate_set_by_year_month</span><span class="p">(</span><span class="n">homes</span><span class="p">,</span><span class="n">year</span><span class="p">,</span><span class="n">month</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Returns an appliance set by month and year. Where there is one</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+    <span class="c"># db = get_db_connection()</span>
+ 
+    <span class="n">homes_traces</span> <span class="o">=</span> <span class="n">homes_to_traces</span><span class="p">(</span><span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="n">homes</span><span class="p">))</span>
+    <span class="n">complete_homes</span> <span class="o">=</span> <span class="n">get_list_of_homes_with_certain_year_month</span><span class="p">(</span><span class="n">homes_traces</span><span class="p">,</span><span class="n">year</span><span class="p">,</span><span class="n">month</span><span class="p">)</span>
+    <span class="n">correct_homes</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="k">for</span> <span class="n">h</span> <span class="ow">in</span> <span class="n">complete_homes</span><span class="p">:</span>
+        <span class="n">correct_homes</span><span class="p">[</span><span class="n">h</span><span class="p">]</span><span class="o">=</span><span class="n">homes_traces</span><span class="p">[</span><span class="n">h</span><span class="p">]</span>
+        <span class="n">correct_homes</span><span class="p">[</span><span class="n">h</span><span class="p">]</span><span class="o">.</span><span class="n">series</span><span class="o">=</span><span class="n">get_home_series_by_year_month</span><span class="p">(</span><span class="n">homes_traces</span><span class="p">[</span><span class="n">h</span><span class="p">],</span><span class="n">year</span><span class="p">,</span><span class="n">month</span><span class="p">)</span>
+    
+    <span class="c"># print len(homes_traces[h].series)</span>
+    <span class="c">#print homes_traces[h].series.index[0]</span>
+    <span class="n">instances</span> <span class="o">=</span> <span class="p">[</span><span class="n">ApplianceInstance</span><span class="p">([</span><span class="n">t</span><span class="p">],</span><span class="n">t</span><span class="o">.</span><span class="n">metadata</span><span class="p">)</span> <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">correct_homes</span><span class="o">.</span><span class="n">values</span><span class="p">()]</span>
+    <span class="n">metadata_set</span><span class="o">=</span> <span class="p">{</span><span class="s">&#39;source&#39;</span><span class="p">:</span><span class="n">source</span><span class="p">,</span><span class="s">&#39;dataids&#39;</span><span class="p">:</span><span class="n">complete_homes</span><span class="p">}</span>
+    <span class="k">return</span> <span class="n">ApplianceSet</span><span class="p">(</span><span class="n">instances</span><span class="p">,</span><span class="n">metadata_set</span><span class="p">)</span>
+</pre></div></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../index.html">disaggregator 0.1.0 documentation</a> &raquo;</li>
+          <li><a href="../index.html" >Module code</a> &raquo;</li>
+          <li><a href="../disaggregator.html" >disaggregator</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2014, Phil Ngo, Miguel Perez, Stephen Suffian, Sabina Tomkins.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.
+    </div>
+  </body>
+</html>
