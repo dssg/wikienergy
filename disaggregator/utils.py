@@ -5,7 +5,9 @@
       appliance classes.
 
 .. moduleauthor:: Phil Ngo <ngo.phil@gmail.com>
+.. moduleauthor:: Miguel Perez <miguel@invalid.com>
 .. moduleauthor:: Stephen Suffian <steve@invalid.com>
+.. moduleauthor:: Sabina Tomkins <sabina@invalid.com>
 
 """
 
@@ -21,6 +23,7 @@ import decimal
 import datetime
 import random
 import copy
+
 
 def aggregate_instances(instances, metadata, how="strict"):
     '''
@@ -122,7 +125,7 @@ def split_instance_traces_into_rate(device_instance,rate):
     from a unique date
     '''
     print "WARNING: deprecated, "\
-          "use appliance_instance.split_traces_into_rate(rate) instead"
+          "use appliance_instance.split_by(rate) instead"
     traces=[]
     for trace in device_instance.traces:
         traces.extend(split_trace_into_rate(trace,rate))
@@ -134,7 +137,7 @@ def split_type_traces_into_rate(device_type, rate):
     that are each from a unique date
     '''
     print "WARNING: deprecated, "\
-          "use appliance_type.split_traces_into_rate(rate) instead"
+          "use appliance_type.split_by(rate) instead"
     instances=[]
     for instance in device_type.instances:
         new_instance= split_instance_traces_into_rate(instance,rate)
@@ -147,7 +150,7 @@ def split_set_traces_into_rate(device_set, rate):
     that are each from a unique date
     '''
     print "WARNING: deprecated, "\
-          "use appliance_set.split_traces_into_rate(rate) instead"
+          "use appliance_set.split_by(rate) instead"
     instances=[]
     for instance in device_set.instances:
         new_instance= split_instance_traces_into_rate(instance,rate)
@@ -248,9 +251,13 @@ def pickle_object(obj,title):
     '''
     Given an object and a filename saves the object in pickled format to the data directory.
     '''
-    rel_path = os.path.relpath(os.getcwd(),'data')
-    with open(os.path.join(rel_path,'data/{}.p'.format(title)),'wb') as f:
+    rel_path = os.path.relpath(os.getcwd(),'data/')
+    file = os.path.join(rel_path,'../data/{}.p'.format(title))
+#print open(os.path.join(rel_path,'{}.p'.format(title)),'wb')
+
+    with open(os.path.join(file),'wb') as f:
         pickle.dump(obj, f)
+
 
 def generate_random_appliance_sets(appliance_sets,k,n):
     """
@@ -355,7 +362,8 @@ def traces_aligned(traces):
     """
     indices = [trace.series.index for trace in traces]
     for index in indices[1:]:
-        if not indices[0].equals(index):
+        if not indices[0].summary()==(index.summary()):
+            print index
             return False
     return True
 
@@ -363,24 +371,27 @@ def instances_aligned(instances):
     """
     Returns True iff instances and their traces are temporally aligned.
     """
-    if len(instances < 2):
+    if len(instances) < 2:
         return True
     for instance in instances[1:]:
         if not len(instance.traces) == len(instances[0].traces):
+            print "one"
             return False
     traces = map(list,zip(*[instance.traces for instance in instances]))
     for traces_ in traces:
         if not traces_aligned(traces_):
+            print "two"
             return False
     return True
 
-def align_traces(traces,to=None,how="front"):
+def align_traces(traces,to=None,how="front",freq=None):
     """
     Temporally aligns the traces. `how`="front" means to align to the front of
     the `to` trace. If no `to` trace is given, the first shortest trace is used.
     Traces are all downsampled to match the lowest sampling rate
     """
     # make copies
+
     traces=copy.deepcopy(traces)
 
     # if already aligned, don't do extra work.
@@ -388,9 +399,17 @@ def align_traces(traces,to=None,how="front"):
         return traces
 
     # resample to the same frequency
-    frequencies = [pd.tseries.frequencies.to_offset(trace.series.index.freq)
-                   for trace in traces if trace.series.index.freq]
-    new_freq = sorted(frequencies,reverse=True)[0]
+
+    if freq:
+        new_freq = freq
+    else:
+        frequencies = [pd.tseries.frequencies.to_offset(trace.series.index.freq)
+                    for trace in traces if trace.series.index.freq]
+        try:
+            new_freq = sorted(frequencies,reverse=True)[0]
+        except IndexError:
+            print "Please supply a frequency, no frequency could be guessed."
+
     for trace in traces:
         trace.resample(new_freq)
 
@@ -424,10 +443,12 @@ def align_instances(instances):
     Aligns all traces in a list of instances. Removes traces that don't fit.
     """
     traces = map(list,zip(*[instance.traces for instance in instances]))
+    print traces
     aligned_traces = []
     for traces_ in traces:
         aligned_traces.append(align_traces(traces_))
-    traces = map(list,zip(*aligned_traces))
+    print aligned_traces
+    traces = map(list,zip(*aligned_traces_))
     return [ApplianceInstance(traces_,instance.metadata)
             for traces_,instance in zip(traces,instances)]
 

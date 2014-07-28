@@ -25,6 +25,7 @@
     <script type="text/javascript" src="_static/doctools.js"></script>
     <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
     <link rel="top" title="disaggregator 0.1.0 documentation" href="index.html" />
+    <link rel="next" title="Generators" href="generators.html" />
     <link rel="prev" title="Utilities" href="utils.html" /> 
   </head>
   <body>
@@ -37,6 +38,9 @@
         <li class="right" >
           <a href="py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
+        <li class="right" >
+          <a href="generators.html" title="Generators"
+             accesskey="N">next</a> |</li>
         <li class="right" >
           <a href="utils.html" title="Utilities"
              accesskey="P">previous</a> |</li>
@@ -81,9 +85,11 @@ combine a number of HMMs in parallel to model appliance states.</p>
 
 <dl class="function">
 <dt id="disaggregator.fhmm.generate_FHMM_from_HMMs">
-<tt class="descclassname">disaggregator.fhmm.</tt><tt class="descname">generate_FHMM_from_HMMs</tt><big>(</big><em>type_models</em>, <em>key_for_model_name=None</em><big>)</big><a class="reference internal" href="_modules/disaggregator/fhmm.html#generate_FHMM_from_HMMs"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#disaggregator.fhmm.generate_FHMM_from_HMMs" title="Permalink to this definition">¶</a></dt>
+<tt class="descclassname">disaggregator.fhmm.</tt><tt class="descname">generate_FHMM_from_HMMs</tt><big>(</big><em>type_models</em><big>)</big><a class="reference internal" href="_modules/disaggregator/fhmm.html#generate_FHMM_from_HMMs"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#disaggregator.fhmm.generate_FHMM_from_HMMs" title="Permalink to this definition">¶</a></dt>
 <dd><p>Takes a dictionary of models, where the keys are the device type name, and
-generates an FHMM of these models.</p>
+generates an FHMM of these models. It returns the fhmm model as well as 
+a dictionary with the key being device type and each value being a list
+containing the means for each state of that device type.</p>
 </dd></dl>
 
 <dl class="function">
@@ -119,21 +125,17 @@ one column, and n third dimensional states.<ul>
 </dd></dl>
 
 <dl class="function">
-<dt id="disaggregator.fhmm.sort_learnt_parameters">
-<tt class="descclassname">disaggregator.fhmm.</tt><tt class="descname">sort_learnt_parameters</tt><big>(</big><em>startprob</em>, <em>means</em>, <em>covars</em>, <em>transmat</em><big>)</big><a class="reference internal" href="_modules/disaggregator/fhmm.html#sort_learnt_parameters"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#disaggregator.fhmm.sort_learnt_parameters" title="Permalink to this definition">¶</a></dt>
-<dd><p>Sorts the learnt parameters for the HMM</p>
+<dt id="disaggregator.fhmm.plot_FHMM_and_predictions">
+<tt class="descclassname">disaggregator.fhmm.</tt><tt class="descname">plot_FHMM_and_predictions</tt><big>(</big><em>test_data</em>, <em>_decoded_power</em><big>)</big><a class="reference internal" href="_modules/disaggregator/fhmm.html#plot_FHMM_and_predictions"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#disaggregator.fhmm.plot_FHMM_and_predictions" title="Permalink to this definition">¶</a></dt>
+<dd><p>This plots the actual and predicted power based on the FHMM.</p>
 </dd></dl>
 
 <dl class="function">
-<dt id="disaggregator.fhmm.sort_startprob">
-<tt class="descclassname">disaggregator.fhmm.</tt><tt class="descname">sort_startprob</tt><big>(</big><em>mapping</em>, <em>startprob</em><big>)</big><a class="reference internal" href="_modules/disaggregator/fhmm.html#sort_startprob"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#disaggregator.fhmm.sort_startprob" title="Permalink to this definition">¶</a></dt>
-<dd><p>Sort the startprob of the HMM according to power means; as returned by mapping</p>
-</dd></dl>
-
-<dl class="function">
-<dt id="disaggregator.fhmm.sort_transition_matrix">
-<tt class="descclassname">disaggregator.fhmm.</tt><tt class="descname">sort_transition_matrix</tt><big>(</big><em>mapping</em>, <em>A</em><big>)</big><a class="reference internal" href="_modules/disaggregator/fhmm.html#sort_transition_matrix"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#disaggregator.fhmm.sort_transition_matrix" title="Permalink to this definition">¶</a></dt>
-<dd><p>Sorts the transition matrix of the HMM according to power means; as returned by mapping</p>
+<dt id="disaggregator.fhmm.predict_with_FHMM">
+<tt class="descclassname">disaggregator.fhmm.</tt><tt class="descname">predict_with_FHMM</tt><big>(</big><em>model_fhmm</em>, <em>means</em>, <em>test_data</em>, <em>power_total</em>, <em>plot=False</em><big>)</big><a class="reference internal" href="_modules/disaggregator/fhmm.html#predict_with_FHMM"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#disaggregator.fhmm.predict_with_FHMM" title="Permalink to this definition">¶</a></dt>
+<dd><p>Predicts the _decoded states and power for the given test data with the
+given FHMM. test_data is a dictionary containing keys for each device
+that is in the FHMM.</p>
 </dd></dl>
 
 </div>
@@ -201,6 +203,9 @@ problems.</p>
   <h4>Previous topic</h4>
   <p class="topless"><a href="utils.html"
                         title="previous chapter">Utilities</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="generators.html"
+                        title="next chapter">Generators</a></p>
   <h3>This Page</h3>
   <ul class="this-page-menu">
     <li><a href="_sources/algorithms.txt"
@@ -232,6 +237,9 @@ problems.</p>
         <li class="right" >
           <a href="py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
+        <li class="right" >
+          <a href="generators.html" title="Generators"
+             >next</a> |</li>
         <li class="right" >
           <a href="utils.html" title="Utilities"
              >previous</a> |</li>
