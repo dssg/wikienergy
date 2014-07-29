@@ -71,7 +71,6 @@ Methods
 
 GreenButton Dataset Adapter
 ---------------------------
-*[Future]*
 
 Overview
 ~~~~~~~~
@@ -82,4 +81,21 @@ suppliers to provide end-users with historical energy usages
 Methods
 ~~~~~~~
 
-*[None]*
+.. automodule:: disaggregator.GreenButtonDatasetAdapter
+   :members:
+
+Oak Park  Dataset Adapter
+-------------------------
+
+Overview
+~~~~~~~~
+
+A set of functions for working with a database of Oak Park home energy
+usage.
+
+Methods
+~~~~~~~
+
+.. automodule:: disaggregator.OakParkDatasetAdapter
+   :members:
+
