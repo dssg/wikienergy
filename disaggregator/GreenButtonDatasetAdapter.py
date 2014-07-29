@@ -37,8 +37,8 @@ def get_trace_from_xml(xml_string):
     Returns an ApplianceTrace representing the data in the XML file, which
     must conform to the GreenButtonXML format.
     '''
-    if not _validate(xml_string):
-        raise InvalidXMLError
+    # if not _validate(xml_string):
+    #     raise InvalidXMLError
 
     try:
         xmldoc = minidom.parseString(xml_string)
