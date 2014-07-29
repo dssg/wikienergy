@@ -68,6 +68,7 @@
 <span class="kn">from</span> <span class="nn">utils</span> <span class="kn">import</span> <span class="n">order_traces</span>
 <span class="kn">import</span> <span class="nn">utils</span>
 <span class="kn">import</span> <span class="nn">decimal</span>
+<span class="kn">import</span> <span class="nn">json</span>
 
 <div class="viewcode-block" id="ApplianceTrace"><a class="viewcode-back" href="../../appliances.html#disaggregator.appliance.ApplianceTrace">[docs]</a><span class="k">class</span> <span class="nc">ApplianceTrace</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;This class represents appliance traces.</span>
@@ -162,7 +163,20 @@
             <span class="n">metadata</span><span class="p">[</span><span class="s">&#39;trace_num&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">i</span>
             <span class="n">traces</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ApplianceTrace</span><span class="p">(</span><span class="n">group</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span><span class="n">metadata</span><span class="p">))</span>
         <span class="k">return</span> <span class="n">traces</span>
+</div>
+<div class="viewcode-block" id="ApplianceTrace.to_json"><a class="viewcode-back" href="../../appliances.html#disaggregator.appliance.ApplianceTrace.to_json">[docs]</a>    <span class="k">def</span> <span class="nf">to_json</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Returns the trace in json a json format amenable to d3 visualization.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">series</span><span class="o">.</span><span class="n">iteritems</span><span class="p">():</span>
+            <span class="n">data</span><span class="o">.</span><span class="n">append</span><span class="p">({</span><span class="s">&#39;date&#39;</span><span class="p">:</span><span class="n">i</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s">&#39;%Y-%m-</span><span class="si">%d</span><span class="s">&#39;</span><span class="p">),</span>
+                         <span class="s">&#39;time&#39;</span><span class="p">:</span><span class="n">i</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s">&#39;%H:%M&#39;</span><span class="p">),</span>
+                         <span class="s">&#39;value&#39;</span><span class="p">:</span> <span class="nb">float</span><span class="p">(</span><span class="n">v</span><span class="p">)})</span>
 
+        <span class="n">json_string</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">ensure_ascii</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span>
+                                 <span class="n">indent</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">separators</span><span class="o">=</span><span class="p">(</span><span class="s">&#39;,&#39;</span><span class="p">,</span> <span class="s">&#39;: &#39;</span><span class="p">))</span>
+        <span class="k">return</span> <span class="n">json_string</span>
 
 </div></div>
 <div class="viewcode-block" id="ApplianceInstance"><a class="viewcode-back" href="../../appliances.html#disaggregator.appliance.ApplianceInstance">[docs]</a><span class="k">class</span> <span class="nc">ApplianceInstance</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
