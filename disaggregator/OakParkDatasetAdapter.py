@@ -1,13 +1,13 @@
 """
-    .. module:: OakParkDatasetAdapter
-    :platform: Unix
-    :synopsis: Contains methods for importing data from Oak Park
-    dataset.
+.. module:: OakParkDatasetAdapter
+   :platform: Unix
+   :synopsis: Contains methods for importing data from Oak Park
+     dataset.
 
-    .. moduleauthor:: Phil Ngo <ngo.phil@gmail.com>
-    .. moduleauthor:: Miguel Perez <miguel@invalid.com>
-    .. moduleauthor:: Stephen Suffian <steve@invalid.com>
-    .. moduleauthor:: Sabina Tomkins <sabina.tomkins@gmail.com>
+.. moduleauthor:: Phil Ngo <ngo.phil@gmail.com>
+.. moduleauthor:: Miguel Perez <miguel@invalid.com>
+.. moduleauthor:: Stephen Suffian <steve@invalid.com>
+.. moduleauthor:: Sabina Tomkins <sabina.tomkins@gmail.com>
 
 """
 
@@ -43,6 +43,17 @@ def get_homes(db):
         ids.append(str(co['meta']['dataid']))
         houses.append(co)
     return {i:h for i,h in zip (ids,houses)}
+
+def get_trace_from_intermediate_xml(xml_house):
+    '''
+        Assumes you have a dict with interval readings. Assigns an arbitrary dataid.
+    '''
+    dates = [x[0] for x in xml_house['interval_readings']]
+    values = [x[1]['value'] for x in xml_house['interval_readings']]
+    return ApplianceTrace(pd.Series(values, index = dates),xml_house['meta'])
+
+
+
 
 def homes_to_traces(homes):
     '''
