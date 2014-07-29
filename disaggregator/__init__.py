@@ -17,6 +17,7 @@ import evaluation_metrics
 import PecanStreetDatasetAdapter
 import OakParkDatasetAdapter
 from TracebaseDatasetAdapter import TracebaseDatasetAdapter
+import GreenButtonDatasetAdapter
 import utils
 import appliance
 import fhmm
