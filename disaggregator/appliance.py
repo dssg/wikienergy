@@ -17,6 +17,7 @@ import pprint
 from utils import order_traces
 import utils
 import decimal
+import json
 
 class ApplianceTrace(object):
     """This class represents appliance traces.
@@ -112,6 +113,19 @@ class ApplianceTrace(object):
             traces.append(ApplianceTrace(group[1],metadata))
         return traces
 
+    def to_json(self):
+        '''
+        Returns the trace in a json format amenable to d3 visualization.
+        '''
+        data = []
+        for i, v in self.series.iteritems():
+            data.append({'date':i.strftime('%Y-%m-%d'),
+                         'time':i.strftime('%H:%M'),
+                         'value': float(v)})
+
+        json_string = json.dumps(data, ensure_ascii=False,
+                                 indent=4, separators=(',', ': '))
+        return json_string
 
 
 class ApplianceInstance(object):
