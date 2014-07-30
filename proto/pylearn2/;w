@@ -1,0 +1,67 @@
+import sys
+import os.path
+sys.path.append(os.path.abspath(os.path.join(os.pardir,os.pardir)))
+import disaggregator as da
+import disaggregator.PecanStreetDatasetAdapter as psda
+import pylearn2.datasets as ds
+import pickle
+import argparse
+from copy import deepcopy
+import numpy as np
+
+def create_dataset(ids, which = None):
+    all_traces = psda.generate_traces_for_appliances_by_dataids(schema,table,
+            ['use','air1','furnace1'],ids,sample_rate='15T')
+
+    X_arrays = []
+    y_arrays = []
+    for traces,dataid in zip(all_traces,ids):
+        use = traces[0]
+        air1 = traces[1]
+        furnace1 = traces[2]
+        total_air = da.utils.aggregate_traces([air1,furnace1],{})
+        ratios = da.appliance.ApplianceTrace(total_air.series / (use.series).clip(lower=0.000001),{})
+        use_windows = use.get_windows(window_length,window_stride)
+        ratio_windows = ratios.get_windows(window_length,window_stride)
+        X_arrays.append(use_windows)
+        y_array = ratio_windows[:,prediction_index:prediction_index+1].clip(0,1)
+        y_arrays.append(np.concatenate([1-y_array,y_array],axis=1))
+    X = np.concatenate(X_arrays,axis=0)
+    y = np.concatenate(y_arrays,axis=0)
+    dataset = ds.DenseDesignMatrix(X=X,y=y)
+    with open(os.path.join(args.data_dir,args.prefix+'_'+which+'.pkl'),'w') as f:
+        pickle.dump(dataset,f)
+
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser(description='create appliance detection datasets for pylearn2.')
+    parser.add_argument('data_dir',type=str,
+            help='directory in which to store data')
+    parser.add_argument('prefix',type=str,
+            help='prefix for dataset files')
+    args = parser.parse_args()
+
+    schema = 'shared'
+    tables = [u'validated_01_2014',
+              u'validated_02_2014',
+              u'validated_03_2014',
+              u'validated_04_2014',
+              u'validated_05_2014',]
+    table = tables[4]
+
+    db_url = "postgresql://USERNAME:PASSWORD@db.wiki-energy.org:5432/postgres"
+    psda.set_url(db_url)
+
+    window_length = 10
+    window_stride = 1
+    prediction_index = 6
+
+    air1_dataids = psda.get_dataids_with_real_values(schema,table,'air1')
+    furnace1_dataids = psda.get_dataids_with_real_values(schema,table,'furnace1')
+    common_ids = da.utils.get_common_ids([air1_dataids,furnace1_dataids])
+
+    train_ids = common_ids[:6]
+    valid_ids = common_ids[6:9]
+    test_ids = common_ids[9:12]
+
+    for ids,which in zip([train_ids,valid_ids,test_ids],["train","test","valid"]):
+        create_dataset(ids,which)
