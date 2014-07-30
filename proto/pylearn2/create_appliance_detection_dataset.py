@@ -24,7 +24,7 @@ if __name__ == "__main__":
               u'validated_03_2014',
               u'validated_04_2014',
               u'validated_05_2014',]
-    
+
     db_url = "postgresql://USERNAME:PASSWORD@db.wiki-energy.org:5432/postgres"
     psda.set_url(db_url)
 
@@ -35,16 +35,16 @@ if __name__ == "__main__":
     train_dataset = ds.DenseDesignMatrix(X=train[0],y=train[1])
     valid_dataset = ds.DenseDesignMatrix(X=valid[0],y=valid[1])
     test_dataset = ds.DenseDesignMatrix(X=test[0],y=test[1])
-    
+
     with open('{data_dir}/{prefix}_train.pkl'
             .format(data_dir=args.data_dir,prefix=args.prefix), 'w') as f:
-        pickle.dump(train_dataset,f) 
-    
+        pickle.dump(train_dataset,f)
+
     with open('{data_dir}/{prefix}_valid.pkl'
             .format(data_dir=args.data_dir,prefix=args.prefix), 'w') as f:
-        pickle.dump(valid_dataset,f) 
-    
+        pickle.dump(valid_dataset,f)
+
     with open('{data_dir}/{prefix}_test.pkl'
             .format(data_dir=args.data_dir,prefix=args.prefix), 'w') as f:
-        pickle.dump(test_dataset,f) 
+        pickle.dump(test_dataset,f)
     import pdb; pdb.set_trace()
