@@ -87,6 +87,7 @@ class ApplianceTrace(object):
         try:
             new_series = self.series.astype(float)
             new_series = new_series.resample(sample_rate,how='mean')
+            new_series = new_series.fillna(0)
             new_series = new_series.map(decimal.Decimal)
             new_series.name = self.series.name
         except ValueError:
