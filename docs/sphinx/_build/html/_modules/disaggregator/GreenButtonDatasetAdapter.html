@@ -85,11 +85,11 @@
 
 <div class="viewcode-block" id="get_trace_from_xml"><a class="viewcode-back" href="../../dataset_adapters.html#disaggregator.GreenButtonDatasetAdapter.get_trace_from_xml">[docs]</a><span class="k">def</span> <span class="nf">get_trace_from_xml</span><span class="p">(</span><span class="n">xml_string</span><span class="p">):</span>
     <span class="sd">&#39;&#39;&#39;</span>
-<span class="sd">    This function returns a unique set of dates (corresponding to</span>
-<span class="sd">    individual files) for a single device instance id</span>
+<span class="sd">    Returns an ApplianceTrace representing the data in the XML file, which</span>
+<span class="sd">    must conform to the GreenButtonXML format.</span>
 <span class="sd">    &#39;&#39;&#39;</span>
-    <span class="k">if</span> <span class="ow">not</span> <span class="n">_validate</span><span class="p">(</span><span class="n">xml_string</span><span class="p">):</span>
-        <span class="k">raise</span> <span class="n">InvalidXMLError</span>
+    <span class="c"># if not _validate(xml_string):</span>
+    <span class="c">#     raise InvalidXMLError</span>
 
     <span class="k">try</span><span class="p">:</span>
         <span class="n">xmldoc</span> <span class="o">=</span> <span class="n">minidom</span><span class="o">.</span><span class="n">parseString</span><span class="p">(</span><span class="n">xml_string</span><span class="p">)</span>
@@ -200,7 +200,7 @@
     </div>
     <div class="footer">
         &copy; Copyright 2014, Phil Ngo, Miguel Perez, Stephen Suffian, Sabina Tomkins.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.2.
     </div>
   </body>
 </html>
