@@ -287,11 +287,12 @@ def _decode_hmm(length_sequence, centroids, variance, appliance_list, states):
                 1)[0]]).reshape(2,1)[hmm_states[appliance][i]]
     return [hmm_states,hmm_power]
 
+
 def disaggregate_data(model_tuple, trace):
     data=[]
     power_total=utils.trace_series_to_numpy_array(trace.series)
     [decoded_states, decoded_power]=predict_with_FHMM(model_tuple[0],
-            model_tuple[1],power_total)
+            model_tuple[1],model_tuple[2],power_total)
     for i,v in enumerate(decoded_power['air1']):
         date_time=trace.series.index[i]
         value=trace.series[i]
