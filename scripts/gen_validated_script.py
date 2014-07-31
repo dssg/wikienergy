@@ -55,7 +55,7 @@ def generate_and_pickle_models(device_name,pi_prior,a_prior,mean_prior,cov_prior
 
 
 pi_prior=np.array([0.5,0.5])
-a_prior=np.array([[0.5,0.5],[0.5,0.5]])
+a_prior=np.array([[0.8,0.2],[0.2,0.8]])
 mean_prior=np.array([[0],[2]])
 cov_prior=np.tile(1, (2, 1, 1))
 generate_and_pickle_models('air1',pi_prior,a_prior,mean_prior,cov_prior,'dataid',5,'D','15T')
