@@ -281,6 +281,7 @@ def _decode_hmm(length_sequence, centroids, appliance_list, states):
     return [hmm_states,hmm_power]
 
 def disaggregate_data(model_tuple, trace):
+    data=[]
     power_total=utils.trace_series_to_numpy_array(trace.series)
     [decoded_states, decoded_power]=predict_with_FHMM(model_tuple[0],
             model_tuple[1],power_total)
