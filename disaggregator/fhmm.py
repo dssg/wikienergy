@@ -6,6 +6,7 @@ import pandas as pd
 from collections import OrderedDict
 import itertools
 import matplotlib.pyplot as plt
+import json
 
 def init_HMM(pi_prior,a_prior,mean_prior,cov_prior):
     '''
