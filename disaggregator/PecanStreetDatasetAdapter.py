@@ -351,7 +351,7 @@ def generate_appliance_instance(
     """
     traces = [generate_appliance_trace(schema,table,appliances,dataid,
                   sample_rate,verbose) for table in tables]
-    traces = [utils.concatenate_trace(traces)]
+    traces = [utils.concatenate_traces(traces)]
     return ApplianceInstance(traces,traces[0].metadata)
 
 def generate_appliances_instances(
