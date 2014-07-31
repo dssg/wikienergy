@@ -87,6 +87,7 @@ class ApplianceTrace(object):
         try:
             new_series = self.series.astype(float)
             new_series = new_series.resample(sample_rate,how='mean')
+            new_series = new_series.fillna(0)
             new_series = new_series.map(decimal.Decimal)
             new_series.name = self.series.name
         except ValueError:
@@ -120,8 +121,7 @@ class ApplianceTrace(object):
         data = []
         for i, v in self.series.iteritems():
             data.append({'date':i.strftime('%Y-%m-%d %H:%M'),                         
-                         'value': float(v)})
-
+                         'reading': float(v)})
         json_string = json.dumps(data, ensure_ascii=False,
                                  indent=4, separators=(',', ': '))
         return json_string
