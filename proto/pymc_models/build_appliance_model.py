@@ -24,7 +24,7 @@ totals = np.sum(transitions,axis=2)[:,:,np.newaxis]
 transitions = (transitions / totals)[:,:,:n_states-1]
 
 mean_params = [pymc.Gamma('mean_param{}'.format(i), alpha=1, beta=.1) for i in range(n_states*2)]
-var_params = [pymc.Uniform('var_param{}'.format(i), lower=0, upper=1) for i in range(n_states*2)]
+var_params = [pymc.Gamma('var_param{}'.format(i), alpha=1, beta=.1) for i in range(n_states*2)]
 trans_params = [pymc.Beta('trans_params{}'.format(i), alpha=1, beta=1) for i in range(n_states**2)]
 
 mean_obs = []
@@ -40,10 +40,10 @@ for i in xrange(n_states):
     mean_obs.append(pymc.Gamma("mean_obs{}".format(i),alpha=alpha,beta=beta,value=means[i],observed=True))
     mean_pred.append(pymc.Gamma("mean_pred{}".format(i),alpha=alpha,beta=beta))
 
-    mu = var_params[i*2]
-    tau = var_params[i*2+1]
-    var_obs.append(pymc.Normal("var_obs{}".format(i),mu=mu,tau=tau,value=variances[i],observed=True))
-    var_pred.append(pymc.Normal("var_pred{}".format(i),mu=mu,tau=tau))
+    alpha = var_params[i*2]
+    beta = var_params[i*2+1]
+    var_obs.append(pymc.Gamma("var_obs{}".format(i),alpha=alpha,beta=beta,value=means[i],observed=True))
+    var_pred.append(pymc.Gamma("var_pred{}".format(i),alpha=alpha,beta=beta))
 
     probs = [trans_params[i*n_states + j] for j in range(n_states)]
     @pymc.deterministic
@@ -58,7 +58,7 @@ pred.extend(var_pred)
 pred.extend(trans_pred)
 model = pymc.Model(pred)
 
-M = pymc.MCMC(model, db="pickle",dbname=args.out_file)
+M = pymc.MCMC(model)
 M.sample(1000,200,10)
 M.db.close()
 
