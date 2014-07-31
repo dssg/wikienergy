@@ -290,7 +290,7 @@ def disaggregate_data(model_tuple, trace):
         date_time=trace.series.index[i]
         value=trace.series[i]
         data.append({'date':date_time.strftime('%Y-%m-%d %H:%M'),
-            'reading': float(v),'dg':float(value)})
+            'dg': float(v),'reading':float(value)})
     json_string = json.dumps(data, ensure_ascii=False,indent=4,
             separators=(',', ': '))
     return json_string
