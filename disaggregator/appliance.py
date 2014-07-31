@@ -120,8 +120,8 @@ class ApplianceTrace(object):
         '''
         data = []
         for i, v in self.series.iteritems():
-            data.append({'date':i.strftime('%Y-%m-%d %H:%M'),                         
-                         'value': float(v)})
+            data.append({'date':i.strftime('%Y-%m-%d %H:%M'),
+                         'reading': float(v)})
 
         json_string = json.dumps(data, ensure_ascii=False,
                                  indent=4, separators=(',', ': '))
