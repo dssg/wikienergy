@@ -96,7 +96,7 @@ def generate_FHMM_from_HMMs(type_models):
             A_combined, mean_combined, cov_combined)
     return model_fhmm,means
 
-def predict_with_FHMM(model_fhmm,means,test_data,power_total,plot=False):
+def predict_with_FHMM(model_fhmm,means,power_total):
     '''
     Predicts the _decoded states and power for the given test data with the
     given FHMM. test_data is a dictionary containing keys for each device
@@ -104,9 +104,7 @@ def predict_with_FHMM(model_fhmm,means,test_data,power_total,plot=False):
     '''
     learnt_states=model_fhmm.predict(power_total)
     [_decoded_states,_decoded_power]=_decode_hmm(len(learnt_states), means,
-            [appliance for appliance in test_data], learnt_states)
-    if(plot):
-        plot_FHMM_and_predictions(test_data,_decoded_power)
+            means.keys(), learnt_states)
     return _decoded_states,_decoded_power
 
 def plot_FHMM_and_predictions(test_data,_decoded_power):
@@ -281,3 +279,11 @@ def _decode_hmm(length_sequence, centroids, appliance_list, states):
             hmm_power[appliance][i]=centroids[appliance][hmm_states[appliance][i]]
 
     return [hmm_states,hmm_power]
+
+def disaggregate_data(model_tuple, trace):
+    for i,v in enumerate(decoded_power['air1']):
+        date_time=trace.series.index[i]
+        value=trace.series[i]
+        data.append({'date':date_time.strftime('%Y-%m-%d %H:%M'),'reading': float(v),'dg':float(value)})
+    json_string = json.dumps(data, ensure_ascii=False,indent=4, separators=(',', ': '))
+    return json_string
