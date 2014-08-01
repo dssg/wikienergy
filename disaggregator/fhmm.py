@@ -6,6 +6,7 @@ import pandas as pd
 from collections import OrderedDict
 import itertools
 import matplotlib.pyplot as plt
+import json
 
 def init_HMM(pi_prior,a_prior,mean_prior,cov_prior):
     '''
@@ -83,20 +84,22 @@ def generate_FHMM_from_HMMs(type_models):
     list_A=[]
     list_means=[]
     means={}
+    variances={}
     for device_type_name in type_models:
         list_pi.append(type_models[device_type_name].startprob_)
         list_A.append(type_models[device_type_name].transmat_)
         list_means.append(type_models[device_type_name].means_.flatten().
             tolist())
         means[device_type_name]=type_models[device_type_name].means_
+        variances[device_type_name]=type_models[device_type_name].covars_
     pi_combined=_compute_pi_fhmm(list_pi)
     A_combined=_compute_A_fhmm(list_A)
     [mean_combined, cov_combined]=_compute_means_fhmm(list_means)
     model_fhmm=_create_combined_hmm(len(pi_combined),pi_combined,
             A_combined, mean_combined, cov_combined)
-    return model_fhmm,means
+    return model_fhmm,means,variances
 
-def predict_with_FHMM(model_fhmm,means,test_data,power_total,plot=False):
+def predict_with_FHMM(model_fhmm,means,variances,power_total):
     '''
     Predicts the _decoded states and power for the given test data with the
     given FHMM. test_data is a dictionary containing keys for each device
@@ -104,9 +107,9 @@ def predict_with_FHMM(model_fhmm,means,test_data,power_total,plot=False):
     '''
     learnt_states=model_fhmm.predict(power_total)
     [_decoded_states,_decoded_power]=_decode_hmm(len(learnt_states), means,
-            [appliance for appliance in test_data], learnt_states)
-    if(plot):
-        plot_FHMM_and_predictions(test_data,_decoded_power)
+            variances, means.keys(), learnt_states)
+    np.putmask(_decoded_power['air1'],_decoded_power['air1'] >= power_total.T,
+             power_total.T)
     return _decoded_states,_decoded_power
 
 def plot_FHMM_and_predictions(test_data,_decoded_power):
@@ -255,7 +258,7 @@ def _create_combined_hmm(n, pi, A, mean, cov):
     combined_model.means_=mean
     return combined_model
 
-def _decode_hmm(length_sequence, centroids, appliance_list, states):
+def _decode_hmm(length_sequence, centroids, variance, appliance_list, states):
     '''
     decodes the HMM state sequence
     '''
@@ -278,6 +281,23 @@ def _decode_hmm(length_sequence, centroids, appliance_list, states):
 
             temp=int(states[i])/factor
             hmm_states[appliance][i]=temp%len(centroids[appliance])
-            hmm_power[appliance][i]=centroids[appliance][hmm_states[appliance][i]]
-
+            mu=centroids[appliance]
+            sigma=variance[appliance]
+            hmm_power[appliance][i]=np.array([0,np.random.normal(mu[1],sigma[1],
+                1)[0]]).reshape(2,1)[hmm_states[appliance][i]]
     return [hmm_states,hmm_power]
+
+
+def disaggregate_data(model_tuple, trace):
+    data=[]
+    power_total=utils.trace_series_to_numpy_array(trace.series)
+    [decoded_states, decoded_power]=predict_with_FHMM(model_tuple[0],
+            model_tuple[1],model_tuple[2],power_total)
+    for i,v in enumerate(decoded_power['air1']):
+        date_time=trace.series.index[i]
+        value=trace.series[i]
+        data.append({'date':date_time.strftime('%Y-%m-%d %H:%M'),
+            'dg': float(v),'reading':float(value)})
+    json_string = json.dumps(data, ensure_ascii=False,indent=4,
+            separators=(',', ': '))
+    return json_string
