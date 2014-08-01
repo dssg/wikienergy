@@ -62,12 +62,17 @@ class ApplianceTrace(object):
             windows.append(window)
         return np.array(windows,dtype=np.float)
 
-
     def get_total_usage(self):
         '''
         Returns the total usage of this trace
         '''
         return self.series.sum()
+
+    def get_daily_usage(self):
+        '''
+        Returns the total daily usage of this trace
+        '''    
+        return series.resample('D', how='mean')
 
     def print_trace(self):
         '''
@@ -87,6 +92,7 @@ class ApplianceTrace(object):
         try:
             new_series = self.series.astype(float)
             new_series = new_series.resample(sample_rate,how='mean')
+            new_series = new_series.fillna(0)
             new_series = new_series.map(decimal.Decimal)
             new_series.name = self.series.name
         except ValueError:
@@ -113,15 +119,26 @@ class ApplianceTrace(object):
             traces.append(ApplianceTrace(group[1],metadata))
         return traces
 
+    def to_daily_usage_json(self):
+        '''
+        Returns the daily usage average trace in a json format for calendar view
+        '''    
+        data = {}
+        d_avg = self.series.resample('D')
+        import pdb; pdb.set_trace();        
+        for i, v in enumerate(d_avg):
+            data.update({i:float(v)})            
+        json_string = json.dumps(data, ensure_ascii=False)
+        return json_string
+
     def to_json(self):
         '''
         Returns the trace in a json format amenable to d3 visualization.
         '''
         data = []
         for i, v in self.series.iteritems():
-            data.append({'date':i.strftime('%Y-%m-%d %H:%M'),                         
-                         'value': float(v)})
-
+            data.append({'date':i.strftime('%Y-%m-%d %H:%M'),
+                         'reading': float(v)})
         json_string = json.dumps(data, ensure_ascii=False,
                                  indent=4, separators=(',', ': '))
         return json_string
