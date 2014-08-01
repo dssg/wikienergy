@@ -119,6 +119,17 @@ class ApplianceTrace(object):
             traces.append(ApplianceTrace(group[1],metadata))
         return traces
 
+    def to_daily_usage_json(self):
+        '''
+        Returns the daily usage average trace in a json format for calendat view
+        '''
+        data = {}
+        d_avg = series.resample('D')        
+        for i, v in self.d_avg.iteritems():
+            data.update({i:float(v)})            
+        json_string = json.dumps(data, ensure_ascii=False)
+        return json_string
+
     def to_json(self):
         '''
         Returns the trace in a json format amenable to d3 visualization.
