@@ -1,4 +1,6 @@
-onverts a pickle file containing CudaNdarraySharedVariables into
+#!/usr/bin/env python
+"""
+Converts a pickle file containing CudaNdarraySharedVariables into
 a pickle file containing only TensorSharedVariables.
 
 Usage:
