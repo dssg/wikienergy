@@ -121,11 +121,12 @@ class ApplianceTrace(object):
 
     def to_daily_usage_json(self):
         '''
-        Returns the daily usage average trace in a json format for calendat view
-        '''
+        Returns the daily usage average trace in a json format for calendar view
+        '''    
         data = {}
-        d_avg = series.resample('D')        
-        for i, v in self.d_avg.iteritems():
+        d_avg = self.series.resample('D')
+        import pdb; pdb.set_trace();        
+        for i, v in enumerate(d_avg):
             data.update({i:float(v)})            
         json_string = json.dumps(data, ensure_ascii=False)
         return json_string
