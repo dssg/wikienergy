@@ -9,6 +9,8 @@
 .. moduleauthor:: Sabina Tomkins <sabina@invalid.com>
 
 """
+import urllib2
+import json
 
 def get_lat_lng_from_zip_code(zip_code,google_apis_key):
     '''
