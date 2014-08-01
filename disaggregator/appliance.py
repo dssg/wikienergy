@@ -62,12 +62,17 @@ class ApplianceTrace(object):
             windows.append(window)
         return np.array(windows,dtype=np.float)
 
-
     def get_total_usage(self):
         '''
         Returns the total usage of this trace
         '''
         return self.series.sum()
+
+    def get_daily_usage(self):
+        '''
+        Returns the total daily usage of this trace
+        '''    
+        return series.resample('D', how='mean')
 
     def print_trace(self):
         '''
@@ -113,6 +118,17 @@ class ApplianceTrace(object):
             metadata['trace_num'] = i
             traces.append(ApplianceTrace(group[1],metadata))
         return traces
+
+    def to_daily_usage_json(self):
+        '''
+        Returns the daily usage average trace in a json format for calendat view
+        '''
+        data = {}
+        d_avg = series.resample('D')        
+        for i, v in self.d_avg.iteritems():
+            data.update({i:float(v)})            
+        json_string = json.dumps(data, ensure_ascii=False)
+        return json_string
 
     def to_json(self):
         '''
