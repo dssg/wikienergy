@@ -62,12 +62,17 @@ class ApplianceTrace(object):
             windows.append(window)
         return np.array(windows,dtype=np.float)
 
-
     def get_total_usage(self):
         '''
         Returns the total usage of this trace
         '''
         return self.series.sum()
+
+    def get_daily_usage(self):
+        '''
+        Returns the total daily usage of this trace
+        '''    
+        return series.resample('D', how='mean')
 
     def print_trace(self):
         '''
