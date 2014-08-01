@@ -15,6 +15,7 @@ Disaggregator Package
    utils
    algorithms
    generators
+   weather
 
 Overview
 --------
