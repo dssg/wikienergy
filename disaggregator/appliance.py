@@ -124,9 +124,11 @@ class ApplianceTrace(object):
         Returns the daily usage average trace in a json format for calendar view
         '''    
         data = {}
-        d_avg = self.resample('D')           
-        for i, v in enumerate(d_avg.series):            
-            data.update({i:float(v)})            
+        d_sum = self.resample('D', how='sum')   
+
+        for i, v in d_sum.series.iteritems():  
+            unixtime = str(i.strftime("%s"))                   
+            data.update({unixtime:float(v)})            
         json_string = json.dumps(data, ensure_ascii=False)
         return json_string
 
