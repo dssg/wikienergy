@@ -71,7 +71,7 @@ class ApplianceTrace(object):
     def get_daily_usage(self):
         '''
         Returns the total daily usage of this trace
-        '''    
+        '''
         return series.resample('D', how='mean')
 
     def print_trace(self):
@@ -119,15 +119,23 @@ class ApplianceTrace(object):
             traces.append(ApplianceTrace(group[1],metadata))
         return traces
 
-    def to_daily_usage_json(self):
+    def to_daily_usage_json(self,method='utc_dict'):
         '''
         Returns the daily usage sum trace in a json format for calendar view
-        '''    
-        data = {}
-        d_sum = self.resample('D', 'sum')           
-        for i, v in d_sum.series.iteritems():  
-            unixtime = str(i.strftime("%s"))                   
-            data.update({unixtime:float(v)})            
+        '''
+        d_sum = self.resample('D', 'sum')
+        if method == 'utc_dict':
+            data = {}
+            for i, v in d_sum.series.iteritems():
+                unixtime = str(i.strftime("%s"))
+                data.update({unixtime:float(v)})
+        elif method == 'date_list':
+            data = []
+            for i, v in d_sum.series.iteritems():
+                data.append({'date':i.strftime('%Y-%m-%d %H:%M'),
+                             'usage': float(v)})
+        else:
+            raise NotImplementedError
         json_string = json.dumps(data, ensure_ascii=False)
         return json_string
 
