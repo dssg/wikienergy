@@ -346,7 +346,17 @@ least 6 hours of real values</p>
 suppliers to provide end-users with historical energy usages</p>
 </div>
 <div class="section" id="id5">
-<h3>Methods<a class="headerlink" href="#id5" title="Permalink to this headline">¶</a></h3>
+<h3>Example Usage<a class="headerlink" href="#id5" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">xml_path</span> <span class="o">=</span> <span class="s">&#39;/path/to/green_button_example_data.xml&#39;</span>
+<span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">xml_path</span><span class="p">,</span><span class="s">&#39;r&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+    <span class="n">xml_string</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+
+<span class="n">trace</span> <span class="o">=</span> <span class="n">gbda</span><span class="o">.</span><span class="n">get_trace_from_xml</span><span class="p">(</span><span class="n">xml_string</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="id6">
+<h3>Methods<a class="headerlink" href="#id6" title="Permalink to this headline">¶</a></h3>
 <span class="target" id="module-disaggregator.GreenButtonDatasetAdapter"></span><span class="target" id="module-GreenButtonDatasetAdapter"></span><dl class="exception">
 <dt id="disaggregator.GreenButtonDatasetAdapter.InvalidXMLError">
 <em class="property">exception </em><tt class="descclassname">disaggregator.GreenButtonDatasetAdapter.</tt><tt class="descname">InvalidXMLError</tt><a class="reference internal" href="_modules/disaggregator/GreenButtonDatasetAdapter.html#InvalidXMLError"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#disaggregator.GreenButtonDatasetAdapter.InvalidXMLError" title="Permalink to this definition">¶</a></dt>
@@ -364,13 +374,13 @@ must conform to the GreenButtonXML format.</p>
 </div>
 <div class="section" id="oak-park-dataset-adapter">
 <h2>Oak Park  Dataset Adapter<a class="headerlink" href="#oak-park-dataset-adapter" title="Permalink to this headline">¶</a></h2>
-<div class="section" id="id6">
-<h3>Overview<a class="headerlink" href="#id6" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="id7">
+<h3>Overview<a class="headerlink" href="#id7" title="Permalink to this headline">¶</a></h3>
 <p>A set of functions for working with a database of Oak Park home energy
 usage.</p>
 </div>
-<div class="section" id="id7">
-<h3>Methods<a class="headerlink" href="#id7" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="id8">
+<h3>Methods<a class="headerlink" href="#id8" title="Permalink to this headline">¶</a></h3>
 <span class="target" id="module-disaggregator.OakParkDatasetAdapter"></span><span class="target" id="module-OakParkDatasetAdapter"></span><dl class="function">
 <dt id="disaggregator.OakParkDatasetAdapter.generate_set_by_year_month">
 <tt class="descclassname">disaggregator.OakParkDatasetAdapter.</tt><tt class="descname">generate_set_by_year_month</tt><big>(</big><em>homes</em>, <em>year</em>, <em>month</em><big>)</big><a class="reference internal" href="_modules/disaggregator/OakParkDatasetAdapter.html#generate_set_by_year_month"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#disaggregator.OakParkDatasetAdapter.generate_set_by_year_month" title="Permalink to this definition">¶</a></dt>
@@ -449,12 +459,13 @@ Appliance Trace.</p>
 </li>
 <li><a class="reference internal" href="#greenbutton-dataset-adapter">GreenButton Dataset Adapter</a><ul>
 <li><a class="reference internal" href="#id4">Overview</a></li>
-<li><a class="reference internal" href="#id5">Methods</a></li>
+<li><a class="reference internal" href="#id5">Example Usage</a></li>
+<li><a class="reference internal" href="#id6">Methods</a></li>
 </ul>
 </li>
 <li><a class="reference internal" href="#oak-park-dataset-adapter">Oak Park  Dataset Adapter</a><ul>
-<li><a class="reference internal" href="#id6">Overview</a></li>
-<li><a class="reference internal" href="#id7">Methods</a></li>
+<li><a class="reference internal" href="#id7">Overview</a></li>
+<li><a class="reference internal" href="#id8">Methods</a></li>
 </ul>
 </li>
 </ul>
