@@ -16,6 +16,9 @@ import collections
 import pandas as pd
 
 def get_weather_data_as_df(api,city,state,start_date,end_date):
+    """
+    Return a dataframe indexed by time containing hourly weather data
+    """
     query_results=get_weather_data(api,city,state,start_date,end_date)
     temp_temps=pd.read_json(query_results)
     return combine_date_time_and_index(temp_temps)

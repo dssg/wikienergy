@@ -3,18 +3,18 @@
     model: !obj:pylearn2.models.mlp.MLP {
         batch_size: 100,
         input_space: !obj:pylearn2.space.CompositeSpace {
-            components: [ !obj:pylearn2.space.Conv2DSpace {
-                             shape: [10,1],
-                             num_channels: 1
-                         }, !obj:pylearn2.space.VectorSpace {
-                             dim: 1,
-                         }, !obj:pylearn2.space.VectorSpace {
-                             dim: 1,
-                         }, !obj:pylearn2.space.VectorSpace {
-                             dim: 7,
-                             sparse: True
-                         }
-                        ]
+            components: [
+                !obj:pylearn2.space.Conv2DSpace {
+                    shape: [10,1],
+                    num_channels: 1
+                }, !obj:pylearn2.space.VectorSpace {
+                    dim: 1,
+                }, !obj:pylearn2.space.VectorSpace {
+                    dim: 1,
+                }, !obj:pylearn2.space.VectorSpace {
+                    dim: 7,
+                    sparse: True
+                }]
             },
         },
         layers: [
@@ -49,15 +49,15 @@
                     }, !obj: pylearn2.models.mlp.RectifiedLinear {
                         layer_name: 'time0',
                         dim: 3,
-                        sparse_init: 1.965
+                        sparse_init: 15
                     }, !obj: pylearn2.models.mlp.RectifiedLinear {
                         layer_name: 'temp0',
                         dim: 3,
-                        sparse_init: 1.965
+                        sparse_init: 15
                     }, !obj: pylearn2.models.mlp.RectifiedLinear {
                         layer_name: 'day_of_week0',
                         dim: 3,
-                        sparse_init: 1.965
+                        sparse_init: 15
                     }
                 ],
                 inputs_to_layers: {
