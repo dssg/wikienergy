@@ -62,12 +62,17 @@ class ApplianceTrace(object):
             windows.append(window)
         return np.array(windows,dtype=np.float)
 
-
     def get_total_usage(self):
         '''
         Returns the total usage of this trace
         '''
         return self.series.sum()
+
+    def get_daily_usage(self):
+        '''
+        Returns the total daily usage of this trace
+        '''    
+        return series.resample('D', how='mean')
 
     def print_trace(self):
         '''
@@ -78,7 +83,7 @@ class ApplianceTrace(object):
         print 'Metadata: '
         pprint.pprint(self.metadata)
 
-    def resample(self,sample_rate):
+    def resample(self,sample_rate, method='mean'):
         '''
         Returns a new trace resampled to a given sample rate, defined by the
         offset aliases described in panda time series.
@@ -86,7 +91,7 @@ class ApplianceTrace(object):
         '''
         try:
             new_series = self.series.astype(float)
-            new_series = new_series.resample(sample_rate,how='mean')
+            new_series = new_series.resample(sample_rate,how=method)
             new_series = new_series.fillna(0)
             new_series = new_series.map(decimal.Decimal)
             new_series.name = self.series.name
@@ -113,6 +118,18 @@ class ApplianceTrace(object):
             metadata['trace_num'] = i
             traces.append(ApplianceTrace(group[1],metadata))
         return traces
+
+    def to_daily_usage_json(self):
+        '''
+        Returns the daily usage sum trace in a json format for calendar view
+        '''    
+        data = {}
+        d_sum = self.resample('D', 'sum')           
+        for i, v in d_sum.series.iteritems():  
+            unixtime = str(i.strftime("%s"))                   
+            data.update({unixtime:float(v)})            
+        json_string = json.dumps(data, ensure_ascii=False)
+        return json_string
 
     def to_json(self):
         '''

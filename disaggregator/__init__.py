@@ -22,3 +22,4 @@ import utils
 import appliance
 import fhmm
 import generate
+import weather
