@@ -251,11 +251,14 @@ def pickle_object(obj,title):
     '''
     Given an object and a filename saves the object in pickled format to the data directory.
     '''
-    rel_path = os.path.relpath(os.getcwd(),'data/')
-    file = os.path.join(rel_path,'../data/{}.p'.format(title))
+    
+    current_path = os.getcwd()
+    rel = os.path.relpath(os.path.join(current_path.split('wikienergy')[0],'wikienergy'),current_path)
+    path = os.path.abspath(os.path.join(os.getcwd(),rel))
+    file = os.path.join(os.path.abspath(os.path.join(os.getcwd(),rel)),'data/{}.p'.format(title))
 #print open(os.path.join(rel_path,'{}.p'.format(title)),'wb')
 
-    with open(os.path.join(file),'wb') as f:
+    with open(file,'wb') as f:
         pickle.dump(obj, f)
 
 
