@@ -14,13 +14,26 @@ def create_dataset(schema,tables,ids, n_classes, which = None):
     all_instances = psda.generate_instances_for_appliances_by_dataids(schema,tables,
             ['use','air1','furnace1'],ids,sample_rate='15T')
 
-    X_arrays = []
-    y_arrays = []
+    energy_arrays = []
+    temperature_arrays = []
+    time_arrays = []
+    weekday_arrays = []
+    target_arrays = []
     sorted_classes = np.linspace(0,1,n_classes + 1)[:-1]
     for instances,dataid in zip(all_instances,ids):
+        # format use correctly
         use = instances[0].traces[0]
         use.series.fillna(0,inplace=True)
         use.series = use.series.astype(float).clip(0.0000001)
+        use_windows = use.get_windows(window_length,window_stride)
+
+        # create features sources
+        energy_arrays.append(use_windows)
+        temperature_arrays = np.repeat(np.array([70],use_windows.shape[0],axis=0)
+        time_arrays = np.repeat(np.array([12],use_windows.shape[0],axis=0)
+        weekday_arrays = np.repeat(np.array([1,0,0,0,0,0,0],use_windows.shape[0],axis=0)
+
+        # determine targets
         air1 = instances[1].traces[0]
         furnace1 = instances[2].traces[0]
         total_air = da.utils.aggregate_traces([air1,furnace1],{})
@@ -28,19 +41,29 @@ def create_dataset(schema,tables,ids, n_classes, which = None):
         total_air.series = total_air.series.astype(float)
         ratio_series = total_air.series/use.series
         ratios = da.appliance.ApplianceTrace(ratio_series,{})
-        use_windows = use.get_windows(window_length,window_stride)
         ratio_windows = ratios.get_windows(window_length,window_stride)
-        temp = 70 # degrees F
-        time = 13 # hours
-        weekday = np.array([1,0,0,0,0,0,0,0])
-        X_tuple = (use_windows,temp,time,weekday)
-        X_arrays.append(X_tuple)
         ratio_windows = ratio_windows[:,prediction_index].clip(0,1)
         classes = np.searchsorted(sorted_classes,ratio_windows,side='right') - 1
-        y_arrays.append(classes_to_onehot(classes,n_classes))
-    X = np.concatenate(X_arrays,axis=0)
-    y = np.concatenate(y_arrays,axis=0)
-    dataset = ds.DenseDesignMatrix(X=X,y=y)
+        target_arrays.append(classes_to_onehot(classes,n_classes))
+
+    # create data tuple
+    energy_arrays = np.concatenate(energy_arrays,axis=0)
+    temperature_arrays = np.concatenate(temperature_arrays,axis=0)
+    time_arrays = np.concatenate(time_arrays,axis=0)
+    weekday_arrays = np.concatenate(weekday_arrays,axis=0)
+    target_arrays = np.concatenate(target_arrays,axis=0)
+    data = (energy_arrays,temperature_arrays,time_arrays,weekday_arrays,target_arrays)
+
+    # define the data specs
+    space = CompositeSpace(
+        Conv2DSpace(shape=[10,1],num_channels=1),
+        VectorSpace(dim=1),
+        VectorSpace(dim=1),
+        VectorSpace(dim=7,sparse=True),
+        VectorSpace(dim=n_classes,sparse=True))
+    source = ('features','features','features','features','targets')
+    data_specs = (space,sources)
+    dataset = ds.VectorSpacesDataset(data=data,data_specs=data_specs)
     with open(os.path.join(args.data_dir,args.prefix+'_'+which+'.pkl'),'w') as f:
         pickle.dump(dataset,f)
 
@@ -88,6 +111,7 @@ if __name__ == "__main__":
     train_ids = common_ids[:n_train]
     valid_ids = common_ids[n_train:n_train+n_valid]
     test_ids = common_ids[n_train+n_valid:n_train+n_valid+n_test]
+    n_classes = 10
 
     for ids,which in zip([train_ids,valid_ids,test_ids],["train","test","valid"]):
-        create_dataset(schema,tables[:1],ids,20,which)
+        create_dataset(schema,tables[:1],ids,n_classes,which)
