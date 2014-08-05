@@ -21,12 +21,12 @@ import pandas as pd
 def degree_day_regression(df, x_opt='both'):
     '''
     Function that runs the weather normalization regression on energy use data
-    --------------
+
     df: dataframe that includes
         use per day (upd)
         heating degree days per day (hddpd)
         cooling degree days per day (cddpd)
-    ---------------
+
     x_opt: options for the regression function
         'hdd': run regression with just heating degree days
         'cdd': run regression with just cooling degree days
@@ -80,15 +80,16 @@ def get_cdd(ref_temp,df):
     df['cdd_cum']=df.cdd.cumsum()
     return df
 
-def get_weather_data_as_df(api,city,state,start_date,end_date):
+def get_weather_data_as_df(api_key,city,state,start_date,end_date):
     """
-    Return a dataframe indexed by time containing hourly weather data
+    Return a dataframe indexed by time containing hourly weather data.
+    Requires Weather underground api key.
     """
-    query_results=get_weather_data(api,city,state,start_date,end_date)
+    query_results=get_weather_data(api_key,city,state,start_date,end_date)
     temp_temps=pd.read_json(query_results)
     return _combine_date_time_and_index(temp_temps)
 
-def get_weather_data(api,city,state,start_date,end_date):
+def get_weather_data(api_key,city,state,start_date,end_date):
     '''
     Returns a json string given a city, state, and desired date (YYYYMMDD)
     '''
@@ -110,7 +111,8 @@ def get_weather_data(api,city,state,start_date,end_date):
             #format our str with our date_format
             formatted_dates = datetime.strftime(dates, date_format)
             #create query which will iterate through desired weather period
-            query = 'http://api.wunderground.com/api/'+ api +'/history_'+formatted_dates+'/q/'+state+'/'+city+'.json'
+            query = 'http://api.wunderground.com/api/'+ api_key +\
+                '/history_' + formatted_dates + '/q/' + state + '/' + city + '.json'
             #iterate through the number of days and query the api. dump json results every time
             f = urllib2.urlopen(query)
             #read query as a json string

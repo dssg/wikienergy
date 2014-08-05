@@ -49,12 +49,56 @@
         <div class="bodywrapper">
           <div class="body">
             
-  <div class="section" id="module-disaggregator.weather">
-<span id="weather"></span><h1>Weather<a class="headerlink" href="#module-disaggregator.weather" title="Permalink to this headline">¶</a></h1>
-<span class="target" id="module-weather"></span><dl class="function">
+  <div class="section" id="weather">
+<h1>Weather<a class="headerlink" href="#weather" title="Permalink to this headline">¶</a></h1>
+<p>Contains utilities for obtaining weather data and performing
+temperature normalization. Also includes utilities for converting
+temperatures to heating/cooling degree days.</p>
+<span class="target" id="module-disaggregator.weather"></span><span class="target" id="module-weather"></span><dl class="function">
+<dt id="disaggregator.weather.degree_day_regression">
+<tt class="descclassname">disaggregator.weather.</tt><tt class="descname">degree_day_regression</tt><big>(</big><em>df</em>, <em>x_opt='both'</em><big>)</big><a class="headerlink" href="#disaggregator.weather.degree_day_regression" title="Permalink to this definition">¶</a></dt>
+<dd><p>Function that runs the weather normalization regression on energy use data</p>
+<dl class="docutils">
+<dt>df: dataframe that includes</dt>
+<dd>use per day (upd)
+heating degree days per day (hddpd)
+cooling degree days per day (cddpd)</dd>
+<dt>x_opt: options for the regression function</dt>
+<dd>&#8216;hdd&#8217;: run regression with just heating degree days
+&#8216;cdd&#8217;: run regression with just cooling degree days
+&#8216;both&#8217; (default):</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="disaggregator.weather.get_cdd">
+<tt class="descclassname">disaggregator.weather.</tt><tt class="descname">get_cdd</tt><big>(</big><em>ref_temp</em>, <em>df</em><big>)</big><a class="headerlink" href="#disaggregator.weather.get_cdd" title="Permalink to this definition">¶</a></dt>
+<dd><p>Converts a temperature to HDD.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="disaggregator.weather.get_hdd">
+<tt class="descclassname">disaggregator.weather.</tt><tt class="descname">get_hdd</tt><big>(</big><em>ref_temp</em>, <em>df</em><big>)</big><a class="headerlink" href="#disaggregator.weather.get_hdd" title="Permalink to this definition">¶</a></dt>
+<dd><p>Converts a temperature to HDD.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="disaggregator.weather.get_weather_data">
+<tt class="descclassname">disaggregator.weather.</tt><tt class="descname">get_weather_data</tt><big>(</big><em>api_key</em>, <em>city</em>, <em>state</em>, <em>start_date</em>, <em>end_date</em><big>)</big><a class="headerlink" href="#disaggregator.weather.get_weather_data" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a json string given a city, state, and desired date (YYYYMMDD)</p>
+</dd></dl>
+
+<dl class="function">
 <dt id="disaggregator.weather.get_weather_data_as_df">
-<tt class="descclassname">disaggregator.weather.</tt><tt class="descname">get_weather_data_as_df</tt><big>(</big><em>api</em>, <em>city</em>, <em>state</em>, <em>start_date</em>, <em>end_date</em><big>)</big><a class="headerlink" href="#disaggregator.weather.get_weather_data_as_df" title="Permalink to this definition">¶</a></dt>
-<dd><p>Return a dataframe indexed by time containing hourly weather data</p>
+<tt class="descclassname">disaggregator.weather.</tt><tt class="descname">get_weather_data_as_df</tt><big>(</big><em>api_key</em>, <em>city</em>, <em>state</em>, <em>start_date</em>, <em>end_date</em><big>)</big><a class="headerlink" href="#disaggregator.weather.get_weather_data_as_df" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return a dataframe indexed by time containing hourly weather data.
+Requires Weather underground api key.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="disaggregator.weather.weather_normalize">
+<tt class="descclassname">disaggregator.weather.</tt><tt class="descname">weather_normalize</tt><big>(</big><em>trace</em>, <em>temperature</em>, <em>set_point</em><big>)</big><a class="headerlink" href="#disaggregator.weather.weather_normalize" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a weather-normalized trace</p>
 </dd></dl>
 
 </div>
