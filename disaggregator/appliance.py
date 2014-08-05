@@ -83,15 +83,16 @@ class ApplianceTrace(object):
         print 'Metadata: '
         pprint.pprint(self.metadata)
 
-    def resample(self,sample_rate):
+    def resample(self,sample_rate, method='mean'):
         '''
         Returns a new trace resampled to a given sample rate, defined by the
         offset aliases described in panda time series.
         http://pandas.pydata.org/pandas-docs/stable/timeseries.html#offset-aliases
         '''
+      
         try:
             new_series = self.series.astype(float)
-            new_series = new_series.resample(sample_rate,how='mean')
+            new_series = new_series.resample(sample_rate,how=method)
             new_series = new_series.fillna(0)
             new_series = new_series.map(decimal.Decimal)
             new_series.name = self.series.name
@@ -109,6 +110,8 @@ class ApplianceTrace(object):
             groupby_rate = self.series.index.date
         elif rate == 'W' or rate == '1W':
             groupby_rate = self.series.index.week
+        elif rate == 'M' or rate== '1M':
+            groupby_rate = self.series.index.month
         else:
             raise NotImplementedError('Looking for "week" or "day"')
 
@@ -121,13 +124,13 @@ class ApplianceTrace(object):
 
     def to_daily_usage_json(self):
         '''
-        Returns the daily usage average trace in a json format for calendar view
+        Returns the daily usage sum trace in a json format for calendar view
         '''    
         data = {}
-        d_avg = self.series.resample('D')
-        import pdb; pdb.set_trace();        
-        for i, v in enumerate(d_avg):
-            data.update({i:float(v)})            
+        d_sum = self.resample('D', 'sum')           
+        for i, v in d_sum.series.iteritems():  
+            unixtime = str(i.strftime("%s"))                   
+            data.update({unixtime:float(v)})            
         json_string = json.dumps(data, ensure_ascii=False)
         return json_string
 
