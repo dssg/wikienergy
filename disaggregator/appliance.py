@@ -125,15 +125,17 @@ class ApplianceTrace(object):
         '''
         d_sum = self.resample('D', 'sum')
         if method == 'utc_dict':
-            data = {}
+            data = {}            
             for i, v in d_sum.series.iteritems():
+                kwh = v/1000
                 unixtime = str(i.strftime("%s"))
-                data.update({unixtime:float(v)})
+                data.update({unixtime:float(kwh)})
         elif method == 'date_list':
             data = []
             for i, v in d_sum.series.iteritems():
+                kwh = v/1000
                 data.append({'date':i.strftime('%Y-%m-%d %H:%M'),
-                             'usage': float(v)})
+                             'usage': float(kwh)})
         else:
             raise NotImplementedError
         json_string = json.dumps(data, ensure_ascii=False)
