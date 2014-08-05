@@ -111,7 +111,7 @@ within that time period.</p>
 
 <dl class="method">
 <dt id="disaggregator.appliance.ApplianceTrace.resample">
-<tt class="descname">resample</tt><big>(</big><em>sample_rate</em><big>)</big><a class="reference internal" href="_modules/disaggregator/appliance.html#ApplianceTrace.resample"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#disaggregator.appliance.ApplianceTrace.resample" title="Permalink to this definition">¶</a></dt>
+<tt class="descname">resample</tt><big>(</big><em>sample_rate</em>, <em>method='mean'</em><big>)</big><a class="reference internal" href="_modules/disaggregator/appliance.html#ApplianceTrace.resample"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#disaggregator.appliance.ApplianceTrace.resample" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns a new trace resampled to a given sample rate, defined by the
 offset aliases described in panda time series.
 <a class="reference external" href="http://pandas.pydata.org/pandas-docs/stable/timeseries.html#offset-aliases">http://pandas.pydata.org/pandas-docs/stable/timeseries.html#offset-aliases</a></p>
@@ -127,7 +127,7 @@ or week (&#8216;W&#8217;)</p>
 <dl class="method">
 <dt id="disaggregator.appliance.ApplianceTrace.to_daily_usage_json">
 <tt class="descname">to_daily_usage_json</tt><big>(</big><big>)</big><a class="headerlink" href="#disaggregator.appliance.ApplianceTrace.to_daily_usage_json" title="Permalink to this definition">¶</a></dt>
-<dd><p>Returns the daily usage average trace in a json format for calendat view</p>
+<dd><p>Returns the daily usage sum trace in a json format for calendar view</p>
 </dd></dl>
 
 <dl class="method">
