@@ -5,7 +5,10 @@ data/*
 *.json
 *.pyc
 *.pkl
+<<<<<<< HEAD
 *.p
+=======
+>>>>>>> 4567fc75136d73d0d515203530b3e63091aa4190
 .ipynb_checkpoints
 *.swp
 proto/*.png

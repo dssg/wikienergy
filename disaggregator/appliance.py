@@ -89,7 +89,10 @@ class ApplianceTrace(object):
         offset aliases described in panda time series.
         http://pandas.pydata.org/pandas-docs/stable/timeseries.html#offset-aliases
         '''
+<<<<<<< HEAD
 
+=======
+>>>>>>> 4567fc75136d73d0d515203530b3e63091aa4190
         try:
             new_series = self.series.astype(float)
             new_series = new_series.resample(sample_rate,how=method)
@@ -110,10 +113,13 @@ class ApplianceTrace(object):
             groupby_rate = self.series.index.date
         elif rate == 'W' or rate == '1W':
             groupby_rate = self.series.index.week
+<<<<<<< HEAD
 
         elif rate == 'M' or rate== '1M':
             groupby_rate = self.series.index.month
 
+=======
+>>>>>>> 4567fc75136d73d0d515203530b3e63091aa4190
         else:
             raise NotImplementedError('Looking for "week" or "day"')
 
