@@ -78,6 +78,17 @@ Overview
 The Green Button xml format is a standard which is used by commercial energy
 suppliers to provide end-users with historical energy usages
 
+Example Usage
+~~~~~~~~~~~~~
+
+.. code-block:: python
+
+    xml_path = '/path/to/green_button_example_data.xml'
+    with open(xml_path,'r') as f:
+        xml_string = f.read()
+
+    trace = gbda.get_trace_from_xml(xml_string)
+
 Methods
 ~~~~~~~
 
