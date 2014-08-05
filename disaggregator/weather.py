@@ -64,7 +64,7 @@ def degree_day_regression(df, x_opt='both'):
                                        'R2', 'R2_adj','N_reads'])
 def get_hdd(ref_temp,df):
     '''
-    Converts a temperature to HDD.
+    Adds a column for heating degree days (converted from temp (F)).
     '''
     df['hdd']=ref_temp-df.temps
     df['hdd'].loc[df.hdd<0]=0
