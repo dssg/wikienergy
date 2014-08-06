@@ -2,12 +2,24 @@ import sys
 import os.path
 sys.path.append(os.path.abspath(os.pardir))
 import disaggregator as da
+import pandas as pd
+import numpy as np
 import unittest
+from datetime import datetime
 
 class UtilsTestCase(unittest.TestCase):
 
     def setUp(self):
-        pass
+        self.consecutive_traces = []
+        self.consecutive_instances = []
+        for i in range(1,6):
+            start = datetime(2013,1,i)
+            series = pd.Series(np.zeros(24*4),
+                    index=pd.date_range(start, periods=24*4, freq='15T'))
+            trace = da.ApplianceTrace(series,{})
+            self.consecutive_traces.append(trace)
+            self.consecutive_instances.append(da.ApplianceInstance([trace],{}))
+        self.piecewise_instance = da.ApplianceInstance(self.consecutive_traces,{})
 
     def test_get_common_ids(self):
         ids0 = []
@@ -25,6 +37,21 @@ class UtilsTestCase(unittest.TestCase):
         [self.assertNotIn(el,common2) for el in [1,4]]
         [self.assertIn(el,common3)    for el in [2,5]]
         [self.assertNotIn(el,common3) for el in [1,7]]
+
+    def test_aggregate_traces_misaligned(self):
+        self.assertRaises(da.AlignmentError,da.aggregate_traces,self.consecutive_traces,{})
+
+    def test_aggregate_traces_aligned(self):
+        aligned_traces = da.align_traces(self.consecutive_traces)
+        da.aggregate_traces(aligned_traces,{})
+
+    def test_aggregate_instances_misaligned(self):
+        self.assertRaises(da.AlignmentError,da.aggregate_instances,self.consecutive_instances,{})
+
+    def test_aggregate_instances_aligned(self):
+        aligned_instances = da.align_instances(self.consecutive_instances)
+        da.aggregate_instances(aligned_instances,{})
+
 
 if __name__ == "__main__":
     unittest.main()
