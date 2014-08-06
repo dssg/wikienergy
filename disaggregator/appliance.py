@@ -361,3 +361,9 @@ class ApplianceType(object):
             instances.append(new_instance)
         return ApplianceType(instances,self.metadata)
 
+class AlignmentError(Exception):
+    """
+    Exception raised for errors in the alignment of the data.
+    """
+    def __str__(self):
+        return '''Improperly aligned traces'''
