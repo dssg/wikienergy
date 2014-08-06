@@ -190,6 +190,18 @@ def concatenate_traces_lists(traces, metadata=None, how="strict"):
     else:
         raise NotImplementedError
 
+def concatenate_instances(instances, metadata=None, how="strict"):
+    '''
+    Takes a list of instances and concatenates them into a single instance
+    with a single trace
+    '''
+    if how == 'strict':
+        traces = [instance.traces for instance in instances]
+        trace = concatenate_traces(concatenate_traces_lists(traces))
+        return appliance.ApplianceInstance([trace],metadata)
+    else:
+        raise NotImplementedError
+
 def resample_trace(trace,sample_rate):
     '''
     Takes a trace and resamples it to a given sample rate, defined by the
