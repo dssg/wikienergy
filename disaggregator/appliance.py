@@ -147,8 +147,9 @@ class ApplianceTrace(object):
         '''
         data = []
         for i, v in self.series.iteritems():
+            kwh = v/1000
             data.append({'date':i.strftime('%Y-%m-%d %H:%M'),
-                         'reading': float(v)})
+                         'reading': float(kwh)})
         json_string = json.dumps(data, ensure_ascii=False,
                                  indent=4, separators=(',', ': '))
         return json_string
