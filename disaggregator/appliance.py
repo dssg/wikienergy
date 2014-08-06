@@ -18,6 +18,7 @@ from utils import order_traces
 import utils
 import decimal
 import json
+import warnings
 
 class ApplianceTrace(object):
     """This class represents appliance traces.
@@ -229,6 +230,7 @@ class ApplianceSet(object):
         '''
         if not utils.instances_aligned(instances):
             self.instances = utils.align_instances(instances)
+            warnings.warn("Aligning misaligned traces using default procedure")
         else:
             self.instances = instances
         self.metadata = metadata
@@ -361,3 +363,9 @@ class ApplianceType(object):
             instances.append(new_instance)
         return ApplianceType(instances,self.metadata)
 
+class AlignmentError(Exception):
+    """
+    Exception raised for errors in the alignment of the data.
+    """
+    def __str__(self):
+        return '''Improperly aligned traces'''

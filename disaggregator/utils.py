@@ -11,8 +11,6 @@
 
 """
 
-
-
 import appliance
 import pandas as pd
 import numpy as np
@@ -31,6 +29,8 @@ def aggregate_instances(instances, metadata, how="strict"):
     signal.
     '''
     if how == "strict":
+        if not instances_aligned(instances):
+            raise appliance.AlignmentError
         traces = [instance.traces for instance in instances]
         traces = [list(t) for t in zip(*traces)] # transpose
         traces = [ aggregate_traces(t,{}) for t in traces]
@@ -44,7 +44,8 @@ def aggregate_traces(traces, metadata, how="strict"):
     signal.
     '''
     if how == "strict":
-        # require that traces are exactly aligned
+        if not traces_aligned(traces):
+            raise appliance.AlignmentError
         summed_series = traces[0].series
         for trace in traces[1:]:
             summed_series += trace.series
@@ -186,6 +187,18 @@ def concatenate_traces_lists(traces, metadata=None, how="strict"):
         traces = [list(t) for t in zip(*traces)]
         traces = [concatenate_traces(t,m) for t,m in zip(traces,metadata)]
         return traces
+    else:
+        raise NotImplementedError
+
+def concatenate_instances(instances, metadata=None, how="strict"):
+    '''
+    Takes a list of instances and concatenates them into a single instance
+    with a single trace
+    '''
+    if how == 'strict':
+        traces = [instance.traces for instance in instances]
+        trace = concatenate_traces(concatenate_traces_lists(traces))
+        return appliance.ApplianceInstance([trace],metadata)
     else:
         raise NotImplementedError
 
@@ -446,12 +459,10 @@ def align_instances(instances):
     Aligns all traces in a list of instances. Removes traces that don't fit.
     """
     traces = map(list,zip(*[instance.traces for instance in instances]))
-    print traces
     aligned_traces = []
     for traces_ in traces:
         aligned_traces.append(align_traces(traces_))
-    print aligned_traces
-    traces = map(list,zip(*aligned_traces_))
-    return [ApplianceInstance(traces_,instance.metadata)
+    traces = map(list,zip(*aligned_traces))
+    return [appliance.ApplianceInstance(traces_,instance.metadata)
             for traces_,instance in zip(traces,instances)]
 
