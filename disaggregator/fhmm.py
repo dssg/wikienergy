@@ -112,6 +112,18 @@ def predict_with_FHMM(model_fhmm,means,variances,power_total):
              power_total.T)
     return _decoded_states,_decoded_power
 
+def predict_with_FHMM_temp(model_fhmm,means,variances,power_temp_total):
+    '''
+    Predicts the _decoded states and power for the given test data with the
+    given FHMM. test_data is a dictionary containing keys for each device
+    that is in the FHMM.
+    '''
+    learnt_states=model_fhmm.predict(power_total)
+    [_decoded_states,_decoded_power]=_decode_hmm(len(learnt_states), means,
+            variances, means.keys(), learnt_states)
+    np.putmask(_decoded_power['air1'],_decoded_power['air1'] >= power_total.T,
+             power_total.T)
+    return _decoded_states,_decoded_power
 def plot_FHMM_and_predictions(test_data,_decoded_power):
     '''
     This plots the actual and predicted power based on the FHMM.

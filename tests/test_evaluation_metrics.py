@@ -34,7 +34,7 @@ class EvaluationMetricsTestCase(unittest.TestCase):
     def test_truth_from_power(self):
         #print evm.guess_truth_from_power(np.array([2,3,4,51,2]),3)
         pass
-    
+
     def test_fraction_energy_assigned_correctly(self):
         traces = [[1,1,1,1,1],[5,5,5,5,5],[0,0,0,0,0]]
         p_traces = [[1,1,1,1,1],[5,5,5,5,5],[0,0,0,0,0]]
@@ -53,11 +53,14 @@ class EvaluationMetricsTestCase(unittest.TestCase):
         meta_i = meta.pop('dataid')
         instance_p = app.ApplianceInstance(p_traces, meta_i)
         instance_t = app.ApplianceInstance(traces, meta_i)
-        print 'printing'
-        print evm.fraction_energy_assigned_correctly(instance_p,instance_t)
+        evm.fraction_energy_assigned_correctly(instance_p,instance_t)
 
     def test_get_table_of_confusion(self):
-        print(evm.get_table_of_confusion(np.array([1,1]),np.array([0,0]),np.array([0,0]),np.array([0,0])))
+        stats = {'tp':np.array([1,1]),
+                 'fp':np.array([0,0]),
+                 'fn':np.array([0,0]),
+                 'tn':np.array([0,0])}
+        evm.get_table_of_confusion(stats)
 
 if __name__ == '__main__':
     unittest.main()
