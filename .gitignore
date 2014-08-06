@@ -5,6 +5,8 @@ data/*
 *.json
 *.pyc
 *.pkl
+*.p
 .ipynb_checkpoints
 *.swp
 proto/*.png
+proto/FHMM/*.png
