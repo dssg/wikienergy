@@ -135,8 +135,8 @@ def predict_from_results(trace,temps,results_dict):
 def open_xml_and_get_results(filepath):
     [trace,temps_series,results_dict] = open_xml_and_run_regression(filepath)
     [total_series,air_series,diff_series] = predict_from_results(trace,temps_series,results_dict)
-
-    for i, v in total_series.series.iteritems():
+    data=[]
+    for i, v in total_series.iteritems():
         kwh = v/1000
         data.append({'date':i.strftime('%Y-%m-%d %H:%M'),
             'reading': float(kwh),'air_reading':air_series[i],
