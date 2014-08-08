@@ -141,7 +141,7 @@ class ApplianceTrace(object):
             for i, v in d_sum.series.iteritems():
                 kwh = v/1000
                 data.append({'date':i.strftime('%Y-%m-%d %H:%M'),
-                             'usage': float(kwh)})
+                             'reading': float(kwh)})
         else:
             raise NotImplementedError
         json_string = json.dumps(data, ensure_ascii=False)
