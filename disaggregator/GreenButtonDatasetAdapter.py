@@ -41,7 +41,7 @@ def get_trace(xml_string):
 
     try:
         xmldoc = minidom.parseString(xml_string)
-        titles = xmldoc.getElementsByTagName('value')
+        values = xmldoc.getElementsByTagName('value')
         datetimes = xmldoc.getElementsByTagName('start')
         # TODO - more intelligently handle assumption about duration -> freq
         frequency = int(xmldoc.getElementsByTagName('duration')[1]
@@ -80,15 +80,15 @@ def get_zipcode(xml_string):
     '''
     try:
         xmldoc = minidom.parseString(xml_string)
-        address = xmldoc.getElementsByTagName('title').childNodes[0].nodeValue
+        address = xmldoc.getElementsByTagName('title')[0].childNodes[0].nodeValue
         # find a zipcode
         try:
             return re.findall(r"\s((\d{5})([-\s]\d{4})?)\s*$", address)[0][1]
         except IndexError:
-            warnings.warn("No zipcode found, using 60604")
-            return "60604"
+            warnings.warn("No zipcode found (IndexError), using 60605")
+            return "60605"
     except ExpatError:
-        warnings.warn("No zipcode found, using 60604")
+        warnings.warn("No zipcode found (ExpatError), using 60604")
         return "60604"
 
 def _validate(xml_string):
