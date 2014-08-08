@@ -80,6 +80,16 @@ def get_cdd(ref_temp,df):
     df['cdd_cum']=df.cdd.cumsum()
     return df
 
+def get_weather_data_as_df_from_zipcode(api_key,zipcode,start_date,end_date):
+    """
+    Return a dataframe indexed by time containing hourly weather data.
+    Requires Weather underground api key.
+    """
+    query_results=get_weather_data(api_key,"","",start_date,end_date,zipcode=zipcode)
+    temp_temps=pd.read_json(query_results)
+    return _combine_date_time_and_index(temp_temps)
+
+
 def get_weather_data_as_df(api_key,city,state,start_date,end_date):
     """
     Return a dataframe indexed by time containing hourly weather data.
@@ -89,7 +99,7 @@ def get_weather_data_as_df(api_key,city,state,start_date,end_date):
     temp_temps=pd.read_json(query_results)
     return _combine_date_time_and_index(temp_temps)
 
-def get_weather_data(api_key,city,state,start_date,end_date):
+def get_weather_data(api_key,city,state,start_date,end_date,zipcode=None):
     '''
     Returns a json string given a city, state, and desired date (YYYYMMDD)
     '''
@@ -97,22 +107,21 @@ def get_weather_data(api_key,city,state,start_date,end_date):
 
         #format our date structure to pass to our http request
         date_format = "%Y%m%d"
-        a = datetime.strptime(start_date, date_format)
-        b = datetime.strptime(end_date, date_format)
-        #get number of days from start_date to end_date
-        delta = b - a
-        num_days = delta.days
+        num_days = (end_date - start_date).days
         objects_list = []
 
         #create new variable that will create query's for the api
         for year in range(0,num_days + 1):
             #count from start_date to end_date
-            dates = a + timedelta(days=year)
-            #format our str with our date_format
+            dates = start_date + timedelta(days=year)
             formatted_dates = datetime.strftime(dates, date_format)
             #create query which will iterate through desired weather period
-            query = 'http://api.wunderground.com/api/'+ api_key +\
-                '/history_' + formatted_dates + '/q/' + state + '/' + city + '.json'
+            if zipcode:
+                query = 'http://api.wunderground.com/api/'+ api_key +\
+                    '/history_' + formatted_dates + '/q/' + zipcode + '.json'
+            else:
+                query = 'http://api.wunderground.com/api/'+ api_key +\
+                    '/history_' + formatted_dates + '/q/' + state + '/' + city + '.json'
             #iterate through the number of days and query the api. dump json results every time
             f = urllib2.urlopen(query)
             #read query as a json string
@@ -152,7 +161,14 @@ def get_weather_data(api_key,city,state,start_date,end_date):
         return j
     #If we just need the data for ONE day (pass None for end_date):
     if(end_date is None):
-        f = urllib2.urlopen('http://api.wunderground.com/api/API_KEY/history_'+start_date+'/q/'+state+'/'+city+'.json')
+        start_date_str = datetime.strftime(start_date, date_format)
+        if zipcode:
+            query = 'http://api.wunderground.com/api/'+ api_key +\
+                '/history_' + start_date_str + '/q/' + zipcode + '.json'
+        else:
+            query = 'http://api.wunderground.com/api/'+ api_key +\
+                '/history_' + start_date_str + '/q/' + state + '/' + city + '.json'
+        f = urllib2.urlopen(query)
         json_string = f.read()
         parsed_json = json.loads(json_string)
 
