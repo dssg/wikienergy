@@ -80,7 +80,8 @@ def get_zipcode(xml_string):
     '''
     try:
         xmldoc = minidom.parseString(xml_string)
-        address = xmldoc.getElementsByTagName('title')[0].childNodes[0].nodeValue
+        entry=xmldoc.getElementsByTagName('entry')[0]
+        address = entry.getElementsByTagName('title')[0].childNodes[0].nodeValue
         # find a zipcode
         try:
             return re.findall(r"\s((\d{5})([-\s]\d{4})?)\s*$", address)[0][1]
