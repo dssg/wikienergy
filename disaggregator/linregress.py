@@ -22,9 +22,9 @@ def remove_low_outliers(series,threshold,num_hours):
         except KeyError: series[i]= series[i+pd.DateOffset(hours=num_hours)]
     return series
 
-def run_regressions(trace,temps,cal_hdd_temp_range,cal_cdd_temp_range):
+def run_regressions(trace_series,temps,cal_hdd_temp_range,cal_cdd_temp_range):
     results_dict={}
-    df_trace=pd.DataFrame(trace.series,columns=['kwh'])
+    df_trace=pd.DataFrame(trace_series,columns=['kwh'])
     df_trace=df_trace.sort_index()
     df_temps=pd.DataFrame(temps,columns=['temp'])
 
@@ -64,32 +64,53 @@ def run_regressions(trace,temps,cal_hdd_temp_range,cal_cdd_temp_range):
                 intercept_hdd=results.beta[1]
                 df_all_best=df_all
 
-    results_dict['slope_hdd']=slope_hdd
-    results_dict['intercept_hdd']=intercept_hdd
-    results_dict['best_hdd_temp']=best_hdd_temp
-    results_dict['best_r2_adj_hdd']=best_r2_adj_heat
-    results_dict['slope_cdd']=slope_cdd
-    results_dict['intercept_cdd']=intercept_cdd
-    results_dict['best_cdd_temp']=best_cdd_temp
-    results_dict['best_r2_adj_cdd']=best_r2_adj_cool
+    results_dict['slope_hdd'] = slope_hdd
+    results_dict['intercept_hdd'] = intercept_hdd
+    results_dict['best_hdd_temp'] = best_hdd_temp
+    results_dict['best_r2_adj_hdd'] = best_r2_adj_heat
+    results_dict['slope_cdd'] = slope_cdd
+    results_dict['intercept_cdd'] = intercept_cdd
+    results_dict['best_cdd_temp'] = best_cdd_temp
+    results_dict['best_r2_adj_cdd'] = best_r2_adj_cool
     return results_dict
 
 def open_xml_and_run_regression(filepath,cal_heat_temp_range=range(50,60),cal_cool_temp_range=range(60,70)):
     with open(filepath,'rb') as f:
-        xml_house=f.read()
-    trace=gbda.get_trace(xml_house)
+        xml_house = f.read()
+    trace = gbda.get_trace(xml_house)
     trace = trace.resample('24H',method='sum')
-    trace.series = remove_low_outliers(trace.series,0,24)
-
-    date_start = trace.series.index[0]
-    date_end = trace.series.index[len(trace.series)-1]
+    trace_series = trace.series
+    trace_series = remove_low_outliers(trace_series,0,24)
+    date_start = trace_series.index[0]
+    date_end = trace_series.index[len(trace_series)-1]
     temps_series = get_temperatures(date_start,date_end)
 
-    results_dict=run_regressions(trace,temps_series,
+    results_dict = run_regressions(trace_series,temps_series,
         cal_heat_temp_range,cal_cool_temp_range)
-    return [trace, temps_series, results_dict]
+    return [trace_series, temps_series, results_dict]
 
-def predict_from_results(trace,temps,results_dict):
+def load_from_web_and_run_regression(trace_series,temps_series,
+        cal_heat_temp_range=range(50,60),cal_cool_temp_range=range(60,70)):
+
+    results_dict=run_regressions(trace_series,temps_series,
+        cal_heat_temp_range,cal_cool_temp_range)
+    [total_series,air_series,diff_series] = predict_from_results(trace_series,
+            temps_series,results_dict)
+
+    data=[]
+    for i, v in total_series.iteritems():
+        kwh = v/1000
+        air = air_series[i]/1000
+        diff=diff_series[i]/1000
+        data.append({'date':i.strftime('%Y-%m-%d %H:%M'),
+            'reading': float(kwh),'air_reading':float(air),
+            'diff_series':float(diff)})
+    json_string = json.dumps(data, ensure_ascii=False,
+                             indent=4, separators=(',', ': '))
+
+    return json_string
+
+def predict_from_results(trace_series,temps,results_dict):
     slope_hdd = results_dict['slope_hdd']
     intercept_hdd = results_dict['intercept_hdd']
     best_hdd_temp = results_dict['best_hdd_temp']
@@ -98,7 +119,7 @@ def predict_from_results(trace,temps,results_dict):
     intercept_cdd = results_dict['intercept_cdd']
     best_cdd_temp = results_dict['best_cdd_temp']
 
-    df_trace = pd.DataFrame(trace.series,columns=['kwh'])
+    df_trace = pd.DataFrame(trace_series,columns=['kwh'])
     df_trace = df_trace.sort_index()
     df_trace = df_trace
     df_temps = pd.DataFrame(temps,columns=['temp'])
@@ -107,9 +128,10 @@ def predict_from_results(trace,temps,results_dict):
     pred_air_daily=[]
     total_daily=[]
     pred_total_daily=[]
-
-    intercept_cdd_new=best_cdd_temp*slope_cdd+intercept_cdd
-    intercept_hdd_new=best_hdd_temp*slope_hdd+intercept_hdd
+    if(intercept_cdd):
+        intercept_cdd_new=best_cdd_temp*slope_cdd+intercept_cdd
+    if(intercept_hdd):
+        intercept_hdd_new=best_hdd_temp*slope_hdd+intercept_hdd
 
     for i,val in enumerate(df_sub['kwh']):
         use_kwh_per_day=float(val)
@@ -133,8 +155,8 @@ def predict_from_results(trace,temps,results_dict):
     return [total_series,air_series,diff_series]
 
 def open_xml_and_get_results(filepath):
-    [trace,temps_series,results_dict] = open_xml_and_run_regression(filepath)
-    [total_series,air_series,diff_series] = predict_from_results(trace,temps_series,results_dict)
+    [trace_series,temps_series,results_dict] = open_xml_and_run_regression(filepath)
+    [total_series,air_series,diff_series] = predict_from_results(trace_series,temps_series,results_dict)
     data=[]
     for i, v in total_series.iteritems():
         kwh = v/1000
