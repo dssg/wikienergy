@@ -6,6 +6,7 @@ from test_appliance_set import ApplianceSetTestCase
 from test_appliance_type import ApplianceTypeTestCase
 from test_utils import UtilsTestCase
 from test_pecanstreet_dataset_adapter import PecanStreetDatasetAdapterTestCase
+from test_greenbutton_dataset_adapter import GreenButtonDatasetAdapterTestCase
 
 def suite():
     ev_m_suite =\
@@ -20,7 +21,9 @@ def suite():
         unittest.TestLoader().loadTestsFromTestCase(ApplianceTypeTestCase)
     util_suite =\
         unittest.TestLoader().loadTestsFromTestCase(UtilsTestCase)
-
+    gbda_suite =\
+        unittest.TestLoader().\
+        loadTestsFromTestCase(GreenButtonDatasetAdapterTestCase)
     # These tests should take less than ten seconds
     psda_tests = [
         'test_get_table_names',
@@ -37,6 +40,7 @@ def suite():
         a_ty_suite,
         util_suite,
         psda_suite,
+        gbda_suite
     ])
 
     return all_tests

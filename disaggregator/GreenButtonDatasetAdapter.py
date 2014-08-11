@@ -12,27 +12,26 @@
 
 """
 
-
 from appliance import ApplianceTrace
 from appliance import ApplianceInstance
 from appliance import ApplianceSet
 from appliance import ApplianceType
-
 import utils
 
 import sqlalchemy
 import pandas as pd
 import numpy as np
 
-from lxml import etree
-from xml.dom import minidom
 from xml.parsers.expat import ExpatError
-import os.path
+from xml.dom import minidom
+from lxml import etree
+
 from datetime import datetime
+import warnings
+import os.path
+import re
 
-
-
-def get_trace_from_xml(xml_string):
+def get_trace(xml_string):
     '''
     Returns an ApplianceTrace representing the data in the XML file, which
     must conform to the GreenButtonXML format.
@@ -42,7 +41,6 @@ def get_trace_from_xml(xml_string):
 
     try:
         xmldoc = minidom.parseString(xml_string)
-
         values = xmldoc.getElementsByTagName('value')
         datetimes = xmldoc.getElementsByTagName('start')
         # TODO - more intelligently handle assumption about duration -> freq
@@ -60,8 +58,9 @@ def get_trace_from_xml(xml_string):
 
     series = pd.Series(values,index=datetimes)
     metadata = {'source': 'GreenButtonXML'}
-
     trace = ApplianceTrace(series,metadata)
+
+    # TODO - be more flexible
     # set sample rate
     if frequency == 60 * 60:
         trace = trace.resample('H')
@@ -73,6 +72,25 @@ def get_trace_from_xml(xml_string):
         trace = trace.resample('T')
 
     return trace
+
+def get_zipcode(xml_string):
+    '''
+    Returns an ApplianceTrace representing the data in the XML file, which
+    must conform to the GreenButtonXML format.
+    '''
+    try:
+        xmldoc = minidom.parseString(xml_string)
+        entry=xmldoc.getElementsByTagName('entry')[0]
+        address = entry.getElementsByTagName('title')[0].childNodes[0].nodeValue
+        # find a zipcode
+        try:
+            return re.findall(r"\s((\d{5})([-\s]\d{4})?)\s*$", address)[0][1]
+        except IndexError:
+            warnings.warn("No zipcode found (IndexError), using 60605")
+            return "60605"
+    except ExpatError:
+        warnings.warn("No zipcode found (ExpatError), using 60604")
+        return "60604"
 
 def _validate(xml_string):
     '''
