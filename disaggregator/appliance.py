@@ -130,7 +130,14 @@ class ApplianceTrace(object):
         Returns the daily usage sum trace in a json format for calendar view
         '''
         d_sum = self.resample('D', 'sum')
-        if method == 'utc_dict':
+        m_sum = self.resample('M', 'sum')
+        if method == 'month_sums':
+            data = []
+            for i, v in m_sum.series.iteritems():
+                kwh = v/1000
+                data.append({'date':i.strftime('%Y-%m-%d'),
+                             'reading': float(kwh)})
+        elif method == 'utc_dict':
             data = {}            
             for i, v in d_sum.series.iteritems():
                 kwh = v/1000
@@ -140,7 +147,7 @@ class ApplianceTrace(object):
             data = []
             for i, v in d_sum.series.iteritems():
                 kwh = v/1000
-                data.append({'date':i.strftime('%Y-%m-%d %H:%M'),
+                data.append({'date':i.strftime('%Y-%m-%d'),
                              'reading': float(kwh)})
         else:
             raise NotImplementedError
