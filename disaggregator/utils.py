@@ -466,3 +466,4 @@ def align_instances(instances):
     return [appliance.ApplianceInstance(traces_,instance.metadata)
             for traces_,instance in zip(traces,instances)]
 
+
