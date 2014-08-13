@@ -16,7 +16,7 @@ import json
 from datetime import datetime, timedelta, date
 import collections
 import pandas as pd
-
+import numpy as np
 
 def degree_day_regression(df, x_opt='both'):
     '''
@@ -85,9 +85,10 @@ def get_weather_data_as_df_from_zipcode(api_key,zipcode,start_date,end_date):
     Return a dataframe indexed by time containing hourly weather data.
     Requires Weather underground api key.
     """
-    query_results=get_weather_data(api_key,"","",start_date,end_date,zipcode=zipcode)
-    temp_temps=pd.read_json(query_results)
-    return _combine_date_time_and_index(temp_temps)
+    query_results = get_weather_data(api_key,"","",start_date,end_date,zipcode=zipcode)
+    temp_temps = pd.read_json(query_results)
+    temp_temps =  _combine_date_time_and_index(temp_temps)
+    return _remove_low_outliers_df(temp_temps,'temp','H')
 
 
 def get_weather_data_as_df(api_key,city,state,start_date,end_date):
@@ -95,9 +96,10 @@ def get_weather_data_as_df(api_key,city,state,start_date,end_date):
     Return a dataframe indexed by time containing hourly weather data.
     Requires Weather underground api key.
     """
-    query_results=get_weather_data(api_key,city,state,start_date,end_date)
-    temp_temps=pd.read_json(query_results)
-    return _combine_date_time_and_index(temp_temps)
+    query_results = get_weather_data(api_key,city,state,start_date,end_date)
+    temp_temps = pd.read_json(query_results)
+    temp_temps = _combine_date_time_and_index(temp_temps)
+    return _remove_low_outliers_df(temp_temps,'temp','H')
 
 def get_weather_data(api_key,city,state,start_date,end_date,zipcode=None):
     '''
@@ -120,6 +122,7 @@ def get_weather_data(api_key,city,state,start_date,end_date,zipcode=None):
                 query = 'http://api.wunderground.com/api/'+ api_key +\
                     '/history_' + formatted_dates + '/q/' + zipcode + '.json'
             else:
+                city=city.replace(" ","%20")
                 query = 'http://api.wunderground.com/api/'+ api_key +\
                     '/history_' + formatted_dates + '/q/' + state + '/' + city + '.json'
             #iterate through the number of days and query the api. dump json results every time
@@ -225,5 +228,14 @@ def _combine_date_time_and_index(temp_df):
                 hour=0
         temp_df['date'][i]=date.replace(hour=int(hour),minute=int(minute))
     _index_df_by_date(temp_df)
+    temp_df=temp_df.resample('H',how='mean')
     return temp_df
 
+def _remove_low_outliers_df(df,column_name,sample_rate):
+    threshold = np.mean(df[column_name])-(5*np.std(df[column_name]))
+    outliers=df[column_name][(df[column_name] < threshold)].index
+    a=0
+    for a,i in enumerate(outliers):
+        try: df[column_name][i]= df[column_name][i-pd.DateOffset(hours=sample_rate)]
+        except KeyError: df[column_name][i]= df[column_name][i+pd.DateOffset(hours=sample_rate)]
+    return df
