@@ -56,7 +56,7 @@ temperature normalization. Also includes utilities for converting
 temperatures to heating/cooling degree days.</p>
 <span class="target" id="module-disaggregator.weather"></span><span class="target" id="module-weather"></span><dl class="function">
 <dt id="disaggregator.weather.degree_day_regression">
-<tt class="descclassname">disaggregator.weather.</tt><tt class="descname">degree_day_regression</tt><big>(</big><em>df</em>, <em>x_opt='both'</em><big>)</big><a class="reference internal" href="_modules/disaggregator/weather.html#degree_day_regression"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#disaggregator.weather.degree_day_regression" title="Permalink to this definition">¶</a></dt>
+<tt class="descclassname">disaggregator.weather.</tt><tt class="descname">degree_day_regression</tt><big>(</big><em>df</em>, <em>x_opt='both'</em><big>)</big><a class="headerlink" href="#disaggregator.weather.degree_day_regression" title="Permalink to this definition">¶</a></dt>
 <dd><p>Function that runs the weather normalization regression on energy use data</p>
 <dl class="docutils">
 <dt>df: dataframe that includes</dt>
@@ -72,39 +72,39 @@ cooling degree days per day (cddpd)</dd>
 
 <dl class="function">
 <dt id="disaggregator.weather.get_cdd">
-<tt class="descclassname">disaggregator.weather.</tt><tt class="descname">get_cdd</tt><big>(</big><em>ref_temp</em>, <em>df</em><big>)</big><a class="reference internal" href="_modules/disaggregator/weather.html#get_cdd"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#disaggregator.weather.get_cdd" title="Permalink to this definition">¶</a></dt>
+<tt class="descclassname">disaggregator.weather.</tt><tt class="descname">get_cdd</tt><big>(</big><em>ref_temp</em>, <em>df</em><big>)</big><a class="headerlink" href="#disaggregator.weather.get_cdd" title="Permalink to this definition">¶</a></dt>
 <dd><p>Converts a temperature to HDD.</p>
 </dd></dl>
 
 <dl class="function">
 <dt id="disaggregator.weather.get_hdd">
-<tt class="descclassname">disaggregator.weather.</tt><tt class="descname">get_hdd</tt><big>(</big><em>ref_temp</em>, <em>df</em><big>)</big><a class="reference internal" href="_modules/disaggregator/weather.html#get_hdd"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#disaggregator.weather.get_hdd" title="Permalink to this definition">¶</a></dt>
+<tt class="descclassname">disaggregator.weather.</tt><tt class="descname">get_hdd</tt><big>(</big><em>ref_temp</em>, <em>df</em><big>)</big><a class="headerlink" href="#disaggregator.weather.get_hdd" title="Permalink to this definition">¶</a></dt>
 <dd><p>Adds a column for heating degree days (converted from temp (F)).</p>
 </dd></dl>
 
 <dl class="function">
 <dt id="disaggregator.weather.get_weather_data">
-<tt class="descclassname">disaggregator.weather.</tt><tt class="descname">get_weather_data</tt><big>(</big><em>api_key</em>, <em>city</em>, <em>state</em>, <em>start_date</em>, <em>end_date</em>, <em>zipcode=None</em><big>)</big><a class="reference internal" href="_modules/disaggregator/weather.html#get_weather_data"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#disaggregator.weather.get_weather_data" title="Permalink to this definition">¶</a></dt>
+<tt class="descclassname">disaggregator.weather.</tt><tt class="descname">get_weather_data</tt><big>(</big><em>api_key</em>, <em>city</em>, <em>state</em>, <em>start_date</em>, <em>end_date</em>, <em>zipcode=None</em><big>)</big><a class="headerlink" href="#disaggregator.weather.get_weather_data" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns a json string given a city, state, and desired date (YYYYMMDD)</p>
 </dd></dl>
 
 <dl class="function">
 <dt id="disaggregator.weather.get_weather_data_as_df">
-<tt class="descclassname">disaggregator.weather.</tt><tt class="descname">get_weather_data_as_df</tt><big>(</big><em>api_key</em>, <em>city</em>, <em>state</em>, <em>start_date</em>, <em>end_date</em><big>)</big><a class="reference internal" href="_modules/disaggregator/weather.html#get_weather_data_as_df"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#disaggregator.weather.get_weather_data_as_df" title="Permalink to this definition">¶</a></dt>
+<tt class="descclassname">disaggregator.weather.</tt><tt class="descname">get_weather_data_as_df</tt><big>(</big><em>api_key</em>, <em>city</em>, <em>state</em>, <em>start_date</em>, <em>end_date</em><big>)</big><a class="headerlink" href="#disaggregator.weather.get_weather_data_as_df" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return a dataframe indexed by time containing hourly weather data.
 Requires Weather underground api key.</p>
 </dd></dl>
 
 <dl class="function">
 <dt id="disaggregator.weather.get_weather_data_as_df_from_zipcode">
-<tt class="descclassname">disaggregator.weather.</tt><tt class="descname">get_weather_data_as_df_from_zipcode</tt><big>(</big><em>api_key</em>, <em>zipcode</em>, <em>start_date</em>, <em>end_date</em><big>)</big><a class="reference internal" href="_modules/disaggregator/weather.html#get_weather_data_as_df_from_zipcode"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#disaggregator.weather.get_weather_data_as_df_from_zipcode" title="Permalink to this definition">¶</a></dt>
+<tt class="descclassname">disaggregator.weather.</tt><tt class="descname">get_weather_data_as_df_from_zipcode</tt><big>(</big><em>api_key</em>, <em>zipcode</em>, <em>start_date</em>, <em>end_date</em><big>)</big><a class="headerlink" href="#disaggregator.weather.get_weather_data_as_df_from_zipcode" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return a dataframe indexed by time containing hourly weather data.
 Requires Weather underground api key.</p>
 </dd></dl>
 
 <dl class="function">
 <dt id="disaggregator.weather.weather_normalize">
-<tt class="descclassname">disaggregator.weather.</tt><tt class="descname">weather_normalize</tt><big>(</big><em>trace</em>, <em>temperature</em>, <em>set_point</em><big>)</big><a class="reference internal" href="_modules/disaggregator/weather.html#weather_normalize"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#disaggregator.weather.weather_normalize" title="Permalink to this definition">¶</a></dt>
+<tt class="descclassname">disaggregator.weather.</tt><tt class="descname">weather_normalize</tt><big>(</big><em>trace</em>, <em>temperature</em>, <em>set_point</em><big>)</big><a class="headerlink" href="#disaggregator.weather.weather_normalize" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns a weather-normalized trace</p>
 </dd></dl>
 
@@ -158,7 +158,7 @@ Requires Weather underground api key.</p>
     </div>
     <div class="footer">
         &copy; Copyright 2014, Phil Ngo, Miguel Perez, Stephen Suffian, Sabina Tomkins.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.2.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.
     </div>
   </body>
 </html>
