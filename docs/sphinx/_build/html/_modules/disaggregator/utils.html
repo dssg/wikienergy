@@ -62,8 +62,6 @@
 
 <span class="sd">&quot;&quot;&quot;</span>
 
-
-
 <span class="kn">import</span> <span class="nn">appliance</span>
 <span class="kn">import</span> <span class="nn">pandas</span> <span class="kn">as</span> <span class="nn">pd</span>
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
@@ -82,6 +80,8 @@
 <span class="sd">    signal.</span>
 <span class="sd">    &#39;&#39;&#39;</span>
     <span class="k">if</span> <span class="n">how</span> <span class="o">==</span> <span class="s">&quot;strict&quot;</span><span class="p">:</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">instances_aligned</span><span class="p">(</span><span class="n">instances</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="n">appliance</span><span class="o">.</span><span class="n">AlignmentError</span>
         <span class="n">traces</span> <span class="o">=</span> <span class="p">[</span><span class="n">instance</span><span class="o">.</span><span class="n">traces</span> <span class="k">for</span> <span class="n">instance</span> <span class="ow">in</span> <span class="n">instances</span><span class="p">]</span>
         <span class="n">traces</span> <span class="o">=</span> <span class="p">[</span><span class="nb">list</span><span class="p">(</span><span class="n">t</span><span class="p">)</span> <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="o">*</span><span class="n">traces</span><span class="p">)]</span> <span class="c"># transpose</span>
         <span class="n">traces</span> <span class="o">=</span> <span class="p">[</span> <span class="n">aggregate_traces</span><span class="p">(</span><span class="n">t</span><span class="p">,{})</span> <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="n">traces</span><span class="p">]</span>
@@ -95,7 +95,8 @@
 <span class="sd">    signal.</span>
 <span class="sd">    &#39;&#39;&#39;</span>
     <span class="k">if</span> <span class="n">how</span> <span class="o">==</span> <span class="s">&quot;strict&quot;</span><span class="p">:</span>
-        <span class="c"># require that traces are exactly aligned</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">traces_aligned</span><span class="p">(</span><span class="n">traces</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="n">appliance</span><span class="o">.</span><span class="n">AlignmentError</span>
         <span class="n">summed_series</span> <span class="o">=</span> <span class="n">traces</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">series</span>
         <span class="k">for</span> <span class="n">trace</span> <span class="ow">in</span> <span class="n">traces</span><span class="p">[</span><span class="mi">1</span><span class="p">:]:</span>
             <span class="n">summed_series</span> <span class="o">+=</span> <span class="n">trace</span><span class="o">.</span><span class="n">series</span>
@@ -240,6 +241,18 @@
     <span class="k">else</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">NotImplementedError</span>
 </div>
+<div class="viewcode-block" id="concatenate_instances"><a class="viewcode-back" href="../../utils.html#disaggregator.utils.concatenate_instances">[docs]</a><span class="k">def</span> <span class="nf">concatenate_instances</span><span class="p">(</span><span class="n">instances</span><span class="p">,</span> <span class="n">metadata</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">how</span><span class="o">=</span><span class="s">&quot;strict&quot;</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Takes a list of instances and concatenates them into a single instance</span>
+<span class="sd">    with a single trace</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="k">if</span> <span class="n">how</span> <span class="o">==</span> <span class="s">&#39;strict&#39;</span><span class="p">:</span>
+        <span class="n">traces</span> <span class="o">=</span> <span class="p">[</span><span class="n">instance</span><span class="o">.</span><span class="n">traces</span> <span class="k">for</span> <span class="n">instance</span> <span class="ow">in</span> <span class="n">instances</span><span class="p">]</span>
+        <span class="n">trace</span> <span class="o">=</span> <span class="n">concatenate_traces</span><span class="p">(</span><span class="n">concatenate_traces_lists</span><span class="p">(</span><span class="n">traces</span><span class="p">))</span>
+        <span class="k">return</span> <span class="n">appliance</span><span class="o">.</span><span class="n">ApplianceInstance</span><span class="p">([</span><span class="n">trace</span><span class="p">],</span><span class="n">metadata</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">NotImplementedError</span>
+</div>
 <div class="viewcode-block" id="resample_trace"><a class="viewcode-back" href="../../utils.html#disaggregator.utils.resample_trace">[docs]</a><span class="k">def</span> <span class="nf">resample_trace</span><span class="p">(</span><span class="n">trace</span><span class="p">,</span><span class="n">sample_rate</span><span class="p">):</span>
     <span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">    Takes a trace and resamples it to a given sample rate, defined by the</span>
@@ -302,11 +315,14 @@
     <span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">    Given an object and a filename saves the object in pickled format to the data directory.</span>
 <span class="sd">    &#39;&#39;&#39;</span>
-    <span class="n">rel_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">relpath</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">getcwd</span><span class="p">(),</span><span class="s">&#39;data/&#39;</span><span class="p">)</span>
-    <span class="nb">file</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">rel_path</span><span class="p">,</span><span class="s">&#39;../data/{}.p&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">title</span><span class="p">))</span>
+    
+    <span class="n">current_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">getcwd</span><span class="p">()</span>
+    <span class="n">rel</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">relpath</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">current_path</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s">&#39;wikienergy&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">],</span><span class="s">&#39;wikienergy&#39;</span><span class="p">),</span><span class="n">current_path</span><span class="p">)</span>
+    <span class="n">path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">getcwd</span><span class="p">(),</span><span class="n">rel</span><span class="p">))</span>
+    <span class="nb">file</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">getcwd</span><span class="p">(),</span><span class="n">rel</span><span class="p">)),</span><span class="s">&#39;data/{}.p&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">title</span><span class="p">))</span>
 <span class="c">#print open(os.path.join(rel_path,&#39;{}.p&#39;.format(title)),&#39;wb&#39;)</span>
 
-    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">file</span><span class="p">),</span><span class="s">&#39;wb&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="nb">file</span><span class="p">,</span><span class="s">&#39;wb&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
         <span class="n">pickle</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="n">obj</span><span class="p">,</span> <span class="n">f</span><span class="p">)</span>
 
 </div>
@@ -494,13 +510,11 @@
 <span class="sd">    Aligns all traces in a list of instances. Removes traces that don&#39;t fit.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">traces</span> <span class="o">=</span> <span class="nb">map</span><span class="p">(</span><span class="nb">list</span><span class="p">,</span><span class="nb">zip</span><span class="p">(</span><span class="o">*</span><span class="p">[</span><span class="n">instance</span><span class="o">.</span><span class="n">traces</span> <span class="k">for</span> <span class="n">instance</span> <span class="ow">in</span> <span class="n">instances</span><span class="p">]))</span>
-    <span class="k">print</span> <span class="n">traces</span>
     <span class="n">aligned_traces</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="k">for</span> <span class="n">traces_</span> <span class="ow">in</span> <span class="n">traces</span><span class="p">:</span>
         <span class="n">aligned_traces</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">align_traces</span><span class="p">(</span><span class="n">traces_</span><span class="p">))</span>
-    <span class="k">print</span> <span class="n">aligned_traces</span>
-    <span class="n">traces</span> <span class="o">=</span> <span class="nb">map</span><span class="p">(</span><span class="nb">list</span><span class="p">,</span><span class="nb">zip</span><span class="p">(</span><span class="o">*</span><span class="n">aligned_traces_</span><span class="p">))</span>
-    <span class="k">return</span> <span class="p">[</span><span class="n">ApplianceInstance</span><span class="p">(</span><span class="n">traces_</span><span class="p">,</span><span class="n">instance</span><span class="o">.</span><span class="n">metadata</span><span class="p">)</span>
+    <span class="n">traces</span> <span class="o">=</span> <span class="nb">map</span><span class="p">(</span><span class="nb">list</span><span class="p">,</span><span class="nb">zip</span><span class="p">(</span><span class="o">*</span><span class="n">aligned_traces</span><span class="p">))</span>
+    <span class="k">return</span> <span class="p">[</span><span class="n">appliance</span><span class="o">.</span><span class="n">ApplianceInstance</span><span class="p">(</span><span class="n">traces_</span><span class="p">,</span><span class="n">instance</span><span class="o">.</span><span class="n">metadata</span><span class="p">)</span>
             <span class="k">for</span> <span class="n">traces_</span><span class="p">,</span><span class="n">instance</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">traces</span><span class="p">,</span><span class="n">instances</span><span class="p">)]</span>
 </pre></div></div>
 
@@ -542,7 +556,7 @@
     </div>
     <div class="footer">
         &copy; Copyright 2014, Phil Ngo, Miguel Perez, Stephen Suffian, Sabina Tomkins.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.2.
     </div>
   </body>
 </html>

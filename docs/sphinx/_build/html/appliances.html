@@ -74,7 +74,7 @@ source.</p>
 at a consistent rate.</p>
 <dl class="method">
 <dt id="disaggregator.appliance.ApplianceTrace.get_daily_usage">
-<tt class="descname">get_daily_usage</tt><big>(</big><big>)</big><a class="headerlink" href="#disaggregator.appliance.ApplianceTrace.get_daily_usage" title="Permalink to this definition">¶</a></dt>
+<tt class="descname">get_daily_usage</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/disaggregator/appliance.html#ApplianceTrace.get_daily_usage"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#disaggregator.appliance.ApplianceTrace.get_daily_usage" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns the total daily usage of this trace</p>
 </dd></dl>
 
@@ -126,8 +126,15 @@ or week (&#8216;W&#8217;)</p>
 
 <dl class="method">
 <dt id="disaggregator.appliance.ApplianceTrace.to_daily_usage_json">
-<tt class="descname">to_daily_usage_json</tt><big>(</big><em>method='utc_dict'</em><big>)</big><a class="headerlink" href="#disaggregator.appliance.ApplianceTrace.to_daily_usage_json" title="Permalink to this definition">¶</a></dt>
+<tt class="descname">to_daily_usage_json</tt><big>(</big><em>method='utc_dict'</em><big>)</big><a class="reference internal" href="_modules/disaggregator/appliance.html#ApplianceTrace.to_daily_usage_json"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#disaggregator.appliance.ApplianceTrace.to_daily_usage_json" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns the daily usage sum trace in a json format for calendar view</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="disaggregator.appliance.ApplianceTrace.to_dict">
+<tt class="descname">to_dict</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/disaggregator/appliance.html#ApplianceTrace.to_dict"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#disaggregator.appliance.ApplianceTrace.to_dict" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the trace in a dict format amenable to d3 visualization without
+converting to a json string.</p>
 </dd></dl>
 
 <dl class="method">
@@ -367,7 +374,7 @@ is split into multiple traces from unique days (&#8216;D&#8217;) or weeks (&#821
     </div>
     <div class="footer">
         &copy; Copyright 2014, Phil Ngo, Miguel Perez, Stephen Suffian, Sabina Tomkins.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.2.
     </div>
   </body>
 </html>

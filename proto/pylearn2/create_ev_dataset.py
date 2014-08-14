@@ -153,6 +153,15 @@ non_car_train_ids = [non_car_ids[i] for i in non_car_train_i[:]]
 non_car_valid_ids = [non_car_ids[i] for i in non_car_valid_i[:]]
 non_car_test_ids = [non_car_ids[i] for i in non_car_test_i[:]]
 
+print car_train_ids
+print car_valid_ids
+print car_test_ids
+print non_car_train_ids
+print non_car_valid_ids
+print non_car_test_ids
+
+import pdb;pdb.set_trace()
+
 # make arrays and labels
 for i in range(5):
     table_i = i

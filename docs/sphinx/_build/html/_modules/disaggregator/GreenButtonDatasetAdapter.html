@@ -63,27 +63,26 @@
 
 <span class="sd">&quot;&quot;&quot;</span>
 
-
 <span class="kn">from</span> <span class="nn">appliance</span> <span class="kn">import</span> <span class="n">ApplianceTrace</span>
 <span class="kn">from</span> <span class="nn">appliance</span> <span class="kn">import</span> <span class="n">ApplianceInstance</span>
 <span class="kn">from</span> <span class="nn">appliance</span> <span class="kn">import</span> <span class="n">ApplianceSet</span>
 <span class="kn">from</span> <span class="nn">appliance</span> <span class="kn">import</span> <span class="n">ApplianceType</span>
-
 <span class="kn">import</span> <span class="nn">utils</span>
 
 <span class="kn">import</span> <span class="nn">sqlalchemy</span>
 <span class="kn">import</span> <span class="nn">pandas</span> <span class="kn">as</span> <span class="nn">pd</span>
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
 
-<span class="kn">from</span> <span class="nn">lxml</span> <span class="kn">import</span> <span class="n">etree</span>
-<span class="kn">from</span> <span class="nn">xml.dom</span> <span class="kn">import</span> <span class="n">minidom</span>
 <span class="kn">from</span> <span class="nn">xml.parsers.expat</span> <span class="kn">import</span> <span class="n">ExpatError</span>
-<span class="kn">import</span> <span class="nn">os.path</span>
+<span class="kn">from</span> <span class="nn">xml.dom</span> <span class="kn">import</span> <span class="n">minidom</span>
+<span class="kn">from</span> <span class="nn">lxml</span> <span class="kn">import</span> <span class="n">etree</span>
+
 <span class="kn">from</span> <span class="nn">datetime</span> <span class="kn">import</span> <span class="n">datetime</span>
+<span class="kn">import</span> <span class="nn">warnings</span>
+<span class="kn">import</span> <span class="nn">os.path</span>
+<span class="kn">import</span> <span class="nn">re</span>
 
-
-
-<div class="viewcode-block" id="get_trace_from_xml"><a class="viewcode-back" href="../../dataset_adapters.html#disaggregator.GreenButtonDatasetAdapter.get_trace_from_xml">[docs]</a><span class="k">def</span> <span class="nf">get_trace_from_xml</span><span class="p">(</span><span class="n">xml_string</span><span class="p">):</span>
+<div class="viewcode-block" id="get_trace"><a class="viewcode-back" href="../../dataset_adapters.html#disaggregator.GreenButtonDatasetAdapter.get_trace">[docs]</a><span class="k">def</span> <span class="nf">get_trace</span><span class="p">(</span><span class="n">xml_string</span><span class="p">):</span>
     <span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">    Returns an ApplianceTrace representing the data in the XML file, which</span>
 <span class="sd">    must conform to the GreenButtonXML format.</span>
@@ -93,7 +92,6 @@
 
     <span class="k">try</span><span class="p">:</span>
         <span class="n">xmldoc</span> <span class="o">=</span> <span class="n">minidom</span><span class="o">.</span><span class="n">parseString</span><span class="p">(</span><span class="n">xml_string</span><span class="p">)</span>
-
         <span class="n">values</span> <span class="o">=</span> <span class="n">xmldoc</span><span class="o">.</span><span class="n">getElementsByTagName</span><span class="p">(</span><span class="s">&#39;value&#39;</span><span class="p">)</span>
         <span class="n">datetimes</span> <span class="o">=</span> <span class="n">xmldoc</span><span class="o">.</span><span class="n">getElementsByTagName</span><span class="p">(</span><span class="s">&#39;start&#39;</span><span class="p">)</span>
         <span class="c"># TODO - more intelligently handle assumption about duration -&gt; freq</span>
@@ -111,8 +109,9 @@
 
     <span class="n">series</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">(</span><span class="n">values</span><span class="p">,</span><span class="n">index</span><span class="o">=</span><span class="n">datetimes</span><span class="p">)</span>
     <span class="n">metadata</span> <span class="o">=</span> <span class="p">{</span><span class="s">&#39;source&#39;</span><span class="p">:</span> <span class="s">&#39;GreenButtonXML&#39;</span><span class="p">}</span>
-
     <span class="n">trace</span> <span class="o">=</span> <span class="n">ApplianceTrace</span><span class="p">(</span><span class="n">series</span><span class="p">,</span><span class="n">metadata</span><span class="p">)</span>
+
+    <span class="c"># TODO - be more flexible</span>
     <span class="c"># set sample rate</span>
     <span class="k">if</span> <span class="n">frequency</span> <span class="o">==</span> <span class="mi">60</span> <span class="o">*</span> <span class="mi">60</span><span class="p">:</span>
         <span class="n">trace</span> <span class="o">=</span> <span class="n">trace</span><span class="o">.</span><span class="n">resample</span><span class="p">(</span><span class="s">&#39;H&#39;</span><span class="p">)</span>
@@ -124,6 +123,25 @@
         <span class="n">trace</span> <span class="o">=</span> <span class="n">trace</span><span class="o">.</span><span class="n">resample</span><span class="p">(</span><span class="s">&#39;T&#39;</span><span class="p">)</span>
 
     <span class="k">return</span> <span class="n">trace</span>
+</div>
+<div class="viewcode-block" id="get_zipcode"><a class="viewcode-back" href="../../dataset_adapters.html#disaggregator.GreenButtonDatasetAdapter.get_zipcode">[docs]</a><span class="k">def</span> <span class="nf">get_zipcode</span><span class="p">(</span><span class="n">xml_string</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Returns an ApplianceTrace representing the data in the XML file, which</span>
+<span class="sd">    must conform to the GreenButtonXML format.</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">xmldoc</span> <span class="o">=</span> <span class="n">minidom</span><span class="o">.</span><span class="n">parseString</span><span class="p">(</span><span class="n">xml_string</span><span class="p">)</span>
+        <span class="n">entry</span><span class="o">=</span><span class="n">xmldoc</span><span class="o">.</span><span class="n">getElementsByTagName</span><span class="p">(</span><span class="s">&#39;entry&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">address</span> <span class="o">=</span> <span class="n">entry</span><span class="o">.</span><span class="n">getElementsByTagName</span><span class="p">(</span><span class="s">&#39;title&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">childNodes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">nodeValue</span>
+        <span class="c"># find a zipcode</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">re</span><span class="o">.</span><span class="n">findall</span><span class="p">(</span><span class="s">r&quot;\s((\d{5})([-\s]\d{4})?)\s*$&quot;</span><span class="p">,</span> <span class="n">address</span><span class="p">)[</span><span class="mi">0</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span>
+        <span class="k">except</span> <span class="ne">IndexError</span><span class="p">:</span>
+            <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="s">&quot;No zipcode found (IndexError), using 60605&quot;</span><span class="p">)</span>
+            <span class="k">return</span> <span class="s">&quot;60605&quot;</span>
+    <span class="k">except</span> <span class="n">ExpatError</span><span class="p">:</span>
+        <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="s">&quot;No zipcode found (ExpatError), using 60604&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="s">&quot;60604&quot;</span>
 </div>
 <span class="k">def</span> <span class="nf">_validate</span><span class="p">(</span><span class="n">xml_string</span><span class="p">):</span>
     <span class="sd">&#39;&#39;&#39;</span>
@@ -200,7 +218,7 @@
     </div>
     <div class="footer">
         &copy; Copyright 2014, Phil Ngo, Miguel Perez, Stephen Suffian, Sabina Tomkins.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.2.
     </div>
   </body>
 </html>

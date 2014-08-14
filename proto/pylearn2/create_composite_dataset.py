@@ -3,12 +3,16 @@ import os.path
 sys.path.append(os.path.abspath(os.path.join(os.pardir,os.pardir)))
 import disaggregator as da
 import disaggregator.PecanStreetDatasetAdapter as psda
-import pylearn2.datasets as ds
+from pylearn2.datasets.vector_spaces_dataset import VectorSpacesDataset
+from pylearn2.space import CompositeSpace
+from pylearn2.space import Conv2DSpace
+from pylearn2.space import VectorSpace
 import pickle
 import argparse
 from copy import deepcopy
 import numpy as np
 import decimal
+from scipy.sparse import csr_matrix
 
 def create_dataset(schema,tables,ids, n_classes, which = None):
     all_instances = psda.generate_instances_for_appliances_by_dataids(schema,tables,
@@ -29,9 +33,9 @@ def create_dataset(schema,tables,ids, n_classes, which = None):
 
         # create features sources
         energy_arrays.append(use_windows)
-        temperature_arrays = np.repeat(np.array([70],use_windows.shape[0],axis=0)
-        time_arrays = np.repeat(np.array([12],use_windows.shape[0],axis=0)
-        weekday_arrays = np.repeat(np.array([1,0,0,0,0,0,0],use_windows.shape[0],axis=0)
+        temperature_arrays.append(np.tile([70],(use_windows.shape[0],1)))
+        time_arrays.append(np.tile([12],(use_windows.shape[0],1)))
+        weekday_arrays.append(np.tile([1,0,0,0,0,0,0],(use_windows.shape[0],1)))
 
         # determine targets
         air1 = instances[1].traces[0]
@@ -47,23 +51,23 @@ def create_dataset(schema,tables,ids, n_classes, which = None):
         target_arrays.append(classes_to_onehot(classes,n_classes))
 
     # create data tuple
-    energy_arrays = np.concatenate(energy_arrays,axis=0)
+    energy_arrays = np.concatenate(energy_arrays,axis=0)[:,:,np.newaxis,np.newaxis]
     temperature_arrays = np.concatenate(temperature_arrays,axis=0)
     time_arrays = np.concatenate(time_arrays,axis=0)
-    weekday_arrays = np.concatenate(weekday_arrays,axis=0)
-    target_arrays = np.concatenate(target_arrays,axis=0)
+    weekday_arrays = csr_matrix(np.concatenate(weekday_arrays,axis=0))
+    target_arrays = csr_matrix(np.concatenate(target_arrays,axis=0))
     data = (energy_arrays,temperature_arrays,time_arrays,weekday_arrays,target_arrays)
 
     # define the data specs
-    space = CompositeSpace(
+    space = CompositeSpace([
         Conv2DSpace(shape=[10,1],num_channels=1),
         VectorSpace(dim=1),
         VectorSpace(dim=1),
         VectorSpace(dim=7,sparse=True),
-        VectorSpace(dim=n_classes,sparse=True))
-    source = ('features','features','features','features','targets')
-    data_specs = (space,sources)
-    dataset = ds.VectorSpacesDataset(data=data,data_specs=data_specs)
+        VectorSpace(dim=n_classes,sparse=True)])
+    source = ('features0','features1','features2','features3','targets')
+    data_specs = (space,source)
+    dataset = VectorSpacesDataset(data=data,data_specs=data_specs)
     with open(os.path.join(args.data_dir,args.prefix+'_'+which+'.pkl'),'w') as f:
         pickle.dump(dataset,f)
 
