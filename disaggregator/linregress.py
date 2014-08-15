@@ -117,20 +117,20 @@ def get_results_to_json(total_series,air_series,diff_series,slope_cdd):
 
     perc_correlation=len([val for val in diff_series if abs(val) < 5000])\
         /float(len(diff_series))*100
-    
 
     data=[]
     json_object={}
-    json_object['perc_correlation']=perc_correlation
-    json_object['slope_cdd']=slope_cdd
-
+    json_object['perc_correlation'] = perc_correlation
+    json_object['slope_cdd'] = slope_cdd
+    json_object['min_diff'] = min(diff_series/1000)
+    json_object['max_diff'] = max(diff_series/1000)
     for i, v in total_series.iteritems():
         kwh = v/1000
         air = air_series[i]/1000
         diff=diff_series[i]/1000
         data.append({'date':i.strftime('%Y-%m-%d %H:%M'),
             'reading': float(kwh),'air_reading':float(air),
-            'diff_series':float(diff)})
+            'diff_reading':float(diff)})
     json_object['data']=data
     json_string = json.dumps(json_object, ensure_ascii=False,
                              indent=4, separators=(',', ': '))
