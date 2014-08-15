@@ -104,12 +104,13 @@ def run_regressions_and_predict(trace_series,temps_series,
             temps_series,results_dict)
     if(json):
         json_string=get_results_to_json(total_series,air_series,diff_series,
-                results_dict['slope_cdd'])
+                results_dict['slope_cdd'],results_dict['slope_hdd'])
         return json_string
     else:
         return [total_series,air_series,diff_series]
 
-def get_results_to_json(total_series,air_series,diff_series,slope_cdd):
+def get_results_to_json(total_series,air_series,diff_series,
+        slope_cdd,slope_hdd):
     '''
     This method takes in a triple of series and puts them into json format
     for use on the website.
@@ -121,7 +122,8 @@ def get_results_to_json(total_series,air_series,diff_series,slope_cdd):
     data=[]
     json_object={}
     json_object['perc_correlation'] = perc_correlation
-    json_object['slope_cdd'] = slope_cdd
+    json_object['slope_cdd'] = slope_cdd/1000
+    json_object['slope_hdd'] = slope_hdd/1000
     json_object['min_diff'] = min(diff_series/1000)
     json_object['max_diff'] = max(diff_series/1000)
     for i, v in total_series.iteritems():
