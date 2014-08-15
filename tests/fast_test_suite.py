@@ -7,6 +7,7 @@ from test_appliance_type import ApplianceTypeTestCase
 from test_utils import UtilsTestCase
 from test_pecanstreet_dataset_adapter import PecanStreetDatasetAdapterTestCase
 from test_greenbutton_dataset_adapter import GreenButtonDatasetAdapterTestCase
+from test_weather import WeatherTestCase
 
 def suite():
     ev_m_suite =\
@@ -24,6 +25,9 @@ def suite():
     gbda_suite =\
         unittest.TestLoader().\
         loadTestsFromTestCase(GreenButtonDatasetAdapterTestCase)
+    weather_suite=\
+        unittest.TestLoader().\
+        loadTestsFromTestCase(WeatherTestCase)
     # These tests should take less than ten seconds
     psda_tests = [
         'test_get_table_names',
