@@ -1,8 +1,9 @@
 import sys
 import os.path
 sys.path.append(os.path.abspath(os.pardir))
-from disaggregator import weather 
+from disaggregator import weather
 import datetime
+import settings
 import unittest
 import pandas as pd
 
