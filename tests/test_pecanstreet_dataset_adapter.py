@@ -3,14 +3,14 @@ import os.path
 sys.path.append(os.path.abspath(os.pardir))
 from disaggregator import PecanStreetDatasetAdapter as psda
 
+import settings
 import unittest
 
 
 class PecanStreetDatasetAdapterTestCase(unittest.TestCase):
 
     def setUp(self):
-        db_url = "postgresql://USERNAME:PASSWORD@db.wiki-energy.org:5432/postgres"
-        psda.set_url(db_url)
+        psda.set_url(settings.PECAN_STREET_DB_URL)
 
     def test_get_table_names(self):
         s_tables = psda.get_table_names('shared')
