@@ -113,7 +113,9 @@ def get_results_to_json(total_series,air_series,diff_series,
         slope_cdd,slope_hdd):
     '''
     This method takes in a triple of series and puts them into json format
-    for use on the website.
+    for use on the website. It outputs the respective sensitivity slopes
+    as 0 if no regression was calculated for that season (heating and
+    cooling)
     '''
 
     perc_correlation=len([val for val in diff_series if abs(val) < 5000])\
@@ -122,8 +124,14 @@ def get_results_to_json(total_series,air_series,diff_series,
     data=[]
     json_object={}
     json_object['perc_correlation'] = perc_correlation
-    json_object['slope_cdd'] = slope_cdd/1000
-    json_object['slope_hdd'] = slope_hdd/1000
+    if(slope_cdd):
+        json_object['slope_cdd'] = slope_cdd/1000
+    else:
+        json_object['slope_cdd'] = 0
+    if(slope_hdd):
+        json_object['slope_hdd'] = slope_hdd/1000
+    else:
+        json_object['slope_hdd'] = 0
     json_object['min_diff'] = min(diff_series/1000)
     json_object['max_diff'] = max(diff_series/1000)
     for i, v in total_series.iteritems():
@@ -165,9 +173,9 @@ def predict_from_regressions(trace_series,temps_series,results_dict):
     pred_air_daily = []
     total_daily = []
     pred_total_daily = []
-    if(intercept_cdd):
+    if intercept_cdd:
         intercept_cdd_new = best_cdd_temp*slope_cdd+intercept_cdd
-    if(intercept_hdd):
+    if intercept_hdd:
         intercept_hdd_new = best_hdd_temp*slope_hdd+intercept_hdd
 
     for i,val in enumerate(df_sub['kwh']):
@@ -178,6 +186,20 @@ def predict_from_regressions(trace_series,temps_series,results_dict):
         elif df_sub['temp'][i] < best_hdd_temp:
             pred_air_kwh_per_day = df_sub['temp'][i]*slope_hdd+intercept_hdd-intercept_hdd_new
             pred_total_kwh_per_day = df_sub['temp'][i]*slope_hdd+intercept_hdd
+        else:
+            pred_air_kwh_per_day=0
+            if intercept_hdd:
+                if intercept_cdd:
+                    pred_total_kwh_per_day=np.mean([intercept_hdd_new,intercept_cdd_new])
+                else:
+                    pred_total_kwh_per_day=intercept_hdd_new
+            else:
+                if intercept_cdd:
+                    pred_total_kwh_per_day=intercept_cdd_new
+                else:
+                    pred_total_kwh_per_day=0
+
+
         pred_total_daily.append(pred_total_kwh_per_day)
         if pred_air_kwh_per_day > use_kwh_per_day:
             pred_air_kwh_per_day = use_kwh_per_day
