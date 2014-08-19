@@ -27,10 +27,9 @@ def calculate_solar_generated(start_dt,end_dt,api,zip_code,eff_factor=0.8):
     for val in range(delta.days+1):
         delta_days=datetime.timedelta(val)
         month_name= get_month_name(this_month)
-        total_kWh=total_kWh+month_data[month_name]*eff_factor
+        total_kWh=month_data[month_name]*eff_factor
         if (start_dt+delta_days).month is not this_month:
-            data.append({'date':str(month_name.title())+' ' + str((start_dt+delta_days).year) ,'value':total_kWh/float(1000)})
+            data.append({'date':str(month_name.title())+' ' + str((start_dt+delta_days).year) ,'value':total_kWh})
             this_month=(start_dt+delta_days).month
 
-    
     return data
