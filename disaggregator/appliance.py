@@ -138,7 +138,7 @@ class ApplianceTrace(object):
                 data.append({'date':i.strftime('%Y-%m-%d'),
                              'reading': float(kwh)})
         elif method == 'utc_dict':
-            data = {}            
+            data = {}
             for i, v in d_sum.series.iteritems():
                 kwh = v/1000
                 unixtime = str(i.strftime("%s"))
@@ -154,18 +154,26 @@ class ApplianceTrace(object):
         json_string = json.dumps(data, ensure_ascii=False)
         return json_string
 
-    def to_json(self):
+    def to_json(self,start=0,end=-1):
         '''
         Returns the trace in a json format amenable to d3 visualization.
         '''
-        data = []
-        for i, v in self.series.iteritems():
-            kwh = v/1000
-            data.append({'date':i.strftime('%Y-%m-%d %H:%M'),
-                         'reading': float(kwh)})
+        data = self.to_dict(start,end)
         json_string = json.dumps(data, ensure_ascii=False,
                                  indent=4, separators=(',', ': '))
         return json_string
+
+    def to_dict(self,start=0,end=-1):
+        '''
+        Returns the trace in a dict format amenable to d3 visualization without
+        converting to a json string.
+        '''
+        data = []
+        for i, v in self.series.iteritems():
+            kwh = float(v)/1000.0
+            data.append({'date':i.strftime('%Y-%m-%d %H:%M'),
+                         'reading': float(kwh)})
+        return data[start:end]
 
 
 class ApplianceInstance(object):

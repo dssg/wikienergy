@@ -313,3 +313,35 @@ def disaggregate_data(model_tuple, trace):
     json_string = json.dumps(data, ensure_ascii=False,indent=4,
             separators=(',', ': '))
     return json_string
+
+def get_simple_fhmm(means,ons,offs,pis,covs_on,covs_off):
+    hmms = {}
+    for i,(mean,on,off,cov_on,cov_off,pi) in enumerate(zip(means,ons,offs,covs_on,covs_off,pis)):
+        pi_prior = np.array([1 - pi,pi])
+        a_prior = np.array([[off, 1 - off],[1 - on,on]])
+        mean_prior = np.array([0,mean])[:,np.newaxis]
+        cov_prior = np.array([cov_on,cov_off])[:,np.newaxis,np.newaxis]
+        hmms["device_{}".format(i)] = init_HMM(pi_prior,a_prior,mean_prior,cov_prior)
+    appliance_hmm,_,_ = generate_FHMM_from_HMMs(hmms)
+    return appliance_hmm
+
+def get_states(individual_means,appliance_fhmm,use):
+    states = appliance_fhmm.predict(use)
+    combinations = _get_combinations(individual_means.shape[0])
+    state_means = []
+    for combo in combinations:
+        state_means.append(np.sum(individual_means * combo))
+    decoded_state_key = sorted(zip(state_means,combinations), key = lambda x: x[0])
+    decoded_states = [decoded_state_key[state][1] for state in states]
+    return np.array(decoded_states)
+
+def _get_combinations(n):
+    combos = []
+    for i in range(2**n):
+        combo = []
+        for j in range(n-1,-1,-1):
+            combo.append(int(2**j<=i))
+            if 2**j <= i:
+                i = i - 2**j
+        combos.append(combo)
+    return np.array(combos)

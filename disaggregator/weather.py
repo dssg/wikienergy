@@ -88,7 +88,7 @@ def get_weather_data_as_df_from_zipcode(api_key,zipcode,start_date,end_date):
     query_results = get_weather_data(api_key,"","",start_date,end_date,zipcode=zipcode)
     temp_temps = pd.read_json(query_results)
     temp_temps =  _combine_date_time_and_index(temp_temps)
-    return _remove_low_outliers_df(temp_temps,'temp','H')
+    return _remove_low_outliers_df(temp_temps,'temp')
 
 
 def get_weather_data_as_df(api_key,city,state,start_date,end_date):
@@ -99,7 +99,7 @@ def get_weather_data_as_df(api_key,city,state,start_date,end_date):
     query_results = get_weather_data(api_key,city,state,start_date,end_date)
     temp_temps = pd.read_json(query_results)
     temp_temps = _combine_date_time_and_index(temp_temps)
-    return _remove_low_outliers_df(temp_temps,'temp','H')
+    return _remove_low_outliers_df(temp_temps,'temp')
 
 def get_weather_data(api_key,city,state,start_date,end_date,zipcode=None):
     '''
@@ -231,11 +231,19 @@ def _combine_date_time_and_index(temp_df):
     temp_df=temp_df.resample('H',how='mean')
     return temp_df
 
-def _remove_low_outliers_df(df,column_name,sample_rate):
-    threshold = np.mean(df[column_name])-(5*np.std(df[column_name]))
+def _remove_low_outliers_df(df,column_name):
+    '''
+    This removes weather outliers below -40 degrees. This is due to
+    inaccuracies in the weather API. This function requires the indexes
+    to be datetimes across a consistent time interval. It uses this time
+    interval to replace the outlier with its nearest neighbor.
+    '''
+    threshold = -40
     outliers=df[column_name][(df[column_name] < threshold)].index
+    time_delta=df[column_name].index[1]-df[column_name].index[0]
+    offset=time_delta.seconds+time_delta.days*3600*24
     a=0
     for a,i in enumerate(outliers):
-        try: df[column_name][i]= df[column_name][i-pd.DateOffset(hours=sample_rate)]
-        except KeyError: df[column_name][i]= df[column_name][i+pd.DateOffset(hours=sample_rate)]
+        try: df[column_name][i]= df[column_name][i-pd.DateOffset(seconds=offset)]
+        except KeyError: df[column_name][i]= df[column_name][i+pd.DateOffset(seconds=offset)]
     return df
