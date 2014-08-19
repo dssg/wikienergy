@@ -12,8 +12,16 @@ class GreenButtonDatasetAdapterTestCase(unittest.TestCase):
         pass
 
     def test_get_zipcode(self):
-        zip_code=gbda.get_zipcode('<?xml version="1.0" ?><entry><title type="text">822 S LOMBARD AVE OAK PARK IL 60304-1610</title></entry>')
-        self.assertEqual(zip_code,'60304')
+        example_xml = [
+            '<?xml version="1.0" ?><entry><title type="text">123 EXAMPLE AVE OAK PARK IL 60304-1234</title></entry>',
+            '<?xml version="1.0" ?><entry><title type="text">OAK PARK IL 60305</title></entry>',
+            ]
+        answers = [
+            '60304',
+            '60305',
+            ]
+        for example, answer in zip(example_xml,answers):
+            self.assertEqual(gbd.get_zipcode(example),zip_code,answer)
 
 if __name__ == '__main__':
     #unittest.TestRunner().run(fast)
