@@ -10,33 +10,15 @@ def get_solar_data_from_nrel(api,zip_code):
     parsed_json = json.loads(json_string)
     return parsed_json['outputs']['avg_lat_tilt']['monthly']
 
+months = ['jan', 'feb' , 'mar', 'apr', 'may', 'jun',
+            'jul','aug' 'sep','oct','nov','dec']
+
 def get_month_solar_data(month_num,month_data):
-    if month_num is 1:
-        return month_data['jan']
-    elif month_num is 2:
-        return month_data['feb']
-    elif month_num is 3:
-        return month_data['mar']
-    elif month_num is 4:
-        return month_data['apr']
-    elif month_num is 5:
-        return month_data['may']
-    elif month_num is 6:
-        return month_data['jun']
-    elif month_num is 7:
-        return month_data['jul']
-    elif month_num is 8:
-        return month_data['aug']
-    elif month_num is 9:
-        return month_data['sep']
-    elif month_num is 10:
-        return month_data['oct']
-    elif month_num is 11:
-        return month_data['nov']
-    elif month_num is 12:
-        return month_data['dec']
+    for i in range(len(months)):
+        if month_num is i:
+            return month_data[months[i]]
     else:
-        raise ValueError("invalid month number.")
+        raise ValueError("invalid month number.")    
 
 def calculate_solar_generated(start_dt,end_dt,pv_size,api,zip_code,eff_factor=0.8):
 
