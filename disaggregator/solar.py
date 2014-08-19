@@ -14,7 +14,7 @@ months = ['jan', 'feb' , 'mar', 'apr', 'may', 'jun',
             'jul','aug' 'sep','oct','nov','dec']
 
 def get_month_solar_data(month_num,month_data):
-    for i in range(len(months)):
+    for i in range(1, 13)):
         if month_num is i:
             return month_data[months[i]]
     else:
