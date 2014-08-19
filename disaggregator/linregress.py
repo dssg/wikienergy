@@ -2,16 +2,22 @@ from disaggregator import GreenButtonDatasetAdapter as gbda
 import pandas as pd
 import numpy as np
 import json
+import matplotlib.pyplot as plt
 
-
-def run_regressions(trace_series,temps,cal_hdd_temp_range=range(50,60),
-        cal_cdd_temp_range=range(60,70)):
-
+def run_regressions(trace_series,temps_series,cal_hdd_temp_range=range(50,60),
+        cal_cdd_temp_range=range(60,75),plot=False):
+    '''
+    Takes in a series from a trace and a temperature series and runs linear regressions
+    over a range of cooling and heating setpoints. For each linear regression, temperature
+    values above the setpoint are used, with temps below the cooling setpoint (and above
+    the heating setpoint) are set to the setpoint. This is to make the linear regression
+    similar to those conducted for cooling and heating degree days.  This method outputs
+    a dictionary containing the best slopes and intercepts, as well as their corresponding
+    setpoint temperatures and adjusted r2 values.
+    '''
     results_dict = {}
     df_trace = pd.DataFrame(trace_series,columns=['kwh'])
     df_trace = df_trace.sort_index()
-    df_temps = pd.DataFrame(temps,columns=['temp'])
-
     best_r2_adj_cool = float("-inf")
     best_r2_adj_heat = float("-inf")
     best_cdd_temp = 0
@@ -20,12 +26,17 @@ def run_regressions(trace_series,temps,cal_hdd_temp_range=range(50,60),
     slope_hdd = None
     intercept_hdd = None
     intercept_cdd = None
-    df_all_best = None
+    results_cdd = None
+    results_hdd = None
+    df_all_best_cool = None
+    df_all_best_heat = None
+
+    df_temps=pd.DataFrame(temps_series,columns=['temp'])
 
     for cdd_setpoint in cal_cdd_temp_range:
-        df_temps_dropped = df_temps.drop(df_temps[df_temps['temp']<=cdd_setpoint].index)
+        df_temps_dropped=df_temps.drop(df_temps[df_temps['temp']<=cdd_setpoint].index)
         df_all = pd.merge(df_trace,df_temps_dropped,left_index=True,right_index=True)
-        if(len(df_all) > 0):
+        if(len(df_all) > 1):
             results = pd.ols(y=df_all['kwh'], x = df_all['temp'])
             r2_adj = results.r2_adj
             if(r2_adj > best_r2_adj_cool):
@@ -33,12 +44,19 @@ def run_regressions(trace_series,temps,cal_hdd_temp_range=range(50,60),
                 best_r2_adj_cool = r2_adj
                 slope_cdd = results.beta[0]
                 intercept_cdd = results.beta[1]
-                df_all_best = df_all
+                results_cdd=results
+                df_all_best_cool = df_all
+    if plot and df_all_best_cool is not None and len(df_all_best_cool) > 1:
+        df_plot=df_all_best_cool.drop(df_all_best_cool[df_all_best_cool['temp']==best_cdd_temp].index)
+        plt.plot(df_plot['temp'],df_plot['kwh'],'.r')
+        x = np.arange(best_cdd_temp,100,.2)
+        y = x * slope_cdd + intercept_cdd
+        plt.plot(x,y,'k')
 
     for hdd_setpoint in cal_hdd_temp_range:
-        df_temps_dropped = df_temps.drop(df_temps[df_temps['temp']>=hdd_setpoint].index)
+        df_temps_dropped=df_temps.drop(df_temps[df_temps['temp']>=hdd_setpoint].index)
         df_all = pd.merge(df_trace,df_temps_dropped,left_index=True,right_index=True)
-        if(len(df_all) > 0):
+        if(len(df_all) > 1):
             results = pd.ols(y=df_all['kwh'], x=df_all['temp'])
             r2_adj = results.r2_adj
             if(r2_adj > best_r2_adj_heat):
@@ -46,7 +64,15 @@ def run_regressions(trace_series,temps,cal_hdd_temp_range=range(50,60),
                 best_r2_adj_heat = r2_adj
                 slope_hdd = results.beta[0]
                 intercept_hdd = results.beta[1]
-                df_all_best = df_all
+                results_hdd=results
+                df_all_best_heat = df_all
+
+    if plot and df_all_best_heat is not None and len(df_all_best_heat) > 1:
+        df_plot=df_all_best_heat.drop(df_all_best_heat[df_all_best_heat['temp']==best_hdd_temp].index)
+        plt.plot(df_plot['temp'],df_plot['kwh'],'.')
+        x = np.arange(10,best_hdd_temp,.2)
+        y = x*slope_hdd + intercept_hdd
+        plt.plot(x,y,'k')
 
     results_dict['slope_hdd'] = slope_hdd
     results_dict['intercept_hdd'] = intercept_hdd
@@ -56,45 +82,80 @@ def run_regressions(trace_series,temps,cal_hdd_temp_range=range(50,60),
     results_dict['intercept_cdd'] = intercept_cdd
     results_dict['best_cdd_temp'] = best_cdd_temp
     results_dict['best_r2_adj_cdd'] = best_r2_adj_cool
+    results_dict['results_cdd'] = results_cdd
+    results_dict['results_hdd'] = results_hdd
     return results_dict
 
 
 def run_regressions_and_predict(trace_series,temps_series,
-        cal_heat_temp_range=range(50,60),cal_cool_temp_range=range(60,70),
-        json=False):
-    trace_series=trace_series.resample('D',how='sum')
-    temps_series=temps_series.resample('D',how='mean')
+        cal_heat_temp_range=range(50,60),cal_cool_temp_range=range(60,75),
+        plot=False,json=False):
+    '''
+    A wrapper method that both runs the run_regressions and predict_from_regressions
+    methods. It returns the actual total energy value (trace_series), the HVAC
+    disaggregated signal, and the difference between the actual total energy value
+    and the disaggregated TOTAL signal (based on our linear regression). This
+    output can be in json format if the json parameter is set to true, otherwise
+    it outputs as a triple.
+    '''
     results_dict = run_regressions(trace_series,temps_series,
-        cal_heat_temp_range,cal_cool_temp_range)
+        cal_heat_temp_range,cal_cool_temp_range,plot)
     [total_series,air_series,diff_series] = predict_from_regressions(trace_series,
             temps_series,results_dict)
-    if json:
-        series_triple = [total_series,air_series,diff_series]
-        output = get_results_to_json(series_triple)
+    if(json):
+        json_string=get_results_to_json(total_series,air_series,diff_series,
+                results_dict['slope_cdd'],results_dict['slope_hdd'])
+        return json_string
     else:
-        output = [total_series,air_series,diff_series]
+        return [total_series,air_series,diff_series]
 
-    return output
+def get_results_to_json(total_series,air_series,diff_series,
+        slope_cdd,slope_hdd):
+    '''
+    This method takes in a triple of series and puts them into json format
+    for use on the website. It outputs the respective sensitivity slopes
+    as 0 if no regression was calculated for that season (heating and
+    cooling)
+    '''
 
-def get_results_to_json(series_triple):
-    total_series = series_triple[0]
-    air_series = series_triple[1]
-    diff_series = series_triple[2]
+    perc_correlation=len([val for val in diff_series if abs(val) < 5000])\
+        /float(len(diff_series))*100
 
     data=[]
+    json_object={}
+    json_object['perc_correlation'] = perc_correlation
+    if(slope_cdd):
+        json_object['slope_cdd'] = slope_cdd/1000
+    else:
+        json_object['slope_cdd'] = 0
+    if(slope_hdd):
+        json_object['slope_hdd'] = slope_hdd/1000
+    else:
+        json_object['slope_hdd'] = 0
+    json_object['min_diff'] = min(diff_series/1000)
+    json_object['max_diff'] = max(diff_series/1000)
     for i, v in total_series.iteritems():
         kwh = v/1000
         air = air_series[i]/1000
         diff=diff_series[i]/1000
         data.append({'date':i.strftime('%Y-%m-%d %H:%M'),
             'reading': float(kwh),'air_reading':float(air),
-            'diff_series':float(diff)})
-    json_string = json.dumps(data, ensure_ascii=False,
+            'diff_reading':float(diff)})
+    json_object['data']=data
+    json_string = json.dumps(json_object, ensure_ascii=False,
                              indent=4, separators=(',', ': '))
 
     return json_string
 
-def predict_from_regressions(trace_series,temps,results_dict):
+def predict_from_regressions(trace_series,temps_series,results_dict):
+    '''
+    Takes a series of a trace and of temperature, as well as the dictionary
+    output by the run_regression method, and outputs a prediction of the total
+    energy usage, and subsequent HVAC usage. It returns the actual total energy
+    value (trace_series), the HVAC disaggregated signal, and the difference
+    between the actual total energy value and the disaggregated TOTAL signal
+    (based on our linear regression).
+    '''
     slope_hdd = results_dict['slope_hdd']
     intercept_hdd = results_dict['intercept_hdd']
     best_hdd_temp = results_dict['best_hdd_temp']
@@ -106,15 +167,15 @@ def predict_from_regressions(trace_series,temps,results_dict):
     df_trace = pd.DataFrame(trace_series,columns=['kwh'])
     df_trace = df_trace.sort_index()
     df_trace = df_trace
-    df_temps = pd.DataFrame(temps,columns=['temp'])
+    df_temps = pd.DataFrame(temps_series,columns=['temp'])
     df_sub = pd.merge(df_trace,df_temps,left_index=True,right_index=True)
 
     pred_air_daily = []
     total_daily = []
     pred_total_daily = []
-    if(intercept_cdd):
+    if intercept_cdd:
         intercept_cdd_new = best_cdd_temp*slope_cdd+intercept_cdd
-    if(intercept_hdd):
+    if intercept_hdd:
         intercept_hdd_new = best_hdd_temp*slope_hdd+intercept_hdd
 
     for i,val in enumerate(df_sub['kwh']):
@@ -125,6 +186,20 @@ def predict_from_regressions(trace_series,temps,results_dict):
         elif df_sub['temp'][i] < best_hdd_temp:
             pred_air_kwh_per_day = df_sub['temp'][i]*slope_hdd+intercept_hdd-intercept_hdd_new
             pred_total_kwh_per_day = df_sub['temp'][i]*slope_hdd+intercept_hdd
+        else:
+            pred_air_kwh_per_day=0
+            if intercept_hdd:
+                if intercept_cdd:
+                    pred_total_kwh_per_day=np.mean([intercept_hdd_new,intercept_cdd_new])
+                else:
+                    pred_total_kwh_per_day=intercept_hdd_new
+            else:
+                if intercept_cdd:
+                    pred_total_kwh_per_day=intercept_cdd_new
+                else:
+                    pred_total_kwh_per_day=0
+
+
         pred_total_daily.append(pred_total_kwh_per_day)
         if pred_air_kwh_per_day > use_kwh_per_day:
             pred_air_kwh_per_day = use_kwh_per_day
@@ -137,3 +212,15 @@ def predict_from_regressions(trace_series,temps,results_dict):
     diff_series = pd.Series(diff_daily,index=df_sub['kwh'].index)
 
     return [total_series,air_series,diff_series]
+
+def get_sensitivity_to_json(diff_series,slope_cdd):
+    perc_correlation=len([val for val in diff_series if abs(val) < 5000])\
+        /float(len(diff_series))*100
+
+    data.append({'sureness':float(perc_correlation),
+        'sensitivity': slope_cdd})
+
+    json_string = json.dumps(data, ensure_ascii=False,
+                         indent=4, separators=(',', ': '))
+
+    return json_string

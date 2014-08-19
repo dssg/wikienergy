@@ -2,77 +2,52 @@
     dataset: &train !pkl: "%(data_dir)s/%(dataset_prefix)s_train.pkl",
     model: !obj:pylearn2.models.mlp.MLP {
         batch_size: 100,
-        input_space: !obj:pylearn2.space.CompositeSpace {
-            components: [
-                !obj:pylearn2.space.Conv2DSpace {
-                    shape: [10,1],
-                    num_channels: 1
-                }, !obj:pylearn2.space.VectorSpace {
-                    dim: 1,
-                }, !obj:pylearn2.space.VectorSpace {
-                    dim: 1,
-                }, !obj:pylearn2.space.VectorSpace {
-                    dim: 7,
-                    sparse: True
-                }]
-            },
-        },
         layers: [
-            !obj: pylearn2.models.mlp.CompositeLayer {
-                layer_name: "h0",
-                layers: [
-                    !obj:pylearn2.models.mlp.MLP {
-                        batchsize: 100,
-                        input_space: !obj.space.Conv2DSpace {
-                            shape: [10,1],
-                            num_channels: 1
-                        },
-                        layers: [
-                            !obj:pylearn2.models.mlp.ConvRectifiedLinear {
-                                layer_name: 'conv0',
-                                output_channels: 10,
-                                irange: .05,
-                                kernel_shape: [5, 1],
-                                pool_shape: [1, 1],
-                                pool_stride: [1, 1],
-                                max_kernel_norm: 1.9365
-                            }, !obj:pylearn2.models.mlp.ConvRectifiedLinear {
-                                layer_name: 'conv1',
-                                output_channels: 10,
-                                irange: .05,
-                                kernel_shape: [4, 1],
-                                pool_shape: [2, 1],
-                                pool_stride: [2, 1],
-                                max_kernel_norm: 1.9365
-                            }
-                        ]
-                    }, !obj: pylearn2.models.mlp.RectifiedLinear {
-                        layer_name: 'time0',
-                        dim: 3,
-                        sparse_init: 15
-                    }, !obj: pylearn2.models.mlp.RectifiedLinear {
-                        layer_name: 'temp0',
-                        dim: 3,
-                        sparse_init: 15
-                    }, !obj: pylearn2.models.mlp.RectifiedLinear {
-                        layer_name: 'day_of_week0',
-                        dim: 3,
-                        sparse_init: 15
-                    }
-                ],
-                inputs_to_layers: {
-                    0: [0],
-                    1: [1],
-                    2: [2],
-                    2: [3],
-                }
+                 !obj:pylearn2.models.mlp.CompositeLayer {
+                     layer_name: "h0",
+                     inputs_to_layers: {
+                          0: [0],
+                          1: [1],
+                          2: [2],
+                          3: [3]
+                     },
+                     layers: [
+                              !obj:pylearn2.models.mlp.RectifiedLinear {
+                                   layer_name: 'time0',
+                                   dim: 20,
+                                   sparse_init: 15
+                               }, !obj:pylearn2.models.mlp.RectifiedLinear {
+                                   layer_name: 'temp0',
+                                   dim: 20,
+                                   sparse_init: 15
+                               }, !obj:pylearn2.models.mlp.RectifiedLinear {
+                                   layer_name: 'day_of_week0',
+                                   dim: 20,
+                                   sparse_init: 15
+                               }
+                      ],
             }, !obj:pylearn2.models.mlp.Softmax {
                 max_col_norm: 1.9365,
                 layer_name: 'y',
-                n_classes: 20,
+                n_classes: 10,
                 istdev: .05
             }
         ],
+        input_space: !obj:pylearn2.space.CompositeSpace {
+            components: [
+                         !obj:pylearn2.space.Conv2DSpace {
+                             shape: [10,1],
+                             num_channels: 1
+                         }, !obj:pylearn2.space.VectorSpace {
+                             dim: 1,
+                         }, !obj:pylearn2.space.VectorSpace {
+                             dim: 1,
+                         }, !obj:pylearn2.space.VectorSpace {
+                             dim: 7,
+                             sparse: True
+                         }
+            ]
+        },
     },
     algorithm: !obj:pylearn2.training_algorithms.bgd.BGD {
         batch_size: 100,

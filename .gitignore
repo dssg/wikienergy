@@ -10,3 +10,5 @@ data/*
 *.swp
 proto/*.png
 proto/FHMM/*.png
+*.aux
+*.cls
