@@ -32,5 +32,5 @@ def calculate_solar_generated(start_dt,end_dt,api,zip_code,eff_factor=0.8):
             data.append({'date':str(month_name.title())+' ' + str((start_dt+delta_days).year) ,'value':total_kWh/float(1000)})
             this_month=(start_dt+delta_days).month
 
-    json_string = json.dumps(data, ensure_ascii=False)
-    return json_string
+    
+    return data
