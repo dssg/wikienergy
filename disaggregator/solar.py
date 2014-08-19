@@ -11,15 +11,13 @@ def get_solar_data_from_nrel(api,zip_code):
     return parsed_json['outputs']['avg_lat_tilt']['monthly']
 
 
-def get_month_solar_data(month_num,month_data):
+def get_month_name(month_num):
     months = ['jan', 'feb' , 'mar', 'apr', 'may', 'jun',
-            'jul','aug' 'sep','oct','nov','dec']
-    for i in range(1, 13):
-        if month_num is i:
-            return month_data[months[i]]
+            'jul','aug','sep','oct','nov','dec']
+    return months[month_num-1]
 
 
-def calculate_solar_generated(start_dt,end_dt,api,zip_code,month_data,eff_factor=0.8):
+def calculate_solar_generated(start_dt,end_dt,api,zip_code,eff_factor=0.8):
 
     month_data = get_solar_data_from_nrel(api,zip_code)
     delta = end_dt - start_dt
