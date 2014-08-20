@@ -2,7 +2,8 @@ Disaggregator Package Overview
 ==============================
 
 
-***Please view more up-to-date documentation at /docs/sphinx/html/index.html***
+***Please view more up-to-date documentation
+[here](http://smartenergyactions.org/disaggregator/docs/).***
 
 Datasets might be loaded from many external sources and combined or
 manipulated in a variety of ways toward the end of energy disaggregation;
@@ -25,7 +26,7 @@ Basic usage of the disaggregator module during development is as follows:
 
     import sys
     import os.path
-    sys.path.append(os.path.join(os.pardir,os.pardir))
+    sys.path.append(os.path.join('path/to/repository','wikienergy'))
 
     import disaggregator as da
 
