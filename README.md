@@ -52,7 +52,7 @@ Team members
 ------------
  - Stephen Suffian
  - [Phil Ngo](http://www.philngo.me/)
- - Miguel Perez
+ - [Miguel Perez](https://www.linkedin.com/profile/view?id=337090498)
  - Sabina Tomkins
  - Matthew Gee
  - Varun Chandola
