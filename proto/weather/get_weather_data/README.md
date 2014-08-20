@@ -71,7 +71,7 @@ def get_weather_data(api,city,state,start_date,end_date):
         return j
     #If we just need the data for ONE day (pass None for end_date):
     if(end_date is None):
-        f = urllib2.urlopen('http://api.wunderground.com/api/API_KEY/history_'+start_date+'/q/'+state+'/'+city+'.json')
+        f = urllib2.urlopen('http://api.wunderground.com/api/1d83c5de274645d4/history_'+start_date+'/q/'+state+'/'+city+'.json')
         json_string = f.read()
         parsed_json = json.loads(json_string)
     
@@ -105,7 +105,7 @@ def get_weather_data(api,city,state,start_date,end_date):
         j = json.dumps(objects_list)
         return j
 
-query_results = get_weather_data('API_KEY','Austin','TX', '20130101', '20130131')
+query_results = get_weather_data('1d83c5de274645d4','Austin','TX', '20130101', '20130131')
 
 df = pd.read_json(query_results)
 
