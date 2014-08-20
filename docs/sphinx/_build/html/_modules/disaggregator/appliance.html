@@ -69,7 +69,6 @@
 <span class="kn">import</span> <span class="nn">utils</span>
 <span class="kn">import</span> <span class="nn">decimal</span>
 <span class="kn">import</span> <span class="nn">json</span>
-<span class="kn">import</span> <span class="nn">warnings</span>
 
 <div class="viewcode-block" id="ApplianceTrace"><a class="viewcode-back" href="../../appliances.html#disaggregator.appliance.ApplianceTrace">[docs]</a><span class="k">class</span> <span class="nc">ApplianceTrace</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;This class represents appliance traces.</span>
@@ -113,18 +112,13 @@
             <span class="n">window</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">series</span><span class="p">[</span><span class="n">start</span><span class="p">:</span><span class="n">start</span> <span class="o">+</span> <span class="n">window_length</span><span class="p">]</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
             <span class="n">windows</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">window</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">windows</span><span class="p">,</span><span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float</span><span class="p">)</span>
+
 </div>
 <div class="viewcode-block" id="ApplianceTrace.get_total_usage"><a class="viewcode-back" href="../../appliances.html#disaggregator.appliance.ApplianceTrace.get_total_usage">[docs]</a>    <span class="k">def</span> <span class="nf">get_total_usage</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">        Returns the total usage of this trace</span>
 <span class="sd">        &#39;&#39;&#39;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">series</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
-</div>
-<div class="viewcode-block" id="ApplianceTrace.get_daily_usage"><a class="viewcode-back" href="../../appliances.html#disaggregator.appliance.ApplianceTrace.get_daily_usage">[docs]</a>    <span class="k">def</span> <span class="nf">get_daily_usage</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&#39;&#39;&#39;</span>
-<span class="sd">        Returns the total daily usage of this trace</span>
-<span class="sd">        &#39;&#39;&#39;</span>
-        <span class="k">return</span> <span class="n">series</span><span class="o">.</span><span class="n">resample</span><span class="p">(</span><span class="s">&#39;D&#39;</span><span class="p">,</span> <span class="n">how</span><span class="o">=</span><span class="s">&#39;mean&#39;</span><span class="p">)</span>
 </div>
 <div class="viewcode-block" id="ApplianceTrace.print_trace"><a class="viewcode-back" href="../../appliances.html#disaggregator.appliance.ApplianceTrace.print_trace">[docs]</a>    <span class="k">def</span> <span class="nf">print_trace</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39;</span>
@@ -135,17 +129,15 @@
         <span class="k">print</span> <span class="s">&#39;Metadata: &#39;</span>
         <span class="n">pprint</span><span class="o">.</span><span class="n">pprint</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">metadata</span><span class="p">)</span>
 </div>
-<div class="viewcode-block" id="ApplianceTrace.resample"><a class="viewcode-back" href="../../appliances.html#disaggregator.appliance.ApplianceTrace.resample">[docs]</a>    <span class="k">def</span> <span class="nf">resample</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">sample_rate</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s">&#39;mean&#39;</span><span class="p">):</span>
+<div class="viewcode-block" id="ApplianceTrace.resample"><a class="viewcode-back" href="../../appliances.html#disaggregator.appliance.ApplianceTrace.resample">[docs]</a>    <span class="k">def</span> <span class="nf">resample</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">sample_rate</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">        Returns a new trace resampled to a given sample rate, defined by the</span>
 <span class="sd">        offset aliases described in panda time series.</span>
 <span class="sd">        http://pandas.pydata.org/pandas-docs/stable/timeseries.html#offset-aliases</span>
 <span class="sd">        &#39;&#39;&#39;</span>
-
         <span class="k">try</span><span class="p">:</span>
             <span class="n">new_series</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">series</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">float</span><span class="p">)</span>
-            <span class="n">new_series</span> <span class="o">=</span> <span class="n">new_series</span><span class="o">.</span><span class="n">resample</span><span class="p">(</span><span class="n">sample_rate</span><span class="p">,</span><span class="n">how</span><span class="o">=</span><span class="n">method</span><span class="p">)</span>
-            <span class="n">new_series</span> <span class="o">=</span> <span class="n">new_series</span><span class="o">.</span><span class="n">fillna</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+            <span class="n">new_series</span> <span class="o">=</span> <span class="n">new_series</span><span class="o">.</span><span class="n">resample</span><span class="p">(</span><span class="n">sample_rate</span><span class="p">,</span><span class="n">how</span><span class="o">=</span><span class="s">&#39;mean&#39;</span><span class="p">)</span>
             <span class="n">new_series</span> <span class="o">=</span> <span class="n">new_series</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="n">decimal</span><span class="o">.</span><span class="n">Decimal</span><span class="p">)</span>
             <span class="n">new_series</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">series</span><span class="o">.</span><span class="n">name</span>
         <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
@@ -162,10 +154,6 @@
             <span class="n">groupby_rate</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">series</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">date</span>
         <span class="k">elif</span> <span class="n">rate</span> <span class="o">==</span> <span class="s">&#39;W&#39;</span> <span class="ow">or</span> <span class="n">rate</span> <span class="o">==</span> <span class="s">&#39;1W&#39;</span><span class="p">:</span>
             <span class="n">groupby_rate</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">series</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">week</span>
-
-        <span class="k">elif</span> <span class="n">rate</span> <span class="o">==</span> <span class="s">&#39;M&#39;</span> <span class="ow">or</span> <span class="n">rate</span><span class="o">==</span> <span class="s">&#39;1M&#39;</span><span class="p">:</span>
-            <span class="n">groupby_rate</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">series</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">month</span>
-
         <span class="k">else</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="s">&#39;Looking for &quot;week&quot; or &quot;day&quot;&#39;</span><span class="p">)</span>
 
@@ -176,55 +164,18 @@
             <span class="n">traces</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ApplianceTrace</span><span class="p">(</span><span class="n">group</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span><span class="n">metadata</span><span class="p">))</span>
         <span class="k">return</span> <span class="n">traces</span>
 </div>
-<div class="viewcode-block" id="ApplianceTrace.to_daily_usage_json"><a class="viewcode-back" href="../../appliances.html#disaggregator.appliance.ApplianceTrace.to_daily_usage_json">[docs]</a>    <span class="k">def</span> <span class="nf">to_daily_usage_json</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span><span class="n">method</span><span class="o">=</span><span class="s">&#39;utc_dict&#39;</span><span class="p">):</span>
-        <span class="sd">&#39;&#39;&#39;</span>
-<span class="sd">        Returns the daily usage sum trace in a json format for calendar view</span>
-<span class="sd">        &#39;&#39;&#39;</span>
-        <span class="n">d_sum</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">resample</span><span class="p">(</span><span class="s">&#39;D&#39;</span><span class="p">,</span> <span class="s">&#39;sum&#39;</span><span class="p">)</span>
-        <span class="n">m_sum</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">resample</span><span class="p">(</span><span class="s">&#39;M&#39;</span><span class="p">,</span> <span class="s">&#39;sum&#39;</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">method</span> <span class="o">==</span> <span class="s">&#39;month_sums&#39;</span><span class="p">:</span>
-            <span class="n">data</span> <span class="o">=</span> <span class="p">[]</span>
-            <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">m_sum</span><span class="o">.</span><span class="n">series</span><span class="o">.</span><span class="n">iteritems</span><span class="p">():</span>
-                <span class="n">kwh</span> <span class="o">=</span> <span class="n">v</span><span class="o">/</span><span class="mi">1000</span>
-                <span class="n">data</span><span class="o">.</span><span class="n">append</span><span class="p">({</span><span class="s">&#39;date&#39;</span><span class="p">:</span><span class="n">i</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s">&#39;%Y-%m-</span><span class="si">%d</span><span class="s">&#39;</span><span class="p">),</span>
-                             <span class="s">&#39;reading&#39;</span><span class="p">:</span> <span class="nb">float</span><span class="p">(</span><span class="n">kwh</span><span class="p">)})</span>
-        <span class="k">elif</span> <span class="n">method</span> <span class="o">==</span> <span class="s">&#39;utc_dict&#39;</span><span class="p">:</span>
-            <span class="n">data</span> <span class="o">=</span> <span class="p">{}</span>            
-            <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">d_sum</span><span class="o">.</span><span class="n">series</span><span class="o">.</span><span class="n">iteritems</span><span class="p">():</span>
-                <span class="n">kwh</span> <span class="o">=</span> <span class="n">v</span><span class="o">/</span><span class="mi">1000</span>
-                <span class="n">unixtime</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">i</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s">&quot;</span><span class="si">%s</span><span class="s">&quot;</span><span class="p">))</span>
-                <span class="n">data</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="n">unixtime</span><span class="p">:</span><span class="nb">float</span><span class="p">(</span><span class="n">kwh</span><span class="p">)})</span>
-        <span class="k">elif</span> <span class="n">method</span> <span class="o">==</span> <span class="s">&#39;date_list&#39;</span><span class="p">:</span>
-            <span class="n">data</span> <span class="o">=</span> <span class="p">[]</span>
-            <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">d_sum</span><span class="o">.</span><span class="n">series</span><span class="o">.</span><span class="n">iteritems</span><span class="p">():</span>
-                <span class="n">kwh</span> <span class="o">=</span> <span class="n">v</span><span class="o">/</span><span class="mi">1000</span>
-                <span class="n">data</span><span class="o">.</span><span class="n">append</span><span class="p">({</span><span class="s">&#39;date&#39;</span><span class="p">:</span><span class="n">i</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s">&#39;%Y-%m-</span><span class="si">%d</span><span class="s">&#39;</span><span class="p">),</span>
-                             <span class="s">&#39;reading&#39;</span><span class="p">:</span> <span class="nb">float</span><span class="p">(</span><span class="n">kwh</span><span class="p">)})</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">NotImplementedError</span>
-        <span class="n">json_string</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">ensure_ascii</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">json_string</span>
-</div>
 <div class="viewcode-block" id="ApplianceTrace.to_json"><a class="viewcode-back" href="../../appliances.html#disaggregator.appliance.ApplianceTrace.to_json">[docs]</a>    <span class="k">def</span> <span class="nf">to_json</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">        Returns the trace in a json format amenable to d3 visualization.</span>
 <span class="sd">        &#39;&#39;&#39;</span>
-        <span class="n">data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">to_dict</span><span class="p">()</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">series</span><span class="o">.</span><span class="n">iteritems</span><span class="p">():</span>
+            <span class="n">data</span><span class="o">.</span><span class="n">append</span><span class="p">({</span><span class="s">&#39;date&#39;</span><span class="p">:</span><span class="n">i</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s">&#39;%Y-%m-</span><span class="si">%d</span><span class="s"> %H:%M&#39;</span><span class="p">),</span>                         
+                         <span class="s">&#39;reading&#39;</span><span class="p">:</span> <span class="nb">float</span><span class="p">(</span><span class="n">v</span><span class="p">)})</span>
+
         <span class="n">json_string</span> <span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">dumps</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">ensure_ascii</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span>
                                  <span class="n">indent</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">separators</span><span class="o">=</span><span class="p">(</span><span class="s">&#39;,&#39;</span><span class="p">,</span> <span class="s">&#39;: &#39;</span><span class="p">))</span>
         <span class="k">return</span> <span class="n">json_string</span>
-</div>
-<div class="viewcode-block" id="ApplianceTrace.to_dict"><a class="viewcode-back" href="../../appliances.html#disaggregator.appliance.ApplianceTrace.to_dict">[docs]</a>    <span class="k">def</span> <span class="nf">to_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&#39;&#39;&#39;</span>
-<span class="sd">        Returns the trace in a dict format amenable to d3 visualization without</span>
-<span class="sd">        converting to a json string.</span>
-<span class="sd">        &#39;&#39;&#39;</span>
-        <span class="n">data</span> <span class="o">=</span> <span class="p">[]</span>
-        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">series</span><span class="o">.</span><span class="n">iteritems</span><span class="p">():</span>
-            <span class="n">kwh</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">v</span><span class="p">)</span><span class="o">/</span><span class="mf">1000.0</span>
-            <span class="n">data</span><span class="o">.</span><span class="n">append</span><span class="p">({</span><span class="s">&#39;date&#39;</span><span class="p">:</span><span class="n">i</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s">&#39;%Y-%m-</span><span class="si">%d</span><span class="s"> %H:%M&#39;</span><span class="p">),</span>
-                         <span class="s">&#39;reading&#39;</span><span class="p">:</span> <span class="nb">float</span><span class="p">(</span><span class="n">kwh</span><span class="p">)})</span>
-        <span class="k">return</span> <span class="n">data</span>
 
 </div></div>
 <div class="viewcode-block" id="ApplianceInstance"><a class="viewcode-back" href="../../appliances.html#disaggregator.appliance.ApplianceInstance">[docs]</a><span class="k">class</span> <span class="nc">ApplianceInstance</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
@@ -297,7 +248,6 @@
 <span class="sd">        &#39;&#39;&#39;</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">utils</span><span class="o">.</span><span class="n">instances_aligned</span><span class="p">(</span><span class="n">instances</span><span class="p">):</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">instances</span> <span class="o">=</span> <span class="n">utils</span><span class="o">.</span><span class="n">align_instances</span><span class="p">(</span><span class="n">instances</span><span class="p">)</span>
-            <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="s">&quot;Aligning misaligned traces using default procedure&quot;</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">instances</span> <span class="o">=</span> <span class="n">instances</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">metadata</span> <span class="o">=</span> <span class="n">metadata</span>
@@ -429,14 +379,7 @@
             <span class="n">new_instance</span><span class="o">=</span> <span class="n">instance</span><span class="o">.</span><span class="n">split_by</span><span class="p">(</span><span class="n">rate</span><span class="p">)</span>
             <span class="n">instances</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">new_instance</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">ApplianceType</span><span class="p">(</span><span class="n">instances</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">metadata</span><span class="p">)</span>
-</div></div>
-<span class="k">class</span> <span class="nc">AlignmentError</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Exception raised for errors in the alignment of the data.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">def</span> <span class="nf">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">return</span> <span class="s">&#39;&#39;&#39;Improperly aligned traces&#39;&#39;&#39;</span>
-</pre></div>
+</pre></div></div></div>
 
           </div>
         </div>
@@ -476,7 +419,7 @@
     </div>
     <div class="footer">
         &copy; Copyright 2014, Phil Ngo, Miguel Perez, Stephen Suffian, Sabina Tomkins.
-      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.2.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.2.
     </div>
   </body>
 </html>
