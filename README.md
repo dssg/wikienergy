@@ -19,13 +19,28 @@ In particular, the repository contains:
 
 How to use the disaggregator module
 -----------------------------------
+
 ***Please view documentation at /docs/sphinx/html/index.html***
 
-Additional documentation and iPython notebook tutorials can be found in the
+Documentation can be found in the
 [docs](https://github.com/dssg/wikienergy/tree/master/docs) directory.
 
-Background
-----------
+Installation
+------------
+
+Because the `disaggregator` package is in early stages of rapid development,
+it is neither in PyPI, nor installable via `setup.py`. To use the module,
+simply clone the repo and add it to your path as follows:
+
+    import sys
+    import os.path
+    sys.path.append(os.path.join('path','to','disaggregator'))
+
+Tests
+-----
+
+To run the test suite, please refer to the
+[developer guide]("https://github.com/dssg/wikienergy/tree/master/docs/dev").
 
 Parners
 -------
