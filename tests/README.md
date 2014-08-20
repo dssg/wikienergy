@@ -15,6 +15,9 @@ If you wish to run only the fast tests, use the following:
 If you wish to execute or write tests with greater specificity, see the full
 documentation (linked below).
 
+Settings in `tests/settings.py` should be updated to include the proper
+credentials.
+
 Information
 -----------
 
