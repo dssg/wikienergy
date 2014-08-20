@@ -1,3 +1,15 @@
+"""
+.. module:: fhmm
+   :platform: Unix
+   :synopsis: Contains methods for training and fitting Factorials HMMs.
+
+.. moduleauthor:: Phil Ngo <ngo.phil@gmail.com>
+.. moduleauthor:: Miguel Perez <miguel.a.perez4@gmail.com>
+.. moduleauthor:: Stephen Suffian <stephen.suffian@gmail.com>
+.. moduleauthor:: Sabina Tomkins <sabina.tomkins@gmail.com>
+
+"""
+
 from sklearn import hmm
 import utils
 from copy import deepcopy

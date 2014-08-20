@@ -1,3 +1,12 @@
+"""
+.. module:: linregress
+   :platform: Unix
+   :synopsis: Contains methods for doing linear regression.
+
+.. moduleauthor:: Phil Ngo <ngo.phil@gmail.com>
+.. moduleauthor:: Sabina Tomkins <sabina.tomkins@gmail.com>
+
+"""
 from disaggregator import GreenButtonDatasetAdapter as gbda
 import pandas as pd
 import numpy as np

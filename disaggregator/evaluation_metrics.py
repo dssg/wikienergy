@@ -4,7 +4,8 @@
    :synopsis: Contains methods for evaluating the performance of various
       machine learning algorithms used in disaggregation.
 
-.. moduleauthor:: Sabina Tomkins <sabina@invalid.com>
+.. moduleauthor:: Phil Ngo <ngo.phil@gmail.com>
+.. moduleauthor:: Sabina Tomkins <sabina.tomkins@gmail.com>
 
 """
 

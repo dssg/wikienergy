@@ -1,3 +1,13 @@
+"""
+.. module:: generate
+   :platform: Unix
+   :synopsis: Contains methods for generating fake data.
+
+.. moduleauthor:: Phil Ngo <ngo.phil@gmail.com>
+.. moduleauthor:: Sabina Tomkins <sabina.tomkins@gmail.com>
+
+"""
+
 from appliance import ApplianceTrace
 from appliance import ApplianceInstance
 from appliance import ApplianceSet

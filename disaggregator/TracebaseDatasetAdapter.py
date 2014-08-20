@@ -5,7 +5,7 @@
 
 .. autoclass:: TracebaseDatasetAdapter
 
-.. moduleauthor:: Stephen Suffian <steve@invalid.com>
+.. moduleauthor:: Stephen Suffian <stephen.suffian@gmail.com>
 
 """
 import appliance as app

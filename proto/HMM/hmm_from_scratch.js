@@ -1,5 +1,3 @@
-require("sylvester");
-
 var observations = [0.,30.,50.,100.,100.,75.,200.,20.,10.,0.];
 
 var n_states = 3;

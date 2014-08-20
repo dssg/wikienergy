@@ -1,3 +1,13 @@
+"""
+.. module:: solar
+   :platform: Unix
+   :synopsis: Contains methods for calculating solar savings.
+
+.. moduleauthor:: Phil Ngo <ngo.phil@gmail.com>
+.. moduleauthor:: Sabina Tomkins <sabina.tomkins@gmail.com>
+
+"""
+
 import json
 import urllib2
 from calendar import monthrange

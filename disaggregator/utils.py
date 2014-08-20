@@ -5,9 +5,9 @@
       appliance classes.
 
 .. moduleauthor:: Phil Ngo <ngo.phil@gmail.com>
-.. moduleauthor:: Miguel Perez <miguel@invalid.com>
-.. moduleauthor:: Stephen Suffian <steve@invalid.com>
-.. moduleauthor:: Sabina Tomkins <sabina@invalid.com>
+.. moduleauthor:: Miguel Perez <miguel.a.perez4@gmail.com>
+.. moduleauthor:: Stephen Suffian <stephen.suffian@gmail.com>
+.. moduleauthor:: Sabina Tomkins <sabina.tomkins@gmail.com>
 
 """
 

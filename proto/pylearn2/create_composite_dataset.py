@@ -92,7 +92,7 @@ if __name__ == "__main__":
               u'validated_04_2014',
               u'validated_05_2014',]
 
-    db_url = "postgresql://USERNAME:PASSWORD@db.wiki-energy.org:5432/postgres"
+    db_url = "postgresql:/USERNAME:PASSWORD@db.wiki-energy.org:5432/postgres"
     psda.set_url(db_url)
 
     window_length = 10
