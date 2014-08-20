@@ -36,6 +36,18 @@ simply clone the repo and add it to your path as follows:
     import os.path
     sys.path.append(os.path.join('path/to/repository', 'wikienergy'))
 
+Tutorials
+---------
+
+Tutorials can be found [here](https://github.com/dssg/wikienergy/tree/master/docs/tutorials)
+
+Proto
+-----
+
+The [proto](https://github.com/dssg/wikienergy/tree/master/proto)
+directory contains a set of ipython notebooks with (less organized) analysis
+in greater depth.
+
 Tests
 -----
 
