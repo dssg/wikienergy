@@ -30,7 +30,7 @@ Algorithms
     creation and manipulation, model loading and saving.
   - [`NN`](https://github.com/dssg/wikienergy/tree/master/proto/NN):
     Backpropagation algorithm implementation, pybrain testing.
-- Support Vector Networks:
-  - [`SVN`](https://github.com/dssg/wikienergy/tree/master/proto/SVN):
+- Support Vector Machines:
+  - [`SVM`](https://github.com/dssg/wikienergy/tree/master/proto/SVM):
     Raw electric vehicle vs air conditioning signal separation, principle
     component analysis.
