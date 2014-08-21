@@ -4,10 +4,13 @@ Prototyping topics overview
 This directory contains folders, organized by topic, which together represent
 nearly all of the prototyping work which was done in the summer of 2014 by
 the DSSG energy fellows. In its current, unfiltered form, it can be difficult
-to navigate. A curated set of iPython notebooks which cover a small percentage
+to navigate.
+
+A curated set of iPython notebooks which cover a small percentage
 of the prototyping done here is available in the
 [tutorials](https://github.com/dssg/wikienergy/tree/master/docs/tutorials)
-directory.
+directory. These are easier to follow and are much more helpful for becoming
+familiar with the various techniques and modules used here.
 
 
 Topics
