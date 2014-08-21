@@ -56,9 +56,9 @@ To run the test suite, please refer to the
 
 Partners
 -------
-<a href="http://www.iseif.org/" rel="ISEIF"><img src="media/ISEIF.png" width="200" align="right"></a></a>
-<a href="http://www.oak-park.us/" rel="oak park"><img src="media/oakpark.jpg" width="130" align="right"></a>
-<a href="http://www.pecanstreet.org/" rel="pecan street"><img src="media/pecanstreet.png" width="200" align="right"></a>
+<a href="http://www.iseif.org/" rel="ISEIF"><img src="media/ISEIF.png" width="200"></a></a>
+<a href="http://www.oak-park.us/" rel="oak park"><img src="media/oakpark.jpg" width="130"></a>
+<a href="http://www.pecanstreet.org/" rel="pecan street"><img src="media/pecanstreet.png" width="200"></a>
 
 
 
