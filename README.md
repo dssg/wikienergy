@@ -28,14 +28,11 @@ Documentation can be found in the
 Installation
 ------------
 	git clone https://github.com/dssg/wikienergy
-	
-Because the `disaggregator` package is in early stages of rapid development,
-it is neither in PyPI, nor installable via `setup.py`. To use the module,
-simply clone the repo and add it to your path as follows:
 
-    import sys
-    import os.path
-    sys.path.append(os.path.join('path/to/repository', 'wikienergy'))
+In order to import the disaggregator package, at the wikienergy level type:
+    python setup.py install
+
+You may have to use the sudo command if a Permission Denied error occurs.
 
 Tutorials
 ---------
@@ -55,7 +52,7 @@ Tests
 To run the test suite, please refer to the
 [developer guide]("https://github.com/dssg/wikienergy/tree/master/docs/dev").
 
-If you are a developer working on this project via dssg, feel free to clone our website [repo](https://github.com/dssg/smartenergyactions.org). 
+If you are a developer working on this project via dssg, feel free to clone our website [repo](https://github.com/dssg/smartenergyactions.org).
 
 	git clone https://github.com/dssg/smartenergyactions.org
 
@@ -75,7 +72,7 @@ Partners
 Team members
 ------------
 ![alt img](media/energy-team.png)
-[Phil Ngo](http://www.philngo.me/) | [Miguel Perez](https://www.linkedin.com/profile/view?id=337090498) | [Stephen Suffian](https://www.linkedin.com/profile/view?id=56235598) | [Sabina Tomkins](https://www.linkedin.com/profile/view?id=280366604) | Matthew Gee | Varun Chandola 
+[Phil Ngo](http://www.philngo.me/) | [Miguel Perez](https://www.linkedin.com/profile/view?id=337090498) | [Stephen Suffian](https://www.linkedin.com/profile/view?id=56235598) | [Sabina Tomkins](https://www.linkedin.com/profile/view?id=280366604) | Matthew Gee | Varun Chandola
 
 Alternatives
 ------------
