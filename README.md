@@ -57,8 +57,8 @@ To run the test suite, please refer to the
 Partners
 -------
 <a href="http://www.pecanstreet.org/" rel="pecan street">![alt img](media/pecanstreet.png)</a>
-<a href="http://www.oak-park.us/" rel="oak park">![alt img](media/oakpark.jpg =150x)</a>
-<a href="http://www.iseif.org/" rel="ISEIF">![alt img](media/ISEIF.jpg =300x) </a>
+<a href="http://www.oak-park.us/" rel="oak park">![alt img](media/oakpark.jpg)</a>
+<a href="http://www.iseif.org/" rel="ISEIF">![alt img](media/ISEIF.jpg) </a>
 
 Team members
 ------------
