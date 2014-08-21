@@ -54,20 +54,19 @@ Tests
 To run the test suite, please refer to the
 [developer guide]("https://github.com/dssg/wikienergy/tree/master/docs/dev").
 
-Parners
+Partners
 -------
-- [Pecan Street/WikiEnergy](http://www.pecanstreet.org/)
-- [Village of Oak Park](http://www.oak-park.us/)
-- [Illinois Science & Energy Innovation Foundation | ISEIF](http://www.iseif.org/)
+<a href="http://www.iseif.org/" rel="ISEIF"><img src="media/ISEIF.png" width="200"></a></a>
+<a href="http://www.oak-park.us/" rel="oak park"><img src="media/oakpark.jpg" width="130"></a>
+<a href="http://www.pecanstreet.org/" rel="pecan street"><img src="media/pecanstreet.png" width="200"></a>
+
+
+
 
 Team members
 ------------
- - Stephen Suffian
- - [Phil Ngo](http://www.philngo.me/)
- - [Miguel Perez](https://www.linkedin.com/profile/view?id=337090498)
- - Sabina Tomkins
- - Matthew Gee
- - Varun Chandola
+![alt img](media/energy-team.png)
+[Phil Ngo](http://www.philngo.me/) | [Miguel Perez](https://www.linkedin.com/profile/view?id=337090498) | [Stephen Suffian](https://www.linkedin.com/profile/view?id=56235598) | [Sabina Tomkins](https://www.linkedin.com/profile/view?id=280366604) | Matthew Gee | Varun Chandola 
 
 Alternatives
 ------------
