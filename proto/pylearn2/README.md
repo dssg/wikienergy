@@ -11,3 +11,7 @@ This directory contains the following:
   - evaluating models
   - training models
   - concatenating datasets
+
+Example usage:
+
+    python run_model.py network.yaml path/to/data/dir data_prefix model_prefix
