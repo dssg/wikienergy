@@ -55,7 +55,7 @@ Tests
 To run the test suite, please refer to the
 [developer guide]("https://github.com/dssg/wikienergy/tree/master/docs/dev").
 
-If you are a developer working on this project via dssg, feel free to clone our website [repo](https://github.com/mperez4/smartenergyactions.org). 
+If you are a developer working on this project via dssg, feel free to clone our website [repo](https://github.com/dssg/smartenergyactions.org). 
 
 	git clone https://github.com/dssg/smartenergyactions.org
 
