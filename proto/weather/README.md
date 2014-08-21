@@ -13,7 +13,8 @@ Weather and Linear Regression
 
 #Temperature vs Energy Use
 _______
-
+This directory has a stable function to query weather data using the [weatherunderground](http://www.wunderground.com/) API.
+There is also example notebooks that run regressions of temperature with energy.
 ##January
 Temperature:
 ![alt text](get_weather_data/month_temp_graphs/January_Weather.png)

@@ -27,7 +27,8 @@ Documentation can be found in the
 
 Installation
 ------------
-
+	git clone https://github.com/dssg/wikienergy
+	
 Because the `disaggregator` package is in early stages of rapid development,
 it is neither in PyPI, nor installable via `setup.py`. To use the module,
 simply clone the repo and add it to your path as follows:
@@ -53,6 +54,14 @@ Tests
 
 To run the test suite, please refer to the
 [developer guide]("https://github.com/dssg/wikienergy/tree/master/docs/dev").
+
+If you are a developer working on this project via dssg, feel free to clone our website [repo](https://github.com/dssg/smartenergyactions.org). 
+
+	git clone https://github.com/dssg/smartenergyactions.org
+
+Website
+-----
+We have our website running our disaggregation modules at [smartenergyactions.org](smartenergyactions.org)
 
 Partners
 -------
