@@ -57,13 +57,13 @@ To run the test suite, please refer to the
 Partners
 -------
 <a href="http://www.pecanstreet.org/" rel="pecan street">![alt img](media/pecanstreet.png)</a>
-<a href="http://www.oak-park.us/" rel="oak park">![alt img](media/oakpark.jpg)</a>
-<a href="http://www.iseif.org/" rel="ISEIF">![alt img](media/ISEIF.jpg) </a>
+<a href="http://www.oak-park.us/" rel="oak park">![alt img](media/oakpark.png)</a>
+<a href="http://www.iseif.org/" rel="ISEIF">![alt img](media/ISEIF.png) </a>
 
 Team members
 ------------
 ![alt img](media/energy-team.png)
-[Phil Ngo](http://www.philngo.me/) | [Miguel Perez](https://www.linkedin.com/profile/view?id=337090498) | [Stephen Suffian](https://www.linkedin.com/profile/view?id=56235598) | [Sabina Tomkins](https://www.linkedin.com/profile/view?id=280366604) | Matthew Gee | Varun Chandola
+[Phil Ngo](http://www.philngo.me/) | [Miguel Perez](https://www.linkedin.com/profile/view?id=337090498) | [Stephen Suffian](https://www.linkedin.com/profile/view?id=56235598) | [Sabina Tomkins](https://www.linkedin.com/profile/view?id=280366604) | Matthew Gee | Varun Chandola 
 
 Alternatives
 ------------
