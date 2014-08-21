@@ -1,13 +1,6 @@
 DSSG Energy Disaggregation
 ==========================
 
-Parners
--------
-![alt img](http://www.rowcom.com/wordpress/wp-content/uploads/2014/04/Pecan-Street-Logo.png)
-![alt img](https://pbs.twimg.com/profile_images/1930627446/twitter4.jpg =150x)
-![alt img](http://ww1.prweb.com/prfiles/2013/09/25/11159377/ISEIF.jpg =300x)
-
-[Pecan Street/WikiEnergy](http://www.pecanstreet.org/) | [Village of Oak Park](http://www.oak-park.us/) | [Illinois Science & Energy Innovation Foundation](http://www.iseif.org/)
 Contents
 -------------
 This repository contains a set of tools for performing end-to-end
@@ -61,15 +54,16 @@ Tests
 To run the test suite, please refer to the
 [developer guide]("https://github.com/dssg/wikienergy/tree/master/docs/dev").
 
+Partners
+-------
+<a href="http://www.pecanstreet.org/" rel="pecan street">![alt img](media/pecanstreet.png)</a>
+<a href="http://www.oak-park.us/" rel="oak park">![alt img](media/oakpark.jpg =150x)</a>
+<a href="http://www.iseif.org/" rel="ISEIF">![alt img](media/ISEIF.jpg =300x) </a>
 
 Team members
 ------------
- - Stephen Suffian
- - [Phil Ngo](http://www.philngo.me/)
- - [Miguel Perez](https://www.linkedin.com/profile/view?id=337090498)
- - Sabina Tomkins
- - Matthew Gee
- - Varun Chandola
+![alt img](media/energy-team.png)
+[Phil Ngo](http://www.philngo.me/) | [Miguel Perez](https://www.linkedin.com/profile/view?id=337090498) | [Stephen Suffian](https://www.linkedin.com/profile/view?id=56235598) | [Sabina Tomkins](https://www.linkedin.com/profile/view?id=280366604) | Matthew Gee | Varun Chandola
 
 Alternatives
 ------------
