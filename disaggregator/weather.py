@@ -211,6 +211,38 @@ def weather_normalize(trace,temperature,set_point):
     '''
     pass
 
+def get_station_id_from_zip_code(zip_code,google_api_key,solar_api_key):
+    '''
+    Returns a station id given a zip code.
+    '''
+    [lat,lng]=get_lat_lng_from_zip_code(zip_code,google_api_key)
+    station_id=get_station_id_from_lat_lng(lat,lng,solar_api_key)
+    return station_id
+
+def get_station_id_from_lat_lng(lat,lng,solar_api_key):
+    '''
+    Returns a station id given a lat long.
+    '''
+    f = urllib2.urlopen('http://developer.nrel.gov/api/solar/data_query/v1.json?api_key='+solar_api_key+'&lat='+str(lat)+'&lon='+str(lng))
+    json_string = f.read()
+    parsed_json = json.loads(json_string)
+    station_id_unicode=parsed_json['outputs']['tmy3']['id']
+    station_id=int(str.split(str(station_id_unicode),'-')[1])
+    return station_id
+
+def get_lat_lng_from_zip_code(zip_code,google_api_key):
+    '''
+    Returns a lat long given a zip code.
+    '''
+    zip_code=zip_code.replace(' ','+')
+    zip_code=zip_code.replace(',','%2C')
+    f = urllib2.urlopen('https://maps.googleapis.com/maps/api/geocode/json?address='+zip_code+'&key='+google_api_key)
+    json_string = f.read()
+    parsed_json_lat_lng = json.loads(json_string)
+    lat=parsed_json_lat_lng['results'][0]['geometry']['location']['lat']
+    lng=parsed_json_lat_lng['results'][0]['geometry']['location']['lng']
+    return [lat,lng]
+
 def _index_df_by_date(df):
     df['date'] = pd.to_datetime(df['date'])
     df.set_index('date', inplace=True)
