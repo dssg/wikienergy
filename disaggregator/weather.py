@@ -109,60 +109,63 @@ def get_weather_data(api_key,city,state,start_date,end_date,zipcode=None):
 
         #format our date structure to pass to our http request
         date_format = "%Y%m%d"
-        num_days = (end_date - start_date).days
         objects_list = []
         print 'in weather function'
-        #create new variable that will create query's for the api
-        for year in range(0,num_days + 1):
-            #count from start_date to end_date
-            dates = start_date + timedelta(days=year)
-            formatted_dates = datetime.strftime(dates, date_format)
-            #create query which will iterate through desired weather period
-            if zipcode:
-                query = 'http://api.wunderground.com/api/'+ api_key +\
-                    '/history_' + formatted_dates + '/q/' + zipcode + '.json'
-            else:
-                city=city.replace(" ","%20")
-                query = 'http://api.wunderground.com/api/'+ api_key +\
-                    '/history_' + formatted_dates + '/q/' + state + '/' + city + '.json'
-            print query
-            #iterate through the number of days and query the api. dump json results every time
-            f = urllib2.urlopen(query)
-            #read query as a json string
-            json_string = f.read()
-            #parse/load json string
-            parsed_json = json.loads(json_string)
-            #Iterate through each json object and append it to an ordered dictionary
-            for i in parsed_json['history']['observations']:
-                d = collections.OrderedDict()
-                d['date'] = i['date']['mon'] + '/' + i['date']['mday'] + '/' + i['date']['year']
-                d['time'] = i['date']['pretty'][0:8]
-                d['temp'] = i['tempi']
-                d['conds'] = i['conds']
-                d['wdire'] = i['wdire']
-                d['wdird'] = i['wdird']
-                d['hail'] = i['hail']
-                d['thunder'] = i['thunder']
-                d['pressurei'] = i['pressurei']
-                d['snow'] = i['snow']
-                d['pressurem'] = i['pressurem']
-                d['fog'] = i['fog']
-                d['tornado'] = i['tornado']
-                d['hum'] = i['hum']
-                d['tempi'] = i['tempi']
-                d['tempm'] = i['tempm']
-                d['dewptm'] = i['dewptm']
-                d['dewpti'] = i['dewpti']
-                d['rain'] = i['rain']
-                d['visim'] = i['visi']
-                d['wspdi'] = i['wspdi']
-                d['wspdm'] = i['wspdm']
-                objects_list.append(d)
-                #dump the dictionary into a json object
-                j = json.dumps(objects_list)
+
+        #count from start_date to end_date
+        num_days = (end_date - start_date).days
+        dates = start_date + timedelta(days=num_days)
+        formatted_dates = datetime.strftime(dates, date_format)
+
+        #create query which will iterate through desired weather period
+        if zipcode:
+            query = 'http://api.wunderground.com/api/'+ api_key +\
+                '/history_' + formatted_dates + '/q/' + zipcode + '.json'
+        else:
+            # use state and city
+            city=city.replace(" ","%20")
+            query = 'http://api.wunderground.com/api/'+ api_key +\
+                '/history_' + formatted_dates + '/q/' + state + '/' + city + '.json'
+        print "Weather query: {}".format(query)
+
+        #iterate through the number of days and query the api. dump json results every time
+        f = urllib2.urlopen(query)
+        #read query as a json string
+        json_string = f.read()
+        #parse/load json string
+        parsed_json = json.loads(json_string)
+
+        #Iterate through each json object and append it to an ordered dictionary
+        for i in parsed_json['history']['observations']:
+            d = collections.OrderedDict()
+            d['date'] = i['date']['mon'] + '/' + i['date']['mday'] + '/' + i['date']['year']
+            d['time'] = i['date']['pretty'][0:8]
+            d['temp'] = i['tempi']
+            d['conds'] = i['conds']
+            d['wdire'] = i['wdire']
+            d['wdird'] = i['wdird']
+            d['hail'] = i['hail']
+            d['thunder'] = i['thunder']
+            d['pressurei'] = i['pressurei']
+            d['snow'] = i['snow']
+            d['pressurem'] = i['pressurem']
+            d['fog'] = i['fog']
+            d['tornado'] = i['tornado']
+            d['hum'] = i['hum']
+            d['tempi'] = i['tempi']
+            d['tempm'] = i['tempm']
+            d['dewptm'] = i['dewptm']
+            d['dewpti'] = i['dewpti']
+            d['rain'] = i['rain']
+            d['visim'] = i['visi']
+            d['wspdi'] = i['wspdi']
+            d['wspdm'] = i['wspdm']
+            objects_list.append(d)
+            #dump the dictionary into a json object
+            j = json.dumps(objects_list)
         #append our json object to a list for every day and return its data
-    #    print j
         return j
+
     #If we just need the data for ONE day (pass None for end_date):
     if(end_date is None):
         start_date_str = datetime.strftime(start_date, date_format)
