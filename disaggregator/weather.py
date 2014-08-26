@@ -111,7 +111,7 @@ def get_weather_data(api_key,city,state,start_date,end_date,zipcode=None):
         date_format = "%Y%m%d"
         num_days = (end_date - start_date).days
         objects_list = []
-
+        print 'in weather function'
         #create new variable that will create query's for the api
         for year in range(0,num_days + 1):
             #count from start_date to end_date
@@ -125,6 +125,7 @@ def get_weather_data(api_key,city,state,start_date,end_date,zipcode=None):
                 city=city.replace(" ","%20")
                 query = 'http://api.wunderground.com/api/'+ api_key +\
                     '/history_' + formatted_dates + '/q/' + state + '/' + city + '.json'
+            print query
             #iterate through the number of days and query the api. dump json results every time
             f = urllib2.urlopen(query)
             #read query as a json string
