@@ -5,6 +5,8 @@ Weather and Linear Regression
 
 - linregress-oakpark: This notebook takes oak park data and uses the linear regression method. 
 
+- linregress_oak_park_mult_plots: This notebook does the same as the one above but includes a method for printing multiple plots
+
 - solar\_estimator: This notebook uses NREL data to estimate solar output for a given month.
 
 - weather\_normalized\_regression-Pecan-validated: This is an older notebook that uses Pecan Street data to explore the use of linear regression.

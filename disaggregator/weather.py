@@ -114,59 +114,63 @@ def get_weather_data(api_key,city,state,start_date,end_date,zipcode=None):
 
         #format our date structure to pass to our http request
         date_format = "%Y%m%d"
-        num_days = (end_date - start_date).days
         objects_list = []
+        print 'in weather function'
 
-        #create new variable that will create query's for the api
-        for year in range(0,num_days + 1):
-            #count from start_date to end_date
-            dates = start_date + timedelta(days=year)
-            formatted_dates = datetime.strftime(dates, date_format)
-            #create query which will iterate through desired weather period
-            if zipcode:
-                query = 'http://api.wunderground.com/api/'+ api_key +\
-                    '/history_' + formatted_dates + '/q/' + zipcode + '.json'
-            else:
-                city=city.replace(" ","%20")
-                query = 'http://api.wunderground.com/api/'+ api_key +\
-                    '/history_' + formatted_dates + '/q/' + state + '/' + city + '.json'
-            #iterate through the number of days and query the api. dump json results every time
-            f = urllib2.urlopen(query)
-            #read query as a json string
-            json_string = f.read()
-            #parse/load json string
-            parsed_json = json.loads(json_string)
-            #Iterate through each json object and append it to an ordered dictionary
-            for i in parsed_json['history']['observations']:
-                d = collections.OrderedDict()
-                d['date'] = i['date']['mon'] + '/' + i['date']['mday'] + '/' + i['date']['year']
-                d['time'] = i['date']['pretty'][0:8]
-                d['temp'] = i['tempi']
-                d['conds'] = i['conds']
-                d['wdire'] = i['wdire']
-                d['wdird'] = i['wdird']
-                d['hail'] = i['hail']
-                d['thunder'] = i['thunder']
-                d['pressurei'] = i['pressurei']
-                d['snow'] = i['snow']
-                d['pressurem'] = i['pressurem']
-                d['fog'] = i['fog']
-                d['tornado'] = i['tornado']
-                d['hum'] = i['hum']
-                d['tempi'] = i['tempi']
-                d['tempm'] = i['tempm']
-                d['dewptm'] = i['dewptm']
-                d['dewpti'] = i['dewpti']
-                d['rain'] = i['rain']
-                d['visim'] = i['visi']
-                d['wspdi'] = i['wspdi']
-                d['wspdm'] = i['wspdm']
-                objects_list.append(d)
-                #dump the dictionary into a json object
-                j = json.dumps(objects_list)
+        #count from start_date to end_date
+        num_days = (end_date - start_date).days
+        dates = start_date + timedelta(days=num_days)
+        formatted_dates = datetime.strftime(dates, date_format)
+
+        #create query which will iterate through desired weather period
+        if zipcode:
+            query = 'http://api.wunderground.com/api/'+ api_key +\
+                '/history_' + formatted_dates + '/q/' + zipcode + '.json'
+        else:
+            # use state and city
+            city=city.replace(" ","%20")
+            query = 'http://api.wunderground.com/api/'+ api_key +\
+                '/history_' + formatted_dates + '/q/' + state + '/' + city + '.json'
+        print "Weather query: {}".format(query)
+
+        #iterate through the number of days and query the api. dump json results every time
+        f = urllib2.urlopen(query)
+        #read query as a json string
+        json_string = f.read()
+        #parse/load json string
+        parsed_json = json.loads(json_string)
+
+        #Iterate through each json object and append it to an ordered dictionary
+        for i in parsed_json['history']['observations']:
+            d = collections.OrderedDict()
+            d['date'] = i['date']['mon'] + '/' + i['date']['mday'] + '/' + i['date']['year']
+            d['time'] = i['date']['pretty'][0:8]
+            d['temp'] = i['tempi']
+            d['conds'] = i['conds']
+            d['wdire'] = i['wdire']
+            d['wdird'] = i['wdird']
+            d['hail'] = i['hail']
+            d['thunder'] = i['thunder']
+            d['pressurei'] = i['pressurei']
+            d['snow'] = i['snow']
+            d['pressurem'] = i['pressurem']
+            d['fog'] = i['fog']
+            d['tornado'] = i['tornado']
+            d['hum'] = i['hum']
+            d['tempi'] = i['tempi']
+            d['tempm'] = i['tempm']
+            d['dewptm'] = i['dewptm']
+            d['dewpti'] = i['dewpti']
+            d['rain'] = i['rain']
+            d['visim'] = i['visi']
+            d['wspdi'] = i['wspdi']
+            d['wspdm'] = i['wspdm']
+            objects_list.append(d)
+            #dump the dictionary into a json object
+            j = json.dumps(objects_list)
         #append our json object to a list for every day and return its data
-    #    print j
         return j
+
     #If we just need the data for ONE day (pass None for end_date):
     if(end_date is None):
         start_date_str = datetime.strftime(start_date, date_format)
@@ -263,6 +267,38 @@ def weather_normalize(trace,temperature,set_point):
     Returns a weather-normalized trace
     '''
     pass
+
+def get_station_id_from_zip_code(zip_code,google_api_key,solar_api_key):
+    '''
+    Returns a station id given a zip code.
+    '''
+    [lat,lng]=get_lat_lng_from_zip_code(zip_code,google_api_key)
+    station_id=get_station_id_from_lat_lng(lat,lng,solar_api_key)
+    return station_id
+
+def get_station_id_from_lat_lng(lat,lng,solar_api_key):
+    '''
+    Returns a station id given a lat long.
+    '''
+    f = urllib2.urlopen('http://developer.nrel.gov/api/solar/data_query/v1.json?api_key='+solar_api_key+'&lat='+str(lat)+'&lon='+str(lng))
+    json_string = f.read()
+    parsed_json = json.loads(json_string)
+    station_id_unicode=parsed_json['outputs']['tmy3']['id']
+    station_id=int(str.split(str(station_id_unicode),'-')[1])
+    return station_id
+
+def get_lat_lng_from_zip_code(zip_code,google_api_key):
+    '''
+    Returns a lat long given a zip code.
+    '''
+    zip_code=zip_code.replace(' ','+')
+    zip_code=zip_code.replace(',','%2C')
+    f = urllib2.urlopen('https://maps.googleapis.com/maps/api/geocode/json?address='+zip_code+'&key='+google_api_key)
+    json_string = f.read()
+    parsed_json_lat_lng = json.loads(json_string)
+    lat=parsed_json_lat_lng['results'][0]['geometry']['location']['lat']
+    lng=parsed_json_lat_lng['results'][0]['geometry']['location']['lng']
+    return [lat,lng]
 
 def _index_df_by_date(df):
     df['date'] = pd.to_datetime(df['date'])
