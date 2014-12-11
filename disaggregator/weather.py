@@ -17,6 +17,11 @@ from datetime import datetime, timedelta, date
 import collections
 import pandas as pd
 import numpy as np
+import os
+import utils
+import ftplib
+import StringIO
+import gzip
 
 def degree_day_regression(df, x_opt='both'):
     '''
@@ -204,6 +209,54 @@ def get_weather_data(api_key,city,state,start_date,end_date,zipcode=None):
 
         j = json.dumps(objects_list)
         return j
+
+class GSODWeatherSource:
+    def __init__(self,station_id,start_year,end_year):
+        if len(station_id) == 6:
+            # given station id is the six digit code, so need to get full name
+            gsod_station_index_filename = os.path.join(
+                    os.path.dirname(os.path.dirname(os.path.abspath(utils.__file__))),
+                    'resources',
+                    'GSOD-ISD_station_index.json')
+            with open(gsod_station_index_filename,'r') as f:
+                station_index = json.load(f)
+                # take first station in list
+                potential_station_ids = station_index[station_id]
+        else:
+            # otherwise, just use the given id
+            potential_station_ids = [station_id]
+        self._data = {}
+        ftp = ftplib.FTP("ftp.ncdc.noaa.gov")
+        ftp.login()
+        data = []
+        for year in xrange(start_year,end_year + 1):
+            string = StringIO.StringIO()
+            # not every station will be available in every year, so use the
+            # first one that works
+            for station_id in potential_station_ids:
+                try:
+                    ftp.retrbinary('RETR /pub/data/gsod/{year}/{station_id}-{year}.op.gz'.format(station_id=station_id,year=year),string.write)
+                    break
+                except (IOError,ftplib.error_perm):
+                    pass
+            string.seek(0)
+            f = gzip.GzipFile(fileobj=string)
+            self._add_file(f)
+            string.close()
+            f.close()
+        ftp.quit()
+
+    def _add_file(self,f):
+        for line in f.readlines()[1:]:
+            columns=line.split()
+            self._data[columns[2]] = float(columns[3])
+
+    def get_weather_range(self,start,end):
+        temps = []
+        for days in range((end - start).days):
+            dt = start + timedelta(days=days)
+            temps.append(self._data.get(dt.strftime("%Y%m%d"),float("nan")))
+        return temps
 
 def weather_normalize(trace,temperature,set_point):
     '''
