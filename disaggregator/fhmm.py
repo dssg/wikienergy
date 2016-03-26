@@ -10,7 +10,7 @@
 
 """
 
-from sklearn import hmm
+from hmmlearn import hmm
 import utils
 from copy import deepcopy
 import numpy as np

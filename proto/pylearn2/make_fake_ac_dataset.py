@@ -1,7 +1,7 @@
 import pylearn2
 import pylearn2.datasets as ds
 import numpy as np
-from sklearn import hmm
+from hmmlearn import hmm
 import os
 import pickle
 

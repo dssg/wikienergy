@@ -2,7 +2,7 @@ import theano
 import theano.tensor as T
 from theano.tensor import nnet
 from theano.tensor.nnet import conv
-from sklearn import hmm
+from hmmlearn import hmm
 import np as np
 
 

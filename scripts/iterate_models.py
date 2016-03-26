@@ -7,7 +7,7 @@ from disaggregator import PecanStreetDatasetAdapter as psda
 from disaggregator import utils
 from disaggregator import fhmm
 from disaggregator import evaluation_metrics as metric
-from sklearn import hmm
+from hmmlearn import hmm
 from copy import deepcopy
 import pymc
 import pylab
